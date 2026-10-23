@@ -19,6 +19,14 @@
 - **ပတ်ဝန်းကျင်နှင့် သဟဇာတဖြစ်မှုကို ထင်ဟပ်ပါ။** လက်ရှိ `app/globals.css` ၏ green/teal primary color ကို အဓိကထားပြီး သဘာဝမြေသားရောင် သို့မဟုတ် နူးညံ့သော accent အရောင်များကို အကန့်အသတ်ဖြင့် ဖြည့်စွက်နိုင်သည်။
 - **အသက်အရွယ်အလိုက် ခွဲခြားထားသည့် ပုံရိပ်မဖြစ်စေပါနှင့်။** Youthful ဆိုသည်မှာ ဖတ်ရလွယ်ကူမှု၊ ဖော်ရွေမှုနှင့် အားအင်ရှိသောအမြင်ကို ဆိုလိုပြီး ကလေးဆန်သည့်အလှဆင်မှုကို မဆိုလိုပါ။
 
+### Doodle Art နှင့် Illustration
+
+- Doodle art ကို UI နေရာတိုင်းတွင် မဖြန့်ဘဲ hero/cover ၏ လွတ်နေသောနေရာ၊ section ကြားနှင့် empty state ကဲ့သို့ အလှဆင်ရန်လိုအပ်သည့်နေရာအနည်းငယ်တွင်သာ ထည့်ပါ။ Product ဓာတ်ပုံနေရာတွင် doodle ကို မသုံးပါနှင့်။
+- Hand-drawn line၊ organic shape နှင့် သဘာဝ/ပြန်လည်အသုံးပြုမှုကို ရည်ညွှန်းသော ပုံစံကို သုံးပါ။ လက်ရှိ green/teal theme နှင့် ကိုက်ညီသည့် အရောင်အနည်းငယ်ကိုသာ သုံးပြီး စာသား၊ product နှင့် အဓိက action များထက် မထင်ရှားစေပါနှင့်။
+- Doodle သည် product ဓာတ်ပုံ၊ merchant အချက်အလက်၊ ဈေးနှုန်း သို့မဟုတ် status badge ကို အစားမထိုးရ။ Product များကို သက်ဆိုင်ရာ တကယ့်/ဓာတ်ပုံဆန်သောပုံနှင့် ရှင်းလင်းသောစာသားဖြင့် ပြသပါ။
+- မျက်နှာပြင်ကို ရှုပ်ထွေးစေခြင်း၊ ဖတ်ရှုရခက်စေခြင်း၊ control အဖြစ်မှားယွင်းထင်မြင်စေခြင်း သို့မဟုတ် အရေးကြီးသည့်အချက်အလက်ကို ဖုံးကွယ်ခြင်း မဖြစ်စေရ။ Doodle ကို decoration အဖြစ်သာသုံးသည့်အခါ assistive technology မှ လျစ်လျူရှုနိုင်အောင် သတ်မှတ်ပါ။ အဓိပ္ပာယ်ပါသောပုံဖြစ်ပါက ဘာသာပြန်နိုင်သော သင့်လျော်သည့် text alternative ပေးပါ။
+- SVG သို့မဟုတ် အရွယ်အစားသင့်တော်သော static image ကို ဦးစားပေးပါ။ Animation ထည့်ရန် မဖြစ်မနေမဟုတ်ပါ; ထည့်ပါက subtle ဖြစ်စေပြီး `prefers-reduced-motion` ကို လိုက်နာပါ။
+
 ### အရောင်၊ စာလုံးနှင့် အကွာအဝေး
 
 - `app/globals.css` ရှိ CSS variable/token များ (`--primary`, `--background`, `--foreground`, `--muted`, `--accent`, `--destructive`, `--border`, `--ring`) ကို အရောင်သတ်မှတ်ရာတွင် အဓိကအသုံးပြုပါ။
@@ -33,7 +41,8 @@
 ## Page နှင့် Component အသုံးပြုမှု
 
 - Homepage ကို သတ်မှတ်ထားသောအစီအစဉ်အတိုင်း တည်ဆောက်ပါ: Logo/navigation header၊ hero/cover၊ major categories၊ popular products၊ ကန့်သတ်ထားသော featured merchants၊ batch ဖြင့် scroll-load လုပ်သော product feed၊ discounted products။
-- Hero သည် desktop တွင် စာသားနှင့် ပုံကို side-by-side သို့မဟုတ် overlay ပြနိုင်ပြီး mobile တွင် အဓိက action နှင့်စာသားကို ရှင်းလင်းစွာဦးစားပေးပါ။ Carousel လိုအပ်ပါက user ထိန်းချုပ်နိုင်သော၊ keyboard accessible ဖြစ်သော၊ reduced-motion preference ကိုလိုက်နာသော control များပေးပါ။ မလိုအပ်ပါက static cover ကို ဦးစားပေးပါ။
+- Hero ကို မလိုအပ်ဘဲ အမြင့်မထားဘဲ desktop တွင် စာသားနှင့် product/lifestyle ဓာတ်ပုံကို side-by-side ပြပြီး mobile တွင်လည်း အဓိက action၊ စာသားနှင့် ပုံကို ကျစ်လစ်စွာ စီပါ။ Slider တွင် အမြဲမြင်ရသော previous/next၊ slide indicator နှင့် autoplay pause/play control များ၊ keyboard အသုံးပြုနိုင်မှုနှင့် screen-reader label များပါစေ။ Auto-rotate ပါပါက hover/focus အချိန်တွင် ရပ်ပြီး `prefers-reduced-motion` ကို သတ်မှတ်ထားသူများအတွက် မလှည့်ပါစေနှင့်။ လက်ရှိ slide မဟုတ်သည့် slide များကို tab သွား၍မရစေဘဲ assistive technology မှလည်း မဖတ်စေရ။
+- AOS ကို section မိတ်ဆက်စာသား သို့မဟုတ် အဓိကအုပ်စုအနည်းငယ်တွင်သာ သုံးပါ။ အရာတိုင်းကို တစ်ပြိုင်နက် animate မလုပ်ဘဲ `prefers-reduced-motion` ကို လေးစားပြီး animation မရရှိသော်လည်း အကြောင်းအရာကို ဖတ်ရှုနိုင်စေရမည်။
 - Major category ကို text-only သို့မဟုတ် icon/logo နှင့် label တွဲဖက်၍ ပြနိုင်သည်။ Icon သည် category အဓိပ္ပာယ်ကို မရှင်းလင်းစေပါက text label ကို မဖြုတ်ပါနှင့်။
 - Featured merchants အရေအတွက်ကို ကန့်သတ်ပြီး card များတွင် အတည်ပြုထားသော public information ကိုသာ ပြပါ။ Product owner က directory route အတည်ပြုမှသာ “View all” ကို ထည့်ပါ။
 - Scroll loading တွင် loading indicator၊ နောက်ထပ် load လုပ်ရန် သို့မဟုတ် ပြန်လည်ကြိုးစားရန် button၊ error/retry state များကို နားလည်လွယ်စွာ ပြပါ။ အဆုံးမရှိ auto-load ကြောင့် Discounted products အောက်သို့ ရွေ့ပျောက်မသွားစေရန် feed ကို batch ဖြင့် ကန့်သတ်ပါ သို့မဟုတ် လွယ်ကူသော shortcut ပေးပါ။

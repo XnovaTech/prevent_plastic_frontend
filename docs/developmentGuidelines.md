@@ -10,6 +10,7 @@
 - **Validation ကို ပြန်သုံးပါ။** Zod schema များကို `validations/` ထဲတွင်ထားပြီး form များမှ တူညီသော schema ကို အသုံးပြုပါ။
 - **UI အတွက် shadcn/ui ကို အမြဲဦးစားပေးပါ။** ရှိပြီးသား component ကို ပြန်သုံး သို့မဟုတ် လိုအပ်သလို compose လုပ်ပါ။ shadcn/ui ဖြင့် မဖြည့်ဆည်းနိုင်သည့်လိုအပ်ချက်ရှိမှ custom primitive တည်ဆောက်ပါ။ Design direction၊ theme နှင့် accessibility အသေးစိတ်ကို [uiUx.md](./uiUx.md) တွင် လိုက်နာပါ။
 - **UI စာသားများကို ဘာသာပြန်အသုံးပြုနိုင်အောင် ရေးပါ။** User-facing text များကို component ထဲတွင် hard-code မလုပ်ဘဲ `next-intl` နှင့် `messages/en.json`, `messages/my.json` မှ ရယူပါ။
+- **Static design အတွက် mock data ကို `mock/` ထဲတွင်သာထားပါ။** Sample product, merchant, category နှင့် homepage content များကို typed fixture အဖြစ်သတ်မှတ်ပြီး UI component ထဲတွင် demo record မရေးပါနှင့်။ Mock data ကို production API response သို့မဟုတ် အတည်ပြုထားသော business data ကဲ့သို့ မဖော်ပြပါနှင့်။
 
 ## Data နှင့် State စီးဆင်းပုံ
 
@@ -22,6 +23,8 @@ Page
   -> backend
 ```
 
+- Static prototype တွင် `Page -> UI component -> mock/<feature>Mock.ts` ပုံစံကို အသုံးပြုနိုင်သည်။ Mock fixture သည် `mock/` အောက်တွင်သာရှိပြီး real API ရလာသောအခါ service/hook boundary မှတစ်ဆင့် အစားထိုးပါ။
+- Mock fixture ၏ shape ကို `types/` ထဲရှိ domain type နှင့် တတ်နိုင်သမျှ ကိုက်ညီစေပါ။ Demo-only field ပါဝင်ပါက fixture type တွင် ရှင်းလင်းစွာ သတ်မှတ်ပါ။
 - API မှရသော data သည် **server state** ဖြစ်သည်။ Fetch၊ cache၊ invalidation နှင့် mutation များကို TanStack React Query ဖြင့်စီမံပါ။
 - Browser ပေါ်တွင် ထိန်းသိမ်းရသော app-wide **client state** (ဥပမာ auth state) ကို Zustand ဖြင့်စီမံပါ။
 - Modal တစ်ခုဖွင့်/ပိတ်ခြင်းလို local UI state ကို component ထဲတွင် ထားနိုင်သည်။ အမှန်တကယ်လိုအပ်ခြင်းမရှိဘဲ Zustand store ထဲမထည့်ပါနှင့်။

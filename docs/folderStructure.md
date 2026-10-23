@@ -4,6 +4,7 @@
 
 ```text
 app/
+  page.tsx
   [locale]/
     (auth)/
       login/
@@ -48,6 +49,20 @@ app/
   layout.tsx
   globals.css
 
+public/
+  illustrations/
+    marketDoodle.svg
+    emptyWishlistDoodle.svg
+  products/
+    ceramicPlates.jpg
+    wovenMarketBag.jpg
+    deskLamp.jpg
+    denimJacket.jpg
+    filmCamera.jpg
+    woodenStool.jpg
+    woodenWallShelf.jpg
+    succulentPot.jpg
+
 i18n/
   routing.ts
   request.ts
@@ -61,6 +76,7 @@ components/
   ui/
     button.tsx
   shared/
+    aosInitializer.tsx
     pageHeader.tsx
     languageSwitcher.tsx
     siteHeader.tsx
@@ -69,17 +85,21 @@ components/
   list/
     productList.tsx
   home/
-    heroSection.tsx
-    majorCategorySection.tsx
-    popularProductSection.tsx
-    featuredMerchantSection.tsx
+    homeHeroSlider.tsx
+    homePage.tsx
+    productCard.tsx
+    productSection.tsx
     productFeedSection.tsx
-    discountedProductSection.tsx
+
+mock/
+  homePageMock.ts
 
 hooks/
   auth/
     useLogin.ts
     useRegister.ts
+  useHeroSlider.ts
+  useAos.ts
   useCart.ts
   useWishlist.ts
   useCheckout.ts
@@ -87,6 +107,7 @@ hooks/
   useInfiniteProducts.ts
   useFeaturedMerchants.ts
   useDiscountedProducts.ts
+  useMockProductFeed.ts
   useMerchantApplication.ts
 
 services/
@@ -132,23 +153,25 @@ docs/
 
 ## Folder တာဝန်များ
 
-| Folder               | တာဝန်                                                                                                                    |
-| -------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| `app/`               | Route entry point၊ page နှင့် layout များ။ Page များကို အဓိကအားဖြင့် UI composition အတွက်သာထားပါ။                        |
-| `components/ui/`     | shadcn/ui primitive များ။ Business logic နှင့် API request မထည့်ပါနှင့်။                                                 |
-| `components/shared/` | နေရာအများအပြားတွင် ပြန်သုံးနိုင်သော presentational component များ။                                                       |
-| `components/forms/`  | Form အလိုက် UI component များ။ Form logic ကို hook နှင့် validation ကို schema မှ ချိတ်ဆက်ပါ။                            |
-| `components/list/`   | Table၊ card list နှင့် အခြား list UI များ။ Data fetch မလုပ်ပါနှင့်။                                                      |
-| `components/home/`   | Homepage အတွက်သာသုံးသော section composition များ။ UI ကိုသာထားပြီး data နှင့် loading logic ကို hooks မှယူပါ။             |
-| `hooks/`             | Feature logic၊ query/mutation နှင့် UI ကို service၊ store တို့နှင့် ချိတ်ဆက်ခြင်း။ Auth hooks ကို `hooks/auth/` ထဲထားပါ။ |
-| `services/`          | Backend API ကိုခေါ်သည့် thin service function များ။ React hook သို့မဟုတ် UI logic မထည့်ပါနှင့်။                          |
-| `stores/`            | Zustand ဖြင့် စီမံသော app-wide client state။                                                                             |
-| `validations/`       | ပြန်သုံးနိုင်သော Zod schema များ။                                                                                        |
-| `types/`             | API နှင့် domain အကြား မျှဝေသုံးစွဲသော TypeScript type များ။                                                             |
-| `lib/`               | API client နှင့် feature မသတ်မှတ်ထားသော shared utility များ။                                                             |
-| `i18n/`              | `next-intl` locale routing နှင့် request configuration။                                                                  |
-| `messages/`          | English (`en.json`) နှင့် Myanmar (`my.json`) UI translation များ။                                                       |
-| `docs/`              | နည်းပညာ၊ ဖွဲ့စည်းပုံနှင့် development လမ်းညွှန်များ။                                                                     |
+| Folder                  | တာဝန်                                                                                                                    |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `app/`                  | Route entry point၊ page နှင့် layout များ။ Page များကို အဓိကအားဖြင့် UI composition အတွက်သာထားပါ။                        |
+| `components/ui/`        | shadcn/ui primitive များ။ Business logic နှင့် API request မထည့်ပါနှင့်။                                                 |
+| `components/shared/`    | နေရာအများအပြားတွင် ပြန်သုံးနိုင်သော presentational component များ။                                                       |
+| `components/forms/`     | Form အလိုက် UI component များ။ Form logic ကို hook နှင့် validation ကို schema မှ ချိတ်ဆက်ပါ။                            |
+| `components/list/`      | Table၊ card list နှင့် အခြား list UI များ။ Data fetch မလုပ်ပါနှင့်။                                                      |
+| `components/home/`      | Homepage အတွက်သာသုံးသော section composition များ။ UI ကိုသာထားပြီး data နှင့် loading logic ကို hooks မှယူပါ။             |
+| `mock/`                 | Static design၊ prototype နှင့် development အတွက် typed mock records များ။ UI component ထဲတွင် demo data မရေးပါနှင့်။     |
+| `hooks/`                | Feature logic၊ query/mutation နှင့် UI ကို service၊ store တို့နှင့် ချိတ်ဆက်ခြင်း။ Auth hooks ကို `hooks/auth/` ထဲထားပါ။ |
+| `services/`             | Backend API ကိုခေါ်သည့် thin service function များ။ React hook သို့မဟုတ် UI logic မထည့်ပါနှင့်။                          |
+| `stores/`               | Zustand ဖြင့် စီမံသော app-wide client state။                                                                             |
+| `validations/`          | ပြန်သုံးနိုင်သော Zod schema များ။                                                                                        |
+| `types/`                | API နှင့် domain အကြား မျှဝေသုံးစွဲသော TypeScript type များ။                                                             |
+| `lib/`                  | API client နှင့် feature မသတ်မှတ်ထားသော shared utility များ။                                                             |
+| `public/illustrations/` | Hero၊ empty state နှင့် section decoration အတွက် ပြန်သုံးနိုင်သော static illustration များ။                              |
+| `i18n/`                 | `next-intl` locale routing နှင့် request configuration။                                                                  |
+| `messages/`             | English (`en.json`) နှင့် Myanmar (`my.json`) UI translation များ။                                                       |
+| `docs/`                 | နည်းပညာ၊ ဖွဲ့စည်းပုံနှင့် development လမ်းညွှန်များ။                                                                     |
 
 ## Routing စည်းမျဉ်း
 

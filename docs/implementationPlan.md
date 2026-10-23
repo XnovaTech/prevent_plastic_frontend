@@ -2,7 +2,7 @@
 
 ## ရည်ရွယ်ချက်
 
-ဤအစီအစဉ်သည် [businessLogic.md](./businessLogic.md) တွင် ဖတ်ရှုနိုင်သော requirement များကို အတည်ပြုနိုင်သော၊ ထိန်းသိမ်းရလွယ်ကူသော frontend implementation အဖြစ် ပြောင်းလဲရန်ဖြစ်သည်။ လက်ရှိအဆင့်တွင် code/module မတည်ဆောက်သေးပါ။ API မသတ်မှတ်ရသေးသည့်အတွက် အစောပိုင်း development ကို mock service ဖြင့်စနိုင်ပြီး backend contract ရလာသည့်အခါ service implementation ကို အစားထိုးမည်။
+ဤအစီအစဉ်သည် [businessLogic.md](./businessLogic.md) တွင် ဖတ်ရှုနိုင်သော requirement များကို အတည်ပြုနိုင်သော၊ ထိန်းသိမ်းရလွယ်ကူသော frontend implementation အဖြစ် ပြောင်းလဲရန်ဖြစ်သည်။ Homepage အတွက် static design ကို `app/page.tsx` နှင့် `components/home/` တွင် တည်ဆောက်ထားပြီး demo content ကို `mock/homePageMock.ts` မှ ယူသည်။ ၎င်းသည် backend/API ချိတ်ဆက်မှုမဟုတ်ပါ။ ကျန် feature များကို API contract ရလာသည့်အခါ service boundary မှတစ်ဆင့် ချိတ်ဆက်ပါ။
 
 ## Implementation မစတင်မီ
 

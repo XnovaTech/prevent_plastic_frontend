@@ -1,0 +1,360 @@
+export type HomeProduct = {
+  id: string
+  name: string
+  category: string
+  price: number
+  originalPrice?: number
+  merchant: string
+  condition: string
+  image: string
+  badge?: string
+  badgeTone?: "coral" | "green" | "lavender"
+}
+
+export type HomeCategory = {
+  id: string
+  title: string
+  description: string
+  icon: "home" | "fashion" | "everyday" | "repair"
+  count: string
+  tone: "sage" | "peach" | "lavender" | "butter"
+  href: string
+}
+
+export type FeaturedMerchant = {
+  id: string
+  name: string
+  initials: string
+  location: string
+  specialty: string
+  rating: string
+  listings: number
+  tone: "sage" | "peach" | "lavender"
+}
+
+export const homePageMock = {
+  announcement: "A little less new. A lot more meaningful.",
+  navigation: [
+    { label: "Home", href: "/" },
+    { label: "SME", href: "/sme" },
+    { label: "Individual", href: "/individual" },
+    { label: "Repair", href: "/#repair" },
+    { label: "About us", href: "/#about" },
+    { label: "Contact", href: "/contact" },
+  ],
+  hero: {
+    slides: [
+      {
+        id: "second-life",
+        eyebrow: "THE CIRCULAR MARKETPLACE",
+        heading: "Good things",
+        highlight: "deserve another day.",
+        description:
+          "Pre-loved finds and local makers make it easier to live lighter and find something lovely.",
+        actionLabel: "Explore the market",
+        actionHref: "#popular",
+        image: "/products/ceramicPlates.jpg",
+        imageAlt: "A set of blue and white secondhand ceramic plates",
+        imageLabel: "GOOD THINGS, RE-LOVED",
+        background: "bg-[#eef2e8]",
+      },
+      {
+        id: "style-again",
+        eyebrow: "GIVE GREAT STYLE ANOTHER GO",
+        heading: "Style worth",
+        highlight: "a second look.",
+        description:
+          "Loved clothes, ready to find a new favorite place in your everyday wardrobe.",
+        actionLabel: "Find your next favorite",
+        actionHref: "#popular",
+        image: "/products/denimJacket.jpg",
+        imageAlt: "A pre-loved blue denim jacket",
+        imageLabel: "READY FOR ROUND TWO",
+        background: "bg-[#f6eee8]",
+      },
+      {
+        id: "less-waste",
+        eyebrow: "A LITTLE MORE THOUGHTFUL",
+        heading: "Useful things,",
+        highlight: "less waste.",
+        description:
+          "Shop local and keep useful everyday things in circulation, for a little longer.",
+        actionLabel: "Meet the community",
+        actionHref: "#sme",
+        image: "/products/deskLamp.jpg",
+        imageAlt: "A secondhand desk lamp displayed on a shelf",
+        imageLabel: "LOCAL FINDS, BIG HEART",
+        background: "bg-[#f0edf6]",
+      },
+    ],
+  },
+  categories: [
+    {
+      id: "home-living",
+      title: "Home & living",
+      description: "Pieces with a past",
+      icon: "home",
+      count: "1,240 finds",
+      tone: "sage",
+      href: "#popular",
+    },
+    {
+      id: "fashion",
+      title: "Style again",
+      description: "Wear it your way",
+      icon: "fashion",
+      count: "860 finds",
+      tone: "peach",
+      href: "#popular",
+    },
+    {
+      id: "everyday",
+      title: "Everyday things",
+      description: "Useful, not wasteful",
+      icon: "everyday",
+      count: "540 finds",
+      tone: "lavender",
+      href: "#popular",
+    },
+    {
+      id: "repair",
+      title: "Repair & care",
+      description: "Make good things last",
+      icon: "repair",
+      count: "Meet local fixers",
+      tone: "butter",
+      href: "#repair",
+    },
+  ] satisfies HomeCategory[],
+  popularProducts: [
+    {
+      id: "ceramic-plates",
+      name: "Sunday blue ceramic plates",
+      category: "Home & living",
+      price: 28000,
+      merchant: "Second Bloom Studio",
+      condition: "Like new",
+      image: "/products/ceramicPlates.jpg",
+      badge: "JUST IN",
+      badgeTone: "green",
+    },
+    {
+      id: "woven-handbag",
+      name: "Orange woven handbag",
+      category: "Accessories",
+      price: 18000,
+      originalPrice: 24000,
+      merchant: "Mya's Thrift Corner",
+      condition: "Good",
+      image: "/products/wovenMarketBag.jpg",
+      badge: "−25%",
+      badgeTone: "coral",
+    },
+    {
+      id: "reading-lamp",
+      name: "Black reading desk lamp",
+      category: "Home & living",
+      price: 42000,
+      merchant: "Thant's Finds",
+      condition: "Very good",
+      image: "/products/deskLamp.jpg",
+      badge: "LOVED",
+      badgeTone: "lavender",
+    },
+    {
+      id: "denim-jacket",
+      name: "The forever denim jacket",
+      category: "Style again",
+      price: 56000,
+      originalPrice: 70000,
+      merchant: "Mya's Thrift Corner",
+      condition: "Very good",
+      image: "/products/denimJacket.jpg",
+      badge: "−20%",
+      badgeTone: "coral",
+    },
+  ] satisfies HomeProduct[],
+  featuredMerchants: [
+    {
+      id: "second-bloom",
+      name: "Second Bloom Studio",
+      initials: "SB",
+      location: "Yangon",
+      specialty: "Home finds & ceramics",
+      rating: "4.9",
+      listings: 38,
+      tone: "sage",
+    },
+    {
+      id: "mya-thrift",
+      name: "Mya's Thrift Corner",
+      initials: "MT",
+      location: "Mandalay",
+      specialty: "Thoughtful pre-loved style",
+      rating: "5.0",
+      listings: 62,
+      tone: "peach",
+    },
+    {
+      id: "thants-finds",
+      name: "Thant's Finds",
+      initials: "TF",
+      location: "Yangon",
+      specialty: "Useful things, made to last",
+      rating: "4.8",
+      listings: 24,
+      tone: "lavender",
+    },
+  ] satisfies FeaturedMerchant[],
+  moreFinds: [
+    {
+      id: "film-camera",
+      name: "Pocket film camera & lens set",
+      category: "Home & living",
+      price: 98000,
+      merchant: "Thant's Finds",
+      condition: "Good",
+      image: "/products/filmCamera.jpg",
+      badge: "A GOOD FIND",
+      badgeTone: "green",
+    },
+    {
+      id: "wooden-stool",
+      name: "Little wooden side stool",
+      category: "Home & living",
+      price: 72000,
+      originalPrice: 90000,
+      merchant: "Second Bloom Studio",
+      condition: "Very good",
+      image: "/products/woodenStool.jpg",
+      badge: "−20%",
+      badgeTone: "coral",
+    },
+    {
+      id: "wooden-wall-shelf",
+      name: "Vintage wooden wall shelf",
+      category: "Everyday things",
+      price: 24000,
+      merchant: "Mya's Thrift Corner",
+      condition: "Like new",
+      image: "/products/woodenWallShelf.jpg",
+      badge: "ONE OF A KIND",
+      badgeTone: "lavender",
+    },
+    {
+      id: "plant-pot",
+      name: "Speckled plant pot",
+      category: "Home & living",
+      price: 22000,
+      merchant: "Second Bloom Studio",
+      condition: "Good",
+      image: "/products/succulentPot.jpg",
+      badge: "JUST IN",
+      badgeTone: "green",
+    },
+    {
+      id: "weekend-woven-handbag",
+      name: "Weekend woven handbag",
+      category: "Everyday things",
+      price: 26000,
+      merchant: "Mya's Thrift Corner",
+      condition: "Like new",
+      image: "/products/wovenMarketBag.jpg",
+      badge: "ONE OF A KIND",
+      badgeTone: "lavender",
+    },
+    {
+      id: "mini-plant-pot",
+      name: "Little speckled planter",
+      category: "Home & living",
+      price: 19000,
+      merchant: "Second Bloom Studio",
+      condition: "Good",
+      image: "/products/succulentPot.jpg",
+      badge: "JUST IN",
+      badgeTone: "green",
+    },
+    {
+      id: "film-camera-case",
+      name: "Film camera with lenses",
+      category: "Everyday things",
+      price: 98000,
+      merchant: "Thant's Finds",
+      condition: "Good",
+      image: "/products/filmCamera.jpg",
+      badge: "A GOOD FIND",
+      badgeTone: "green",
+    },
+    {
+      id: "vintage-reading-lamp",
+      name: "Amber shade reading lamp",
+      category: "Home & living",
+      price: 42000,
+      merchant: "Thant's Finds",
+      condition: "Very good",
+      image: "/products/deskLamp.jpg",
+      badge: "LOVED",
+      badgeTone: "lavender",
+    },
+  ] satisfies HomeProduct[],
+  saleProducts: [
+    {
+      id: "woven-handbag-sale",
+      name: "Orange woven handbag",
+      category: "Accessories",
+      price: 18000,
+      originalPrice: 24000,
+      merchant: "Mya's Thrift Corner",
+      condition: "Good",
+      image: "/products/wovenMarketBag.jpg",
+      badge: "−25%",
+      badgeTone: "coral",
+    },
+    {
+      id: "denim-jacket-sale",
+      name: "The forever denim jacket",
+      category: "Style again",
+      price: 56000,
+      originalPrice: 70000,
+      merchant: "Mya's Thrift Corner",
+      condition: "Very good",
+      image: "/products/denimJacket.jpg",
+      badge: "−20%",
+      badgeTone: "coral",
+    },
+    {
+      id: "wooden-stool-sale",
+      name: "Little wooden side stool",
+      category: "Home & living",
+      price: 72000,
+      originalPrice: 90000,
+      merchant: "Second Bloom Studio",
+      condition: "Very good",
+      image: "/products/woodenStool.jpg",
+      badge: "−20%",
+      badgeTone: "coral",
+    },
+    {
+      id: "film-camera-sale",
+      name: "Pocket film camera & lens set",
+      category: "Everyday things",
+      price: 98000,
+      originalPrice: 122000,
+      merchant: "Thant's Finds",
+      condition: "Like new",
+      image: "/products/filmCamera.jpg",
+      badge: "−20%",
+      badgeTone: "coral",
+    },
+  ] satisfies HomeProduct[],
+  impact: {
+    heading: "Shopping secondhand\nis a small thing\nwith a lovely impact.",
+    description:
+      "Every pre-loved piece that finds a new home is one less thing wasted — and one more reason to shop with a little more heart.",
+    stats: [
+      { value: "2,400+", label: "good things re-loved" },
+      { value: "180+", label: "local makers & merchants" },
+      { value: "1 community", label: "making less waste together" },
+    ],
+  },
+} as const
