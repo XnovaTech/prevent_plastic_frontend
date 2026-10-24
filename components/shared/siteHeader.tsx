@@ -16,13 +16,7 @@ type SiteHeaderProps = {
 export function SiteHeader({ activeHref = "/" }: SiteHeaderProps) {
   return (
     <>
-      <div className="bg-[#174e46] px-4 py-2 text-center text-xs font-medium tracking-wide text-white sm:text-sm">
-        {homePageMock.announcement}
-        <span aria-hidden="true" className="ml-2 text-[#d9f09b]">
-          ✳
-        </span>
-      </div>
-      <header className="sticky top-0 z-40 border-b border-[#173e3614] bg-[#fbfaf6]/80 backdrop-blur-xl">
+      <header className="sticky top-0 z-40 border-b border-[#173e3614] bg-white/60 backdrop-blur-xl">
         <div className="mx-auto flex h-[76px] max-w-[1440px] items-center justify-between gap-4 px-4 sm:px-8 lg:px-12">
           <Link
             aria-label="Prevent Plastic home"

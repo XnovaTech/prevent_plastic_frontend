@@ -1,7 +1,7 @@
 import Link from "next/link"
 import { ArrowRight } from "@phosphor-icons/react/dist/ssr"
 
-import { ProductCard } from "@/components/home/productCard"
+import { ProductCard } from "@/components/product/productCard"
 import type { HomeProduct } from "@/mock/homePageMock"
 
 type ProductSectionProps = {

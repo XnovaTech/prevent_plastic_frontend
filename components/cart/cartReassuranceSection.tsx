@@ -4,10 +4,6 @@ import {
   Storefront,
 } from "@phosphor-icons/react/dist/ssr"
 
-import { CartContent } from "@/components/cart/cartContent"
-import { AosInitializer } from "@/components/shared/aosInitializer"
-import { SiteFooter } from "@/components/shared/siteFooter"
-import { SiteHeader } from "@/components/shared/siteHeader"
 import { cartPageMock } from "@/mock/cartPageMock"
 
 const reassuranceIcons = {
@@ -16,7 +12,7 @@ const reassuranceIcons = {
   chat: ChatCircleDots,
 }
 
-function ReassuranceSection() {
+export function CartReassuranceSection() {
   return (
     <section className="px-4 pb-16 sm:px-8 sm:pb-20 lg:px-12">
       <div className="mx-auto max-w-[1440px] rounded-[26px] border border-[#e7eae2] bg-[#f1f3eb] p-5 sm:p-7">
@@ -43,25 +39,5 @@ function ReassuranceSection() {
         </div>
       </div>
     </section>
-  )
-}
-
-export function CartPage() {
-  return (
-    <div className="min-h-screen bg-transparent text-[#203c33]">
-      <AosInitializer />
-      <a
-        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-full focus:bg-white focus:px-4 focus:py-2"
-        href="#main-content"
-      >
-        Skip to content
-      </a>
-      <SiteHeader activeHref="" />
-      <main id="main-content">
-        <CartContent />
-        <ReassuranceSection />
-      </main>
-      <SiteFooter />
-    </div>
   )
 }

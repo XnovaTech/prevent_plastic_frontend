@@ -84,12 +84,17 @@ components/
     loginForm.tsx
   list/
     productList.tsx
-  home/
+  sections/
     homeHeroSlider.tsx
-    homePage.tsx
+    categorySection.tsx
+    merchantSection.tsx
+    impactSection.tsx
+  product/
     productCard.tsx
     productSection.tsx
     productFeedSection.tsx
+    productGallery.tsx
+    productActions.tsx
 
 mock/
   homePageMock.ts
@@ -160,7 +165,7 @@ docs/
 | `components/shared/`    | နေရာအများအပြားတွင် ပြန်သုံးနိုင်သော presentational component များ။                                                       |
 | `components/forms/`     | Form အလိုက် UI component များ။ Form logic ကို hook နှင့် validation ကို schema မှ ချိတ်ဆက်ပါ။                            |
 | `components/list/`      | Table၊ card list နှင့် အခြား list UI များ။ Data fetch မလုပ်ပါနှင့်။                                                      |
-| `components/home/`      | Homepage အတွက်သာသုံးသော section composition များ။ UI ကိုသာထားပြီး data နှင့် loading logic ကို hooks မှယူပါ။             |
+| `components/sections/`   | Page section composition များ (homepage နှင့် အခြား page များတွင် ပြန်သုံးနိုင်)။ UI ကိုသာထားပြီး data နှင့် loading logic ကို hooks မှယူပါ။ |
 | `mock/`                 | Static design၊ prototype နှင့် development အတွက် typed mock records များ။ UI component ထဲတွင် demo data မရေးပါနှင့်။     |
 | `hooks/`                | Feature logic၊ query/mutation နှင့် UI ကို service၊ store တို့နှင့် ချိတ်ဆက်ခြင်း။ Auth hooks ကို `hooks/auth/` ထဲထားပါ။ |
 | `services/`             | Backend API ကိုခေါ်သည့် thin service function များ။ React hook သို့မဟုတ် UI logic မထည့်ပါနှင့်။                          |

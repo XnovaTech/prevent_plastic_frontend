@@ -2,7 +2,7 @@
 
 import { CircleNotch, MagnifyingGlass } from "@phosphor-icons/react"
 
-import { ProductCard } from "@/components/home/productCard"
+import { ProductCard } from "@/components/product/productCard"
 import { Button } from "@/components/ui/button"
 import { useInfiniteProducts } from "@/hooks/useInfiniteProducts"
 import type { CatalogPageConfig } from "@/mock/catalogPageMock"

@@ -1,14 +1,10 @@
-import { CatalogBrowser } from "@/components/list/catalogBrowser"
-import { AosInitializer } from "@/components/shared/aosInitializer"
-import { SiteFooter } from "@/components/shared/siteFooter"
-import { SiteHeader } from "@/components/shared/siteHeader"
 import type { CatalogPageConfig } from "@/mock/catalogPageMock"
 
-type CatalogPageProps = {
+type CatalogIntroProps = {
   config: CatalogPageConfig
 }
 
-function CatalogIntro({ config }: CatalogPageProps) {
+export function CatalogIntro({ config }: CatalogIntroProps) {
   return (
     <section className="bg-transparent px-4 pt-4 pb-2 sm:px-8 sm:pt-6 lg:px-12">
       <div className="mx-auto max-w-[1440px] overflow-hidden rounded-[28px] border border-white/70 bg-[#eef2e8]/75 px-5 py-8 backdrop-blur-2xl sm:rounded-[32px] sm:px-8 sm:py-10 lg:px-12">
@@ -59,25 +55,5 @@ function CatalogIntro({ config }: CatalogPageProps) {
         </div>
       </div>
     </section>
-  )
-}
-
-export function CatalogPage({ config }: CatalogPageProps) {
-  return (
-    <div className="min-h-screen bg-transparent text-[#203c33]">
-      <AosInitializer />
-      <a
-        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-full focus:bg-white focus:px-4 focus:py-2"
-        href="#main-content"
-      >
-        Skip to content
-      </a>
-      <SiteHeader activeHref={config.href} />
-      <main id="main-content">
-        <CatalogIntro config={config} />
-        <CatalogBrowser config={config} />
-      </main>
-      <SiteFooter />
-    </div>
   )
 }

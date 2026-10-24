@@ -1,6 +1,6 @@
 "use client"
 
-import { ArrowRight, EnvelopeSimple } from "@phosphor-icons/react"
+import { ArrowRight } from "@phosphor-icons/react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -20,7 +20,6 @@ export function ContactForm() {
 
   return (
     <form
-      aria-describedby="contact-form-pending"
       className="scroll-mt-28 rounded-[26px] border border-white/80 bg-white/60 p-5 backdrop-blur-xl sm:p-7"
       data-aos="fade-up"
       data-aos-delay="100"
@@ -30,9 +29,6 @@ export function ContactForm() {
     >
       <div className="flex flex-wrap items-end justify-between gap-3 border-b border-[#e9ece4] pb-5">
         <div>
-          <p className="text-[10px] font-bold tracking-[0.18em] text-[#69927b] uppercase">
-            {form.eyebrow}
-          </p>
           <h2 className="mt-2 font-serif text-[27px] leading-tight tracking-[-0.04em] text-[#203c33] sm:text-[30px]">
             {form.title}
           </h2>
@@ -126,18 +122,6 @@ export function ContactForm() {
           className="size-1.5 rounded-full bg-[#c7d89c]"
         />
         {form.responseNote}
-      </p>
-
-      <p
-        className="mt-3 flex items-start gap-2 rounded-[14px] border border-[#ecdfc6] bg-[#faf5e8] px-3.5 py-3 text-[11px] leading-5 text-[#806c3d]"
-        id="contact-form-pending"
-      >
-        <EnvelopeSimple
-          aria-hidden="true"
-          className="mt-0.5 shrink-0"
-          size={15}
-        />
-        <span>{form.pendingNote}</span>
       </p>
     </form>
   )

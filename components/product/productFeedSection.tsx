@@ -2,7 +2,7 @@
 
 import { ArrowDown, ArrowRight, Sparkle } from "@phosphor-icons/react"
 
-import { ProductCard } from "@/components/home/productCard"
+import { ProductCard } from "@/components/product/productCard"
 import { Button } from "@/components/ui/button"
 import { useMockProductFeed } from "@/hooks/useMockProductFeed"
 

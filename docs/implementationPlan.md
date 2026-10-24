@@ -2,7 +2,7 @@
 
 ## ရည်ရွယ်ချက်
 
-ဤအစီအစဉ်သည် [businessLogic.md](./businessLogic.md) တွင် ဖတ်ရှုနိုင်သော requirement များကို အတည်ပြုနိုင်သော၊ ထိန်းသိမ်းရလွယ်ကူသော frontend implementation အဖြစ် ပြောင်းလဲရန်ဖြစ်သည်။ Homepage အတွက် static design ကို `app/page.tsx` နှင့် `components/home/` တွင် တည်ဆောက်ထားပြီး demo content ကို `mock/homePageMock.ts` မှ ယူသည်။ ၎င်းသည် backend/API ချိတ်ဆက်မှုမဟုတ်ပါ။ ကျန် feature များကို API contract ရလာသည့်အခါ service boundary မှတစ်ဆင့် ချိတ်ဆက်ပါ။
+ဤအစီအစဉ်သည် [businessLogic.md](./businessLogic.md) တွင် ဖတ်ရှုနိုင်သော requirement များကို အတည်ပြုနိုင်သော၊ ထိန်းသိမ်းရလွယ်ကူသော frontend implementation အဖြစ် ပြောင်းလဲရန်ဖြစ်သည်။ Homepage အတွက် static design ကို `app/page.tsx` နှင့် `components/sections/` တွင် တည်ဆောက်ထားပြီး demo content ကို `mock/homePageMock.ts` မှ ယူသည်။ ၎င်းသည် backend/API ချိတ်ဆက်မှုမဟုတ်ပါ။ ကျန် feature များကို API contract ရလာသည့်အခါ service boundary မှတစ်ဆင့် ချိတ်ဆက်ပါ။
 
 ## Implementation မစတင်မီ
 
@@ -57,7 +57,7 @@
 
 - Public header တွင် Logo၊ Home၊ SME၊ Individual၊ Repair၊ About us၊ Contact navigation နှင့် Myanmar/English language selector ကို responsive ပုံစံဖြင့် တည်ဆောက်ပါ။
 - Homepage တွင် hero/cover, major categories, popular products, ကန့်သတ်ထားသော featured merchants, scroll ဖြင့် batch လိုက် load လုပ်သော product feed နှင့် discounted products ကို သတ်မှတ်ထားသည့်အစီအစဉ်အတိုင်း ထည့်ပါ။
-- Homepage section များကို UI-only `components/home/` ထဲတွင်ထားပြီး product/merchant data နှင့် infinite-query behavior ကို hooks မှတစ်ဆင့်ယူပါ။
+- Homepage section များကို UI-only `components/sections/` ထဲတွင်ထားပြီး product/merchant data နှင့် infinite-query behavior ကို hooks မှတစ်ဆင့်ယူပါ။
 - Product data တွင် active discount အတည်ပြုချက်မရှိပါက discount section ကို မပြသပါနှင့်။ Featured merchant များကို approved/public ဖြစ်သူများမှသာယူပါ။
 - SME, Individual နှင့် Repair page များကို route/UI အဖြစ်စီစဉ်ပါ။ ၎င်းတို့၏ domain အဓိပ္ပာယ်နှင့် Repair booking လိုအပ်ချက်ကို အတည်မပြုမချင်း မသတ်မှတ်ထားသော workflow ကို မတည်ဆောက်ပါနှင့်။
 - Public route မှ guest နှင့် customer နှစ်ဦးလုံး ထုတ်ကုန် browse လုပ်နိုင်အောင် တည်ဆောက်ပါ။
