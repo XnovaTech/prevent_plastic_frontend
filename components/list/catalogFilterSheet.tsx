@@ -61,13 +61,13 @@ export function CatalogFilterSheet({
       side="right"
     >
       <SheetHeader className="border-b border-[#e9ece4] px-6 pt-6 pr-14 pb-5">
-        <p className="text-[10px] font-bold tracking-[0.18em] text-[#69927b] uppercase">
+        <p className="text-[10px] font-bold tracking-[0.18em] text-brand-gray-5 uppercase">
           {copy.filterButton}
         </p>
-        <SheetTitle className="mt-1 font-serif text-[30px] leading-tight tracking-[-0.045em] text-[#203c33]">
+        <SheetTitle className="mt-1 font-serif text-[30px] leading-tight tracking-[-0.045em] text-brand">
           {copy.filterSheetTitle}
         </SheetTitle>
-        <SheetDescription className="mt-1 max-w-[300px] text-[11px] leading-5 text-[#7d867f]">
+        <SheetDescription className="mt-1 max-w-[300px] text-[11px] leading-5 text-brand-lighter">
           {copy.filterSheetDescription}
         </SheetDescription>
       </SheetHeader>
@@ -187,7 +187,7 @@ export function CatalogFilterSheet({
       <SheetFooter className="border-t border-[#e9ece4] px-6 py-4">
         <div className="flex gap-2.5">
           <Button
-            className="h-11 flex-1 rounded-full border-[#d8e0d7] text-[11px] font-semibold text-[#245b4d] hover:bg-white"
+            className="h-11 flex-1 rounded-full border-[#d8e0d7] text-[11px] font-semibold text-brand-3 hover:bg-white"
             onPress={onReset}
             type="button"
             variant="outline"
@@ -195,7 +195,7 @@ export function CatalogFilterSheet({
             {copy.resetFilters}
           </Button>
           <Button
-            className="h-11 flex-[1.4] rounded-full bg-[#174e46] text-[11px] font-bold text-white hover:bg-[#1f6157]"
+            className="h-11 flex-[1.4] rounded-full bg-brand-2 text-[11px] font-bold text-white hover:bg-[#1f6157]"
             onPress={() => onOpenChange(false)}
             type="button"
           >

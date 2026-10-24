@@ -80,10 +80,10 @@ export function HomeHeroSlider() {
                   >
                     <div className="relative z-10 max-w-[620px]">
                       <span className="inline-flex items-center gap-2 rounded-full border border-[#31594a]/15 bg-white/45 px-3 py-1.5 text-[9px] font-bold tracking-[0.15em] text-[#496b57] uppercase sm:text-[10px]">
-                        <span className="size-1.5 rounded-full bg-[#df896b]" />
+                        <span className="size-1.5 rounded-full bg-brand-orange-2" />
                         {slide.eyebrow}
                       </span>
-                      <HeadingTag className="mt-4 font-serif text-[38px] leading-[1.02] tracking-[-0.055em] text-[#203c33] sm:text-[46px] md:mt-5 md:text-[52px] lg:text-[60px]">
+                      <HeadingTag className="mt-4 font-serif text-[38px] leading-[1.02] tracking-[-0.055em] text-brand sm:text-[46px] md:mt-5 md:text-[52px] lg:text-[60px]">
                         {slide.heading}
                         <br />
                         <span className="relative inline-block text-[#39745b] italic">
@@ -91,15 +91,15 @@ export function HomeHeroSlider() {
                           <span className="absolute right-0 -bottom-1 h-1.5 w-[94%] -rotate-2 rounded-[50%] border-b-2 border-[#e9a27e]" />
                         </span>
                       </HeadingTag>
-                      <p className="mt-3 max-w-[440px] text-[12px] leading-5 text-[#617067] sm:mt-4 sm:text-[13px] sm:leading-6">
+                      <p className="mt-3 max-w-[440px] text-[12px] leading-5 text-brand-light sm:mt-4 sm:text-[13px] sm:leading-6">
                         {slide.description}
                       </p>
                       <Link
-                        className="mt-4 inline-flex h-10 items-center gap-3 rounded-full bg-[#174e46] px-4 text-[11px] font-bold text-white transition-transform hover:-translate-y-0.5 sm:mt-5 sm:h-11 sm:px-5 sm:text-xs"
+                        className="mt-4 inline-flex h-10 items-center gap-3 rounded-full bg-brand-2 px-4 text-[11px] font-bold text-white transition-transform hover:-translate-y-0.5 sm:mt-5 sm:h-11 sm:px-5 sm:text-xs"
                         href={slide.actionHref}
                       >
                         {slide.actionLabel}
-                        <span className="flex size-6 items-center justify-center rounded-full bg-[#d9f09b] text-[#174e46]">
+                        <span className="flex size-6 items-center justify-center rounded-full bg-[#d9f09b] text-brand-2">
                           <ArrowRight aria-hidden="true" size={14} />
                         </span>
                       </Link>
@@ -137,7 +137,7 @@ export function HomeHeroSlider() {
           <div className="flex items-center gap-2">
             <Button
               aria-label="Previous featured story"
-              className="size-9 rounded-full border-[#d8e0d7] bg-white text-[#245b4d] hover:bg-[#f1f5ed]"
+              className="size-9 rounded-full border-[#d8e0d7] bg-white text-brand-3 hover:bg-[#f1f5ed]"
               onPress={() => api?.scrollPrev()}
               size="icon"
               variant="outline"
@@ -146,7 +146,7 @@ export function HomeHeroSlider() {
             </Button>
             <Button
               aria-label="Next featured story"
-              className="size-9 rounded-full border-[#d8e0d7] bg-white text-[#245b4d] hover:bg-[#f1f5ed]"
+              className="size-9 rounded-full border-[#d8e0d7] bg-white text-brand-3 hover:bg-[#f1f5ed]"
               onPress={() => api?.scrollNext()}
               size="icon"
               variant="outline"
@@ -177,7 +177,7 @@ export function HomeHeroSlider() {
                   ? "Resume automatic slides"
                   : "Pause automatic slides"
               }
-              className="size-9 rounded-full border-[#d8e0d7] bg-white text-[#245b4d] hover:bg-[#f1f5ed]"
+              className="size-9 rounded-full border-[#d8e0d7] bg-white text-brand-3 hover:bg-[#f1f5ed]"
               isDisabled={isReducedMotion}
               onPress={() => setIsAutoPlayPaused(!isAutoPlayPaused)}
               size="icon"

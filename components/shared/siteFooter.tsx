@@ -11,7 +11,7 @@ export function SiteFooter() {
             className="inline-flex items-center gap-2.5"
             href="/"
           >
-            <span className="flex size-9 items-center justify-center rounded-full bg-[#174e46] text-[#d9f09b]">
+            <span className="flex size-9 items-center justify-center rounded-full bg-brand-2 text-brand-green">
               <House aria-hidden="true" size={18} weight="fill" />
             </span>
             <span className="text-[16px] font-bold tracking-[-0.06em] text-[#173e36]">
@@ -33,10 +33,10 @@ export function SiteFooter() {
             <Link href="/#about">About us</Link>
             <Link href="/contact">Contact</Link>
           </nav>
-          <p className="text-[10px] text-[#8a938b]">
+          <p className="text-[10px] text-brand-gray-3">
             Contact details are placeholders until confirmed.
           </p>
-          <p className="text-[10px] text-[#8a938b]">
+          <p className="text-[10px] text-brand-gray-3">
             Prevent Plastic · Mock storefront for design review
           </p>
         </div>

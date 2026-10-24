@@ -31,7 +31,7 @@ export function ProductGallery({ images }: ProductGalleryProps) {
         <span className="absolute top-4 left-4 rounded-full border border-white/70 bg-white/70 px-3 py-1.5 text-[9px] font-bold tracking-[0.12em] text-[#38684f] uppercase backdrop-blur-md">
           {activeIndex + 1} / {images.length} photos
         </span>
-        <span className="absolute right-4 bottom-4 rounded-full border border-white/60 bg-[#174e46]/80 px-3 py-1.5 text-[9px] font-semibold tracking-[0.08em] text-white uppercase backdrop-blur-md">
+        <span className="absolute right-4 bottom-4 rounded-full border border-white/60 bg-brand-2/80 px-3 py-1.5 text-[9px] font-semibold tracking-[0.08em] text-white uppercase backdrop-blur-md">
           Design preview
         </span>
       </div>
@@ -56,7 +56,7 @@ export function ProductGallery({ images }: ProductGalleryProps) {
           </button>
         ))}
       </div>
-      <p className="mt-2 px-1 text-[9px] leading-4 text-[#8a938b]">
+      <p className="mt-2 px-1 text-[9px] leading-4 text-brand-gray-3">
         Gallery images are mock alternatives for this design preview.
       </p>
     </div>

@@ -120,10 +120,10 @@ export function CatalogBrowser({ config }: CatalogBrowserProps) {
           data-aos="fade-up"
         >
           <div>
-            <p className="mb-2 text-[10px] font-bold tracking-[0.18em] text-[#69927b] uppercase">
+            <p className="mb-2 text-[10px] font-bold tracking-[0.18em] text-brand-gray-5 uppercase">
               {copy.catalogEyebrow}
             </p>
-            <h2 className="font-serif text-[30px] leading-tight tracking-[-0.04em] text-[#203c33] sm:text-[38px]">
+            <h2 className="font-serif text-[30px] leading-tight tracking-[-0.04em] text-brand sm:text-[38px]">
               {copy.catalogTitle}
             </h2>
           </div>
@@ -135,7 +135,7 @@ export function CatalogBrowser({ config }: CatalogBrowserProps) {
                 : copy.findPlural}
             </span>
             <Button
-              className="h-10 rounded-full border-[#cfdccb] bg-white px-4 text-[11px] font-semibold text-[#245b4d] hover:bg-[#f1f5ed]"
+              className="h-10 rounded-full border-[#cfdccb] bg-white px-4 text-[11px] font-semibold text-brand-3 hover:bg-[#f1f5ed]"
               onPress={() => setFiltersOpen(true)}
               type="button"
               variant="outline"
@@ -143,7 +143,7 @@ export function CatalogBrowser({ config }: CatalogBrowserProps) {
               <FunnelSimple aria-hidden="true" size={15} />
               {copy.filterButton}
               {activeFilterCount > 0 && (
-                <span className="flex size-5 items-center justify-center rounded-full bg-[#174e46] text-[9px] font-bold text-white">
+                <span className="flex size-5 items-center justify-center rounded-full bg-brand-2 text-[9px] font-bold text-white">
                   {activeFilterCount}
                 </span>
               )}
@@ -153,13 +153,13 @@ export function CatalogBrowser({ config }: CatalogBrowserProps) {
 
         {activeChips.length > 0 && (
           <div className="mb-5 flex flex-wrap items-center gap-2">
-            <span className="text-[10px] font-bold tracking-[0.14em] text-[#8a938b] uppercase">
+            <span className="text-[10px] font-bold tracking-[0.14em] text-brand-gray-3 uppercase">
               {copy.activeFilters}
             </span>
             {activeChips.map((chip) => (
               <button
                 aria-label={`Remove ${chip.label} filter`}
-                className="inline-flex h-7 items-center gap-1.5 rounded-full border border-[#d8e5d3] bg-[#edf4e8] px-3 text-[10px] font-medium text-[#427054] transition-colors hover:bg-[#e1ecda]"
+                className="inline-flex h-7 items-center gap-1.5 rounded-full border border-[#d8e5d3] bg-[#edf4e8] px-3 text-[10px] font-medium text-brand-4 transition-colors hover:bg-[#e1ecda]"
                 key={chip.key}
                 onClick={chip.onRemove}
                 type="button"
@@ -169,7 +169,7 @@ export function CatalogBrowser({ config }: CatalogBrowserProps) {
               </button>
             ))}
             <button
-              className="ml-1 text-[10px] font-semibold text-[#8a938b] underline underline-offset-4 transition-colors hover:text-[#a34d35]"
+              className="ml-1 text-[10px] font-semibold text-brand-gray-3 underline underline-offset-4 transition-colors hover:text-brand-orange-3"
               onClick={resetFilters}
               type="button"
             >

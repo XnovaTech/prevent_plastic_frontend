@@ -1,7 +1,9 @@
 import type { Metadata } from "next"
 
 import { CategorySection } from "@/components/sections/categorySection"
+import { HomeFaqSection } from "@/components/sections/homeFaqSection"
 import { HomeHeroSlider } from "@/components/sections/homeHeroSlider"
+import { HomeSearchFilter } from "@/components/sections/homeSearchFilter"
 import { ImpactSection } from "@/components/sections/impactSection"
 import { MerchantSection } from "@/components/sections/merchantSection"
 import { ProductFeedSection } from "@/components/product/productFeedSection"
@@ -19,7 +21,7 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <div className="min-h-screen bg-transparent text-[#203c33]">
+    <div className="min-h-screen bg-transparent text-brand">
       <AosInitializer />
       <a
         className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-full focus:bg-white focus:px-4 focus:py-2"
@@ -30,6 +32,7 @@ export default function Page() {
       <SiteHeader />
       <main id="main-content">
         <HomeHeroSlider />
+        <HomeSearchFilter />
         <CategorySection />
         <ProductSection
           actionLabel="Browse all finds"
@@ -51,6 +54,7 @@ export default function Page() {
           tone="sale"
         />
         <ImpactSection />
+        <HomeFaqSection />
       </main>
       <SiteFooter />
     </div>

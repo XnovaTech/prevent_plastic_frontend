@@ -23,7 +23,7 @@ export function SiteHeader({ activeHref = "/" }: SiteHeaderProps) {
             className="flex shrink-0 items-center gap-2.5"
             href="/"
           >
-            <span className="flex size-10 items-center justify-center rounded-full bg-[#174e46] text-[#d9f09b]">
+            <span className="flex size-10 items-center justify-center rounded-full bg-brand-2 text-brand-green">
               <Leaf aria-hidden="true" size={21} weight="fill" />
             </span>
             <span className="flex flex-col leading-none">
@@ -44,7 +44,7 @@ export function SiteHeader({ activeHref = "/" }: SiteHeaderProps) {
               <Link
                 key={item.label}
                 className={`text-[13px] font-medium transition-colors hover:text-[#247a65] ${
-                  item.href === activeHref ? "text-[#174e46]" : "text-[#56645e]"
+                  item.href === activeHref ? "text-brand-2" : "text-[#56645e]"
                 }`}
                 href={item.href}
               >
@@ -94,7 +94,7 @@ export function SiteHeader({ activeHref = "/" }: SiteHeaderProps) {
             <Link
               key={item.label}
               className={
-                item.href === activeHref ? "font-semibold text-[#174e46]" : ""
+                item.href === activeHref ? "font-semibold text-brand-2" : ""
               }
               href={item.href}
             >

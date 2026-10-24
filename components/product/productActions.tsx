@@ -47,7 +47,7 @@ export function ProductActions({ product }: ProductActionsProps) {
     <div className="mt-5">
       <div className="flex flex-col gap-2.5 sm:flex-row">
         <Button
-          className="h-11 flex-1 rounded-full bg-[#174e46] px-5 text-[11px] font-bold text-white hover:bg-[#1f6157]"
+          className="h-11 flex-1 rounded-full bg-brand-2 px-5 text-[11px] font-bold text-white hover:bg-[#1f6157]"
           onPress={handleAddToBag}
           type="button"
         >
@@ -55,7 +55,7 @@ export function ProductActions({ product }: ProductActionsProps) {
           {inBag ? "Add another to bag" : "Add to bag"}
         </Button>
         <Button
-          className="h-11 flex-1 rounded-full border-[#cfdccb] bg-white/45 px-5 text-[11px] font-semibold text-[#245b4d] backdrop-blur-md hover:bg-white"
+          className="h-11 flex-1 rounded-full border-[#cfdccb] bg-white/45 px-5 text-[11px] font-semibold text-brand-3 backdrop-blur-md hover:bg-white"
           isDisabled={saved}
           onPress={handleSave}
           type="button"
@@ -72,7 +72,7 @@ export function ProductActions({ product }: ProductActionsProps) {
 
       {inBag && (
         <Link
-          className="mt-3 inline-flex items-center gap-2 text-[10px] font-semibold text-[#245b4d] transition-colors hover:text-[#e17b5d]"
+          className="mt-3 inline-flex items-center gap-2 text-[10px] font-semibold text-brand-3 transition-colors hover:text-brand-orange"
           href="/cart"
         >
           View your bag
@@ -84,7 +84,7 @@ export function ProductActions({ product }: ProductActionsProps) {
         aria-live="polite"
         className={
           status
-            ? "mt-3 rounded-[14px] border border-[#d8e5d3] bg-[#edf4e8]/80 px-4 py-3 text-[10px] text-[#427054] backdrop-blur-md"
+            ? "mt-3 rounded-[14px] border border-[#d8e5d3] bg-brand-yellow-bg/80 px-4 py-3 text-[10px] text-brand-4 backdrop-blur-md"
             : "sr-only"
         }
         role="status"

@@ -13,7 +13,7 @@ export function CartIndicator() {
   return (
     <Link
       aria-label={`Shopping bag, ${itemCount} items`}
-      className="relative flex size-10 items-center justify-center rounded-full bg-[#edf2e9] text-[#174e46] transition-colors hover:bg-[#e1eadb]"
+      className="relative flex size-10 items-center justify-center rounded-full bg-[#edf2e9] text-brand-2 transition-colors hover:bg-[#e1eadb]"
       href="/cart"
     >
       <ShoppingBagOpen aria-hidden="true" size={19} />

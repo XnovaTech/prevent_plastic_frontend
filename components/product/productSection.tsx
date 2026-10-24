@@ -34,10 +34,10 @@ export function ProductSection({
           data-aos="fade-up"
         >
           <div>
-            <p className="mb-2 text-[10px] font-bold tracking-[0.18em] text-[#69927b] uppercase">
+            <p className="mb-2 text-[10px] font-bold tracking-[0.18em] text-brand-gray-5 uppercase">
               {eyebrow}
             </p>
-            <h2 className="font-serif text-[32px] leading-tight tracking-[-0.04em] text-[#203c33] sm:text-[40px]">
+            <h2 className="font-serif text-[32px] leading-tight tracking-[-0.04em] text-brand sm:text-[40px]">
               {title}
             </h2>
             <p className="mt-2 max-w-md text-[13px] leading-6 text-[#748078]">
@@ -45,7 +45,7 @@ export function ProductSection({
             </p>
           </div>
           <Link
-            className="mb-1 hidden shrink-0 items-center gap-2 text-xs font-semibold text-[#245b4d] transition-colors hover:text-[#e17b5d] sm:flex"
+            className="mb-1 hidden shrink-0 items-center gap-2 text-xs font-semibold text-brand-3 transition-colors hover:text-brand-orange sm:flex"
             href="#more-finds"
           >
             {actionLabel}
@@ -58,7 +58,7 @@ export function ProductSection({
           ))}
         </div>
         <Link
-          className="mx-auto mt-8 flex w-fit items-center gap-2 rounded-full border border-[#d8e0d7] px-5 py-3 text-xs font-semibold text-[#245b4d] transition-colors hover:bg-white sm:hidden"
+          className="mx-auto mt-8 flex w-fit items-center gap-2 rounded-full border border-[#d8e0d7] px-5 py-3 text-xs font-semibold text-brand-3 transition-colors hover:bg-white sm:hidden"
           href="#more-finds"
         >
           {actionLabel}

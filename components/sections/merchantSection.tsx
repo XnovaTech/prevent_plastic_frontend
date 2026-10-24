@@ -18,10 +18,10 @@ export function MerchantSection() {
           data-aos="fade-up"
         >
           <div>
-            <p className="mb-2 text-[10px] font-bold tracking-[0.18em] text-[#69927b] uppercase">
+            <p className="mb-2 text-[10px] font-bold tracking-[0.18em] text-brand-gray-5 uppercase">
               PEOPLE BEHIND THE FINDS
             </p>
-            <h2 className="font-serif text-[32px] leading-tight tracking-[-0.04em] text-[#203c33] sm:text-[40px]">
+            <h2 className="font-serif text-[32px] leading-tight tracking-[-0.04em] text-brand sm:text-[40px]">
               Good things, good people
             </h2>
             <p className="mt-2 max-w-md text-[13px] leading-6 text-[#748078]">
@@ -29,7 +29,7 @@ export function MerchantSection() {
             </p>
           </div>
           <Link
-            className="mb-1 hidden shrink-0 items-center gap-2 text-xs font-semibold text-[#245b4d] transition-colors hover:text-[#e17b5d] sm:flex"
+            className="mb-1 hidden shrink-0 items-center gap-2 text-xs font-semibold text-brand-3 transition-colors hover:text-brand-orange sm:flex"
             href="/contact"
           >
             Meet the community
@@ -48,12 +48,12 @@ export function MerchantSection() {
                 >
                   {merchant.initials}
                 </span>
-                <span className="inline-flex items-center gap-1 rounded-full bg-[#f8f2df] px-2.5 py-1.5 text-[10px] font-semibold text-[#806c3d]">
+                <span className="inline-flex items-center gap-1 rounded-full bg-[#f8f2df] px-2.5 py-1.5 text-[10px] font-semibold text-brand-yellow-text">
                   <Star aria-hidden="true" size={12} weight="fill" />
                   {merchant.rating}
                 </span>
               </div>
-              <h3 className="mt-5 text-[16px] font-semibold tracking-[-0.02em] text-[#243b33]">
+              <h3 className="mt-5 text-[16px] font-semibold tracking-[-0.02em] text-brand-6">
                 {merchant.name}
               </h3>
               <p className="mt-1 text-xs text-[#748078]">
@@ -72,7 +72,7 @@ export function MerchantSection() {
           ))}
         </div>
         <Link
-          className="mx-auto mt-6 flex w-fit items-center gap-2 rounded-full border border-[#d4dfd0] px-5 py-3 text-xs font-semibold text-[#245b4d] transition-colors hover:bg-white sm:hidden"
+          className="mx-auto mt-6 flex w-fit items-center gap-2 rounded-full border border-[#d4dfd0] px-5 py-3 text-xs font-semibold text-brand-3 transition-colors hover:bg-white sm:hidden"
           href="/contact"
         >
           Meet the community

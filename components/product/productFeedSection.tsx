@@ -17,10 +17,10 @@ export function ProductFeedSection() {
           data-aos="fade-up"
         >
           <div>
-            <p className="mb-2 text-[10px] font-bold tracking-[0.18em] text-[#69927b] uppercase">
+            <p className="mb-2 text-[10px] font-bold tracking-[0.18em] text-brand-gray-5 uppercase">
               A FEW MORE TREASURES
             </p>
-            <h2 className="font-serif text-[32px] leading-tight tracking-[-0.04em] text-[#203c33] sm:text-[40px]">
+            <h2 className="font-serif text-[32px] leading-tight tracking-[-0.04em] text-brand sm:text-[40px]">
               Keep wandering
             </h2>
             <p className="mt-2 max-w-md text-[13px] leading-6 text-[#748078]">
@@ -53,7 +53,7 @@ export function ProductFeedSection() {
                 Keep scrolling for more good finds
               </p>
               <Button
-                className="mt-3 border-[#d8e0d7] bg-white text-xs font-semibold text-[#245b4d] hover:bg-[#f1f5ed]"
+                className="mt-3 border-[#d8e0d7] bg-white text-xs font-semibold text-brand-3 hover:bg-[#f1f5ed]"
                 onPress={loadMore}
                 size="sm"
                 variant="outline"

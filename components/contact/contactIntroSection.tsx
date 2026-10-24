@@ -37,10 +37,10 @@ export function ContactIntroSection() {
             <div className="border-t border-[#d9e4d5] pt-6">
               <div className="flex items-end justify-between gap-3">
                 <div>
-                  <p className="text-[10px] font-bold tracking-[0.18em] text-[#69927b] uppercase">
+                  <p className="text-[10px] font-bold tracking-[0.18em] text-brand-gray-5 uppercase">
                     {methodsIntro.eyebrow}
                   </p>
-                  <h1 className="mt-1.5 font-serif text-[25px] leading-tight tracking-[-0.04em] text-[#203c33] sm:text-[28px]">
+                  <h1 className="mt-1.5 font-serif text-[25px] leading-tight tracking-[-0.04em] text-brand sm:text-[28px]">
                     {methodsIntro.title}
                   </h1>
                 </div>
@@ -71,7 +71,7 @@ export function ContactIntroSection() {
                           <h2 className="text-[11px] font-semibold text-[#263d34]">
                             {method.title}
                           </h2>
-                          <p className="mt-0.5 text-[10px] leading-4 text-[#7d867f]">
+                          <p className="mt-0.5 text-[10px] leading-4 text-brand-lighter">
                             {method.description}
                           </p>
                         </div>
@@ -79,17 +79,17 @@ export function ContactIntroSection() {
                       <div className="mt-2.5 border-t border-[#edf0e9] pt-2">
                         {method.href ? (
                           <a
-                            className="text-[11px] font-semibold break-words text-[#245b4d] transition-colors hover:text-[#e17b5d]"
+                            className="text-[11px] font-semibold break-words text-brand-3 transition-colors hover:text-brand-orange"
                             href={method.href}
                           >
                             {method.value}
                           </a>
                         ) : (
-                          <p className="text-[11px] font-semibold text-[#245b4d]">
+                          <p className="text-[11px] font-semibold text-brand-3">
                             {method.value}
                           </p>
                         )}
-                        <p className="mt-0.5 text-[9px] leading-4 text-[#8a938b]">
+                        <p className="mt-0.5 text-[9px] leading-4 text-brand-gray-3">
                           {method.note}
                         </p>
                       </div>

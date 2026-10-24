@@ -32,10 +32,10 @@ export function CategorySection() {
           data-aos="fade-up"
         >
           <div>
-            <p className="mb-2 text-[10px] font-bold tracking-[0.18em] text-[#69927b] uppercase">
+            <p className="mb-2 text-[10px] font-bold tracking-[0.18em] text-brand-gray-5 uppercase">
               FIND YOUR KIND OF GOOD
             </p>
-            <h2 className="font-serif text-[30px] leading-tight tracking-[-0.04em] text-[#203c33] sm:text-[38px]">
+            <h2 className="font-serif text-[30px] leading-tight tracking-[-0.04em] text-brand sm:text-[38px]">
               A little something for everyone
             </h2>
           </div>
@@ -73,7 +73,7 @@ export function CategorySection() {
                 <h3 className="mt-4 text-[14px] font-semibold text-[#263d34] sm:text-[15px]">
                   {category.title}
                 </h3>
-                <p className="mt-1 text-[11px] text-[#7d867f]">
+                <p className="mt-1 text-[11px] text-brand-lighter">
                   {category.description}
                 </p>
                 <p className="mt-4 text-[10px] font-medium text-[#578069]">

@@ -38,10 +38,10 @@ export function CartContent() {
           data-aos="fade-up"
         >
           <div>
-            <p className="mb-2 text-[10px] font-bold tracking-[0.18em] text-[#69927b] uppercase">
+            <p className="mb-2 text-[10px] font-bold tracking-[0.18em] text-brand-gray-5 uppercase">
               YOUR BAG
             </p>
-            <h1 className="font-serif text-[30px] leading-tight tracking-[-0.04em] text-[#203c33] sm:text-[38px]">
+            <h1 className="font-serif text-[30px] leading-tight tracking-[-0.04em] text-brand sm:text-[38px]">
               A few good things, waiting
             </h1>
           </div>
@@ -58,24 +58,24 @@ export function CartContent() {
             <span className="mx-auto flex size-14 items-center justify-center rounded-full bg-[#e8f0e3] text-[#3c6950]">
               <ShoppingBagOpen aria-hidden="true" size={26} weight="duotone" />
             </span>
-            <h3 className="mt-5 font-serif text-[27px] tracking-[-0.04em] text-[#203c33]">
+            <h3 className="mt-5 font-serif text-[27px] tracking-[-0.04em] text-brand">
               {empty.title}
             </h3>
-            <p className="mx-auto mt-2 max-w-sm text-[12px] leading-6 text-[#7d867f]">
+            <p className="mx-auto mt-2 max-w-sm text-[12px] leading-6 text-brand-lighter">
               {empty.description}
             </p>
             <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Link
-                className="inline-flex h-11 items-center gap-3 rounded-full bg-[#174e46] px-5 text-[11px] font-bold text-white transition-transform hover:-translate-y-0.5"
+                className="inline-flex h-11 items-center gap-3 rounded-full bg-brand-2 px-5 text-[11px] font-bold text-white transition-transform hover:-translate-y-0.5"
                 href={empty.actionHref}
               >
                 {empty.actionLabel}
-                <span className="flex size-6 items-center justify-center rounded-full bg-[#d9f09b] text-[#174e46]">
+                <span className="flex size-6 items-center justify-center rounded-full bg-[#d9f09b] text-brand-2">
                   <ArrowRight aria-hidden="true" size={14} />
                 </span>
               </Link>
               <Link
-                className="inline-flex h-11 items-center rounded-full border border-[#d8e0d7] px-5 text-[11px] font-semibold text-[#245b4d] transition-colors hover:bg-white"
+                className="inline-flex h-11 items-center rounded-full border border-[#d8e0d7] px-5 text-[11px] font-semibold text-brand-3 transition-colors hover:bg-white"
                 href="/wishlist"
               >
                 Visit your wishlist
@@ -103,33 +103,33 @@ export function CartContent() {
                     <div className="flex min-w-0 flex-1 flex-col">
                       <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
-                          <p className="text-[9px] font-bold tracking-[0.14em] text-[#69927b] uppercase">
+                          <p className="text-[9px] font-bold tracking-[0.14em] text-brand-gray-5 uppercase">
                             {item.category}
                           </p>
-                          <h3 className="mt-0.5 truncate text-[14px] font-semibold text-[#243b33]">
+                          <h3 className="mt-0.5 truncate text-[14px] font-semibold text-brand-6">
                             <Link
-                              className="transition-colors hover:text-[#174e46]"
+                              className="transition-colors hover:text-brand-2"
                               href={`/products/${item.id}`}
                             >
                               {item.name}
                             </Link>
                           </h3>
-                          <p className="mt-1 text-[11px] text-[#7a837c]">
+                          <p className="mt-1 text-[11px] text-brand-gray-2">
                             {item.merchant} <span className="mx-1">·</span>{" "}
                             {item.condition}
                           </p>
                         </div>
                         <div className="shrink-0 text-right">
-                          <p className="text-[14px] font-bold text-[#174e46]">
+                          <p className="text-[14px] font-bold text-brand-2">
                             {formatPrice(item.price * item.quantity)}
                           </p>
                           {item.quantity > 1 && (
-                            <p className="mt-0.5 text-[10px] text-[#8a938b]">
+                            <p className="mt-0.5 text-[10px] text-brand-gray-3">
                               {formatPrice(item.price)} each
                             </p>
                           )}
                           {item.originalPrice && item.quantity === 1 && (
-                            <p className="mt-0.5 text-[10px] text-[#929a92] line-through">
+                            <p className="mt-0.5 text-[10px] text-brand-gray-4 line-through">
                               {formatPrice(item.originalPrice)}
                             </p>
                           )}
@@ -140,7 +140,7 @@ export function CartContent() {
                         <div className="inline-flex items-center rounded-full border border-[#dce4da] bg-white">
                           <button
                             aria-label={`Decrease quantity of ${item.name}`}
-                            className="flex size-8 items-center justify-center rounded-full text-[#245b4d] transition-colors hover:bg-[#f1f5ed] disabled:cursor-not-allowed disabled:opacity-35"
+                            className="flex size-8 items-center justify-center rounded-full text-brand-3 transition-colors hover:bg-[#f1f5ed] disabled:cursor-not-allowed disabled:opacity-35"
                             disabled={item.quantity <= 1}
                             onClick={() =>
                               updateQuantity(item.id, item.quantity - 1)
@@ -151,13 +151,13 @@ export function CartContent() {
                           </button>
                           <span
                             aria-live="polite"
-                            className="min-w-6 text-center text-[11px] font-semibold text-[#243b33]"
+                            className="min-w-6 text-center text-[11px] font-semibold text-brand-6"
                           >
                             {item.quantity}
                           </span>
                           <button
                             aria-label={`Increase quantity of ${item.name}`}
-                            className="flex size-8 items-center justify-center rounded-full text-[#245b4d] transition-colors hover:bg-[#f1f5ed]"
+                            className="flex size-8 items-center justify-center rounded-full text-brand-3 transition-colors hover:bg-[#f1f5ed]"
                             onClick={() =>
                               updateQuantity(item.id, item.quantity + 1)
                             }
@@ -167,7 +167,7 @@ export function CartContent() {
                           </button>
                         </div>
                         <button
-                          className="inline-flex items-center gap-1.5 text-[10px] font-medium text-[#8a938b] transition-colors hover:text-[#a34d35]"
+                          className="inline-flex items-center gap-1.5 text-[10px] font-medium text-brand-gray-3 transition-colors hover:text-brand-orange-3"
                           onClick={() => removeItem(item.id)}
                           type="button"
                         >
@@ -186,10 +186,10 @@ export function CartContent() {
               data-aos="fade-up"
               data-aos-delay="100"
             >
-              <p className="text-[10px] font-bold tracking-[0.18em] text-[#69927b] uppercase">
+              <p className="text-[10px] font-bold tracking-[0.18em] text-brand-gray-5 uppercase">
                 {summary.eyebrow}
               </p>
-              <h3 className="mt-1.5 font-serif text-[26px] leading-tight tracking-[-0.04em] text-[#203c33]">
+              <h3 className="mt-1.5 font-serif text-[26px] leading-tight tracking-[-0.04em] text-brand">
                 {summary.title}
               </h3>
 
@@ -198,31 +198,31 @@ export function CartContent() {
                   <dt className="text-[#748078]">
                     Subtotal · {itemCount} {itemCount === 1 ? "item" : "items"}
                   </dt>
-                  <dd className="font-semibold text-[#243b33]">
+                  <dd className="font-semibold text-brand-6">
                     {formatPrice(subtotal)}
                   </dd>
                 </div>
                 <div className="flex items-center justify-between gap-3">
                   <dt className="text-[#748078]">Delivery</dt>
-                  <dd className="text-[#8a938b]">{summary.deliveryLabel}</dd>
+                  <dd className="text-brand-gray-3">{summary.deliveryLabel}</dd>
                 </div>
               </dl>
 
-              <div className="mt-4 flex items-center justify-between gap-3 text-[13px] font-semibold text-[#243b33]">
+              <div className="mt-4 flex items-center justify-between gap-3 text-[13px] font-semibold text-brand-6">
                 <span>{summary.totalLabel}</span>
                 <span>{formatPrice(subtotal)}</span>
               </div>
 
               <Button
                 aria-describedby="cart-checkout-pending"
-                className="mt-5 h-11 w-full rounded-full bg-[#174e46] px-5 text-xs font-bold text-white"
+                className="mt-5 h-11 w-full rounded-full bg-brand-2 px-5 text-xs font-bold text-white"
                 isDisabled
                 type="button"
               >
                 {summary.checkoutLabel}
               </Button>
               <p
-                className="mt-3 rounded-[14px] border border-[#ecdfc6] bg-[#faf5e8] px-3.5 py-3 text-[10px] leading-5 text-[#806c3d]"
+                className="mt-3 rounded-[14px] border border-brand-yellow-border bg-[#faf5e8] px-3.5 py-3 text-[10px] leading-5 text-brand-yellow-text"
                 id="cart-checkout-pending"
               >
                 {summary.pendingNote}
@@ -230,11 +230,11 @@ export function CartContent() {
               <p className="mt-3 rounded-[14px] bg-[#edf2e9] px-3.5 py-3 text-[10px] leading-5 text-[#557360]">
                 {summary.guestNote}
               </p>
-              <p className="mt-2 text-[9px] leading-4 text-[#8a938b]">
+              <p className="mt-2 text-[9px] leading-4 text-brand-gray-3">
                 {summary.sessionNote}
               </p>
               <Link
-                className="mt-4 inline-flex items-center gap-2 text-[11px] font-semibold text-[#245b4d] transition-colors hover:text-[#e17b5d]"
+                className="mt-4 inline-flex items-center gap-2 text-[11px] font-semibold text-brand-3 transition-colors hover:text-brand-orange"
                 href={summary.continueHref}
               >
                 {summary.continueLabel}

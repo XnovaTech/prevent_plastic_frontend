@@ -34,14 +34,14 @@ export function CatalogResults({
         <span className="mx-auto flex size-14 items-center justify-center rounded-full bg-[#f3e6e0] text-[#a65e46]">
           <MagnifyingGlass aria-hidden="true" size={25} weight="duotone" />
         </span>
-        <h3 className="mt-5 font-serif text-[27px] tracking-[-0.04em] text-[#203c33]">
+        <h3 className="mt-5 font-serif text-[27px] tracking-[-0.04em] text-brand">
           {copy.emptyTitle}
         </h3>
-        <p className="mx-auto mt-2 max-w-sm text-[12px] leading-6 text-[#7d867f]">
+        <p className="mx-auto mt-2 max-w-sm text-[12px] leading-6 text-brand-lighter">
           {copy.emptyDescription}
         </p>
         <Button
-          className="mt-5 h-10 rounded-full border-[#d8e0d7] px-5 text-[11px] font-semibold text-[#245b4d] hover:bg-white"
+          className="mt-5 h-10 rounded-full border-[#d8e0d7] px-5 text-[11px] font-semibold text-brand-3 hover:bg-white"
           onPress={onResetFilters}
           type="button"
           variant="outline"
@@ -54,7 +54,7 @@ export function CatalogResults({
 
   return (
     <div>
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-2 text-[10px] text-[#7d867f]">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-2 text-[10px] text-brand-lighter">
         <p aria-live="polite">
           {copy.showing} {visibleCount} {copy.of} {total}{" "}
           {total === 1 ? copy.findSingular : copy.findPlural}
@@ -86,7 +86,7 @@ export function CatalogResults({
               {copy.keepScrolling}
             </p>
             <Button
-              className="h-9 rounded-full border-[#d8e0d7] bg-white px-4 text-[11px] font-semibold text-[#245b4d] hover:bg-[#f1f5ed]"
+              className="h-9 rounded-full border-[#d8e0d7] bg-white px-4 text-[11px] font-semibold text-brand-3 hover:bg-[#f1f5ed]"
               onPress={loadMore}
               type="button"
               variant="outline"

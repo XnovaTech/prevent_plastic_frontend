@@ -29,7 +29,7 @@ export function CartReassuranceSection() {
                   <p className="text-[11px] font-semibold text-[#263d34]">
                     {item.title}
                   </p>
-                  <p className="mt-0.5 text-[10px] leading-5 text-[#7d867f]">
+                  <p className="mt-0.5 text-[10px] leading-5 text-brand-lighter">
                     {item.description}
                   </p>
                 </div>

@@ -45,10 +45,10 @@ export function WishlistItems() {
           data-aos="fade-up"
         >
           <div>
-            <p className="mb-2 text-[10px] font-bold tracking-[0.18em] text-[#69927b] uppercase">
+            <p className="mb-2 text-[10px] font-bold tracking-[0.18em] text-brand-gray-5 uppercase">
               YOUR WISHLIST
             </p>
-            <h1 className="font-serif text-[30px] leading-tight tracking-[-0.04em] text-[#203c33] sm:text-[38px]">
+            <h1 className="font-serif text-[30px] leading-tight tracking-[-0.04em] text-brand sm:text-[38px]">
               Saved for later
             </h1>
           </div>
@@ -61,7 +61,7 @@ export function WishlistItems() {
           aria-live="polite"
           className={
             status
-              ? "mb-5 rounded-[14px] border border-[#d8e5d3] bg-[#edf4e8] px-4 py-3 text-[11px] text-[#427054]"
+              ? "mb-5 rounded-[14px] border border-[#d8e5d3] bg-[#edf4e8] px-4 py-3 text-[11px] text-brand-4"
               : "sr-only"
           }
           role="status"
@@ -77,18 +77,18 @@ export function WishlistItems() {
             <span className="mx-auto flex size-14 items-center justify-center rounded-full bg-[#f9e8df] text-[#a65e46]">
               <Heart aria-hidden="true" size={26} weight="duotone" />
             </span>
-            <h3 className="mt-5 font-serif text-[27px] tracking-[-0.04em] text-[#203c33]">
+            <h3 className="mt-5 font-serif text-[27px] tracking-[-0.04em] text-brand">
               {empty.title}
             </h3>
-            <p className="mx-auto mt-2 max-w-sm text-[12px] leading-6 text-[#7d867f]">
+            <p className="mx-auto mt-2 max-w-sm text-[12px] leading-6 text-brand-lighter">
               {empty.description}
             </p>
             <Link
-              className="mx-auto mt-6 inline-flex h-11 items-center gap-3 rounded-full bg-[#174e46] px-5 text-[11px] font-bold text-white transition-transform hover:-translate-y-0.5"
+              className="mx-auto mt-6 inline-flex h-11 items-center gap-3 rounded-full bg-brand-2 px-5 text-[11px] font-bold text-white transition-transform hover:-translate-y-0.5"
               href={empty.actionHref}
             >
               {empty.actionLabel}
-              <span className="flex size-6 items-center justify-center rounded-full bg-[#d9f09b] text-[#174e46]">
+              <span className="flex size-6 items-center justify-center rounded-full bg-[#d9f09b] text-brand-2">
                 <ArrowRight aria-hidden="true" size={14} />
               </span>
             </Link>
@@ -118,7 +118,7 @@ export function WishlistItems() {
                     </span>
                     <button
                       aria-label={`Remove ${item.name} from wishlist`}
-                      className="absolute top-3 right-3 flex size-9 items-center justify-center rounded-full border border-white/70 bg-white/85 text-[#29443a] backdrop-blur transition-colors hover:bg-[#fbeae3] hover:text-[#a34d35]"
+                      className="absolute top-3 right-3 flex size-9 items-center justify-center rounded-full border border-white/70 bg-white/85 text-[#29443a] backdrop-blur transition-colors hover:bg-[#fbeae3] hover:text-brand-orange-3"
                       onClick={() => handleRemove(item.id, item.name)}
                       type="button"
                     >
@@ -129,25 +129,25 @@ export function WishlistItems() {
                   <div className="flex flex-1 flex-col px-0.5 pt-3">
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0">
-                        <h3 className="truncate text-[14px] font-semibold text-[#243b33] sm:text-[15px]">
+                        <h3 className="truncate text-[14px] font-semibold text-brand-6 sm:text-[15px]">
                           <Link
-                            className="transition-colors hover:text-[#174e46]"
+                            className="transition-colors hover:text-brand-2"
                             href={`/products/${item.id}`}
                           >
                             {item.name}
                           </Link>
                         </h3>
-                        <p className="mt-1 text-[11px] text-[#7a837c]">
+                        <p className="mt-1 text-[11px] text-brand-gray-2">
                           {item.merchant} <span className="mx-1">·</span>{" "}
                           {item.condition}
                         </p>
                       </div>
                       <div className="shrink-0 text-right">
-                        <p className="text-[14px] font-bold text-[#174e46]">
+                        <p className="text-[14px] font-bold text-brand-2">
                           {formatPrice(item.price)}
                         </p>
                         {item.originalPrice && (
-                          <p className="mt-0.5 text-[11px] text-[#929a92] line-through">
+                          <p className="mt-0.5 text-[11px] text-brand-gray-4 line-through">
                             {formatPrice(item.originalPrice)}
                           </p>
                         )}
@@ -155,7 +155,7 @@ export function WishlistItems() {
                     </div>
 
                     <button
-                      className="mt-3 inline-flex h-9 items-center justify-center gap-2 rounded-full bg-[#174e46] px-4 text-[10px] font-semibold text-white transition-colors hover:bg-[#1f6157]"
+                      className="mt-3 inline-flex h-9 items-center justify-center gap-2 rounded-full bg-brand-2 px-4 text-[10px] font-semibold text-white transition-colors hover:bg-[#1f6157]"
                       onClick={() => handleAddToBag(item)}
                       type="button"
                     >
@@ -166,7 +166,7 @@ export function WishlistItems() {
                 </article>
               ))}
             </div>
-            <p className="mt-6 text-[10px] leading-5 text-[#8a938b]">
+            <p className="mt-6 text-[10px] leading-5 text-brand-gray-3">
               {notice}
             </p>
           </>

@@ -1,6 +1,5 @@
 import type { Metadata } from "next"
 
-import { ContactFaqSection } from "@/components/contact/contactFaqSection"
 import { ContactIntroSection } from "@/components/contact/contactIntroSection"
 import { AosInitializer } from "@/components/shared/aosInitializer"
 import { SiteFooter } from "@/components/shared/siteFooter"
@@ -14,7 +13,7 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <div className="min-h-screen bg-transparent text-[#203c33]">
+    <div className="min-h-screen bg-transparent text-brand">
       <AosInitializer />
       <a
         className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-full focus:bg-white focus:px-4 focus:py-2"
@@ -25,7 +24,6 @@ export default function Page() {
       <SiteHeader activeHref="/contact" />
       <main id="main-content">
         <ContactIntroSection />
-        <ContactFaqSection />
       </main>
       <SiteFooter />
     </div>

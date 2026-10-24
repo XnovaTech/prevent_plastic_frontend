@@ -14,10 +14,10 @@ export function CatalogIntro({ config }: CatalogIntroProps) {
         >
           <div className="max-w-[760px]">
             <span className="inline-flex items-center gap-2 rounded-full border border-[#31594a]/15 bg-white/45 px-3 py-1.5 text-[9px] font-bold tracking-[0.15em] text-[#496b57] uppercase sm:text-[10px]">
-              <span className="size-1.5 rounded-full bg-[#df896b]" />
+              <span className="size-1.5 rounded-full bg-brand-orange-2" />
               {config.eyebrow}
             </span>
-            <h1 className="mt-4 font-serif text-[38px] leading-[1.02] tracking-[-0.055em] text-[#203c33] sm:text-[48px] lg:text-[54px]">
+            <h1 className="mt-4 font-serif text-[38px] leading-[1.02] tracking-[-0.055em] text-brand sm:text-[48px] lg:text-[54px]">
               {config.title}
               <br />
               <span className="relative inline-block text-[#39745b] italic">
@@ -25,13 +25,13 @@ export function CatalogIntro({ config }: CatalogIntroProps) {
                 <span className="absolute right-0 -bottom-1 h-1.5 w-[94%] -rotate-2 rounded-[50%] border-b-2 border-[#e9a27e]" />
               </span>
             </h1>
-            <p className="mt-4 max-w-[560px] text-[12px] leading-6 text-[#617067] sm:text-[13px]">
+            <p className="mt-4 max-w-[560px] text-[12px] leading-6 text-brand-light sm:text-[13px]">
               {config.description}
             </p>
-            <p className="mt-4 flex items-start gap-2 text-[10px] leading-5 text-[#7d867f]">
+            <p className="mt-4 flex items-start gap-2 text-[10px] leading-5 text-brand-lighter">
               <span
                 aria-hidden="true"
-                className="mt-1.5 size-1.5 shrink-0 rounded-full bg-[#df896b]"
+                className="mt-1.5 size-1.5 shrink-0 rounded-full bg-brand-orange-2"
               />
               {config.note}
             </p>
@@ -43,7 +43,7 @@ export function CatalogIntro({ config }: CatalogIntroProps) {
                 className="min-w-[130px] rounded-[18px] border border-white/60 bg-white/55 px-4 py-3"
                 key={stat.label}
               >
-                <p className="font-serif text-[24px] leading-none tracking-[-0.04em] text-[#245b4d]">
+                <p className="font-serif text-[24px] leading-none tracking-[-0.04em] text-brand-3">
                   {stat.value}
                 </p>
                 <p className="mt-1.5 text-[10px] text-[#6f7c73]">

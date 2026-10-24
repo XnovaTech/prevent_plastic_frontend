@@ -9,7 +9,7 @@ type ProductCardProps = {
 }
 
 const badgeToneClass = {
-  coral: "bg-[#fff0e9] text-[#a34d35]",
+  coral: "bg-brand-peach-bg text-brand-orange-3",
   green: "bg-[#e8f1e3] text-[#38684f]",
   lavender: "bg-[#f0ebf8] text-[#695381]",
 }
@@ -49,10 +49,10 @@ export function ProductCard({ product }: ProductCardProps) {
         <div className="px-0.5 pt-3">
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0">
-              <p className="truncate text-[14px] font-semibold text-[#243b33] sm:text-[15px]">
+              <p className="truncate text-[14px] font-semibold text-brand-6 sm:text-[15px]">
                 {product.name}
               </p>
-              <p className="mt-1 flex min-w-0 items-center gap-1 text-[11px] text-[#7a837c]">
+              <p className="mt-1 flex min-w-0 items-center gap-1 text-[11px] text-brand-gray-2">
                 <Storefront
                   aria-hidden="true"
                   className="shrink-0 text-[#8aa18e]"
@@ -65,11 +65,11 @@ export function ProductCard({ product }: ProductCardProps) {
               </p>
             </div>
             <div className="shrink-0 text-right">
-              <p className="text-[14px] font-bold text-[#174e46]">
+              <p className="text-[14px] font-bold text-brand-2">
                 Ks {product.price.toLocaleString("en-US")}
               </p>
               {product.originalPrice && (
-                <p className="mt-0.5 text-[11px] text-[#929a92] line-through">
+                <p className="mt-0.5 text-[11px] text-brand-gray-4 line-through">
                   Ks {product.originalPrice.toLocaleString("en-US")}
                 </p>
               )}
