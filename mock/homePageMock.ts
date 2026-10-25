@@ -16,6 +16,7 @@ export type HomeCategory = {
   title: string
   description: string
   icon: "home" | "fashion" | "everyday" | "repair"
+  image?: string
   count: string
   tone: "sage" | "peach" | "lavender" | "butter"
   href: string
@@ -29,7 +30,8 @@ export type FeaturedMerchant = {
   specialty: string
   rating: string
   listings: number
-  tone: "sage" | "peach" | "lavender"
+  tone: "sage" | "peach" | "lavender" | "butter"
+  image?: string
 }
 
 export const homePageMock = {
@@ -94,6 +96,7 @@ export const homePageMock = {
       title: "Home & living",
       description: "Pieces with a past",
       icon: "home",
+      image: "/products/ceramicPlates.jpg",
       count: "1,240 finds",
       tone: "sage",
       href: "#popular",
@@ -103,6 +106,7 @@ export const homePageMock = {
       title: "Style again",
       description: "Wear it your way",
       icon: "fashion",
+      image: "/products/denimJacket.jpg",
       count: "860 finds",
       tone: "peach",
       href: "#popular",
@@ -112,6 +116,7 @@ export const homePageMock = {
       title: "Everyday things",
       description: "Useful, not wasteful",
       icon: "everyday",
+      image: "/products/succulentPot.jpg",
       count: "540 finds",
       tone: "lavender",
       href: "#popular",
@@ -121,9 +126,69 @@ export const homePageMock = {
       title: "Repair & care",
       description: "Make good things last",
       icon: "repair",
+      image: "/products/deskLamp.jpg",
       count: "Meet local fixers",
       tone: "butter",
       href: "#repair",
+    },
+    {
+      id: "books",
+      title: "Books & media",
+      description: "Stories worth keeping",
+      icon: "everyday",
+      count: "310 finds",
+      tone: "sage",
+      href: "#popular",
+    },
+    {
+      id: "kitchen",
+      title: "Kitchen & dining",
+      description: "Well-loved tableware",
+      icon: "home",
+      image: "/products/ceramicPlates.jpg",
+      count: "420 finds",
+      tone: "peach",
+      href: "#popular",
+    },
+    {
+      id: "plants",
+      title: "Plants & pots",
+      description: "Greenery for your space",
+      icon: "everyday",
+      image: "/products/succulentPot.jpg",
+      count: "280 finds",
+      tone: "lavender",
+      href: "#popular",
+    },
+    {
+      id: "accessories",
+      title: "Accessories",
+      description: "Bags, jewelry & more",
+      icon: "fashion",
+      image: "/products/wovenMarketBag.jpg",
+      count: "190 finds",
+      tone: "butter",
+      href: "#popular",
+    },
+    {
+      id: "electronics",
+      title: "Electronics",
+      description: "Gadgets with history",
+      icon: "home",
+      image: "/products/filmCamera.jpg",
+      count: "150 finds",
+      tone: "sage",
+      href: "#popular",
+    },
+    {
+      id: "toys",
+      title: "Toys & games",
+      description: "Playthings with memories",
+      icon: "everyday",
+      image: "/products/woodenStool.jpg",
+      count: "220 finds",
+      tone: "peach",
+      href: "#popular",
     },
   ] satisfies HomeCategory[],
   popularProducts: [
@@ -204,6 +269,76 @@ export const homePageMock = {
       rating: "4.8",
       listings: 24,
       tone: "lavender",
+    },
+    {
+      id: "yangon-vintage",
+      name: "Yangon Vintage",
+      initials: "YV",
+      location: "Yangon",
+      specialty: "Retro clothing & accessories",
+      rating: "4.7",
+      listings: 45,
+      tone: "butter",
+    },
+    {
+      id: "circular-home",
+      name: "Circular Home",
+      initials: "CH",
+      location: "Bago",
+      specialty: "Secondhand furniture & decor",
+      rating: "4.9",
+      listings: 28,
+      tone: "sage",
+    },
+    {
+      id: "preloved-kids",
+      name: "Preloved Kids",
+      initials: "PK",
+      location: "Mandalay",
+      specialty: "Kids' clothes & toys",
+      rating: "4.6",
+      listings: 52,
+      tone: "peach",
+    },
+    {
+      id: "studio-repair",
+      name: "Studio Repair",
+      initials: "SR",
+      location: "Yangon",
+      specialty: "Electronics & appliance repair",
+      rating: "4.8",
+      listings: 18,
+      tone: "lavender",
+    },
+    {
+      id: "green-shelf",
+      name: "Green Shelf",
+      initials: "GS",
+      location: "Naypyidaw",
+      specialty: "Books & stationery",
+      rating: "4.5",
+      listings: 33,
+      tone: "butter",
+    },
+    {
+      id: "urban-cycle",
+      name: "Urban Cycle",
+      initials: "UC",
+      location: "Yangon",
+      specialty: "Bicycles & cycling gear",
+      rating: "4.9",
+      listings: 15,
+      tone: "sage",
+    },
+    {
+      id: "retro-sounds",
+      name: "Retro Sounds",
+      initials: "RS",
+      location: "Mandalay",
+      specialty: "Vinyl records & audio gear",
+      rating: "4.7",
+      listings: 21,
+      tone: "peach",
     },
   ] satisfies FeaturedMerchant[],
   moreFinds: [

@@ -1,6 +1,8 @@
 import type { Metadata } from "next"
 
-import { ContactIntroSection } from "@/components/contact/contactIntroSection"
+import { ContactForm } from "@/components/contact/contactForm"
+import { ContactMethodsSection } from "@/components/contact/contactMethodsSection"
+
 import { AosInitializer } from "@/components/shared/aosInitializer"
 import { SiteFooter } from "@/components/shared/siteFooter"
 import { SiteHeader } from "@/components/shared/siteHeader"
@@ -23,7 +25,22 @@ export default function Page() {
       </a>
       <SiteHeader activeHref="/contact" />
       <main id="main-content">
-        <ContactIntroSection />
+        <section
+          className="px-4 pb-16 sm:px-8 sm:pb-20 lg:px-6"
+          id="contact"
+        >
+          <div className="mx-auto max-w-[1440px]">
+            <div className="grid grid-cols-5 lg:items-start" data-aos="fade-up">
+              <div className="col-span-3 lg:col-span-2">
+                <ContactMethodsSection />
+              </div>
+              <div className="col-span-3 lg:col-span-3">
+                <ContactForm />
+              </div>
+            </div>
+          </div>
+        </section>
+        
       </main>
       <SiteFooter />
     </div>

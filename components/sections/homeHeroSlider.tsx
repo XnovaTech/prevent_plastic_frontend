@@ -79,10 +79,7 @@ export function HomeHeroSlider() {
                     className={`relative grid min-h-[400px] grid-cols-1 items-center gap-4 px-5 py-5 sm:px-8 md:min-h-[385px] md:grid-cols-[1.08fr_0.92fr] md:gap-7 md:px-12 md:py-8 ${slide.background}`}
                   >
                     <div className="relative z-10 max-w-[620px]">
-                      <span className="inline-flex items-center gap-2 rounded-full border border-[#31594a]/15 bg-white/45 px-3 py-1.5 text-[9px] font-bold tracking-[0.15em] text-[#496b57] uppercase sm:text-[10px]">
-                        <span className="size-1.5 rounded-full bg-brand-orange-2" />
-                        {slide.eyebrow}
-                      </span>
+                    
                       <HeadingTag className="mt-4 font-serif text-[38px] leading-[1.02] tracking-[-0.055em] text-brand sm:text-[46px] md:mt-5 md:text-[52px] lg:text-[60px]">
                         {slide.heading}
                         <br />

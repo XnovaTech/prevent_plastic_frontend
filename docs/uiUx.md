@@ -59,6 +59,7 @@
 ## Interaction နှင့် Motion
 
 - Button နှင့် interactive element တို့တွင် default၊ hover၊ focus၊ active၊ disabled နှင့် loading state များကို သတ်မှတ်ပါ။
+- Homepage section များရှိ “Browse more” action အတွက် `components/shared/sectionBrowseLink.tsx` ကို ပြန်သုံးပါ။ Desktop တွင် heading ဘေး၌ inline link၊ mobile တွင် content အောက်၌ outlined pill အဖြစ်ထားပြီး section တစ်ခုချင်းအလိုက် destination နှင့် label ကိုသာ ပြောင်းပါ။
 - Click သို့မဟုတ် submit ပြီးနောက် user ဘာဖြစ်သွားသည်ကို toast၊ inline message သို့မဟုတ် page state ဖြင့် ချက်ချင်းပြန်လည်တုံ့ပြန်ပါ။
 - Motion ကို state transition ကို နားလည်စေရန်သာ သုံးပါ။ Animation ကြောင့် စာဖတ်ရန် အနှောင့်အယှက်ဖြစ်ခြင်း သို့မဟုတ် interaction နှောင့်နှေးခြင်း မဖြစ်စေပါနှင့်။
 - System ၏ `prefers-reduced-motion` preference ကို လေးစားပါ။

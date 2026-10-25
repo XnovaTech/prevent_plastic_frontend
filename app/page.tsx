@@ -1,11 +1,10 @@
 import type { Metadata } from "next"
 
 import { CategorySection } from "@/components/sections/categorySection"
+import { CommunitySection } from "@/components/sections/communitySection"
 import { HomeFaqSection } from "@/components/sections/homeFaqSection"
 import { HomeHeroSlider } from "@/components/sections/homeHeroSlider"
 import { HomeSearchFilter } from "@/components/sections/homeSearchFilter"
-import { ImpactSection } from "@/components/sections/impactSection"
-import { MerchantSection } from "@/components/sections/merchantSection"
 import { ProductFeedSection } from "@/components/product/productFeedSection"
 import { ProductSection } from "@/components/product/productSection"
 import { AosInitializer } from "@/components/shared/aosInitializer"
@@ -23,12 +22,7 @@ export default function Page() {
   return (
     <div className="min-h-screen bg-transparent text-brand">
       <AosInitializer />
-      <a
-        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-full focus:bg-white focus:px-4 focus:py-2"
-        href="#main-content"
-      >
-        Skip to content
-      </a>
+      
       <SiteHeader />
       <main id="main-content">
         <HomeHeroSlider />
@@ -36,25 +30,30 @@ export default function Page() {
         <CategorySection />
         <ProductSection
           actionLabel="Browse all finds"
-          description="Pre-loved pieces with plenty of life left in them. Picked with care, ready for their next chapter."
-          eyebrow="POPULAR RIGHT NOW"
+          description="Popular pre-loved items from local shops and sellers."
+          eyebrow="POPULAR ITEMS"
           id="popular"
           products={homePageMock.popularProducts}
-          title="Finds worth falling for"
+          title="Popular finds"
         />
-        <MerchantSection />
-        <ProductFeedSection />
-        <ProductSection
-          actionLabel="See all good deals"
-          description="A little easier on your wallet, and still full of character. These lovely finds have a new price."
-          eyebrow="A LITTLE PRICE DROP"
+
+         <ProductSection
+          actionLabel="See all discounts"
+          description="Save on pre-loved items with reduced prices."
+          eyebrow="SPECIAL OFFERS"
           id="discounts"
           products={homePageMock.saleProducts}
-          title="Good things, gentler prices"
+          title="Discounted finds"
           tone="sale"
         />
-        <ImpactSection />
+
+              <CommunitySection />
+   
+        <ProductFeedSection />
+       
+        
         <HomeFaqSection />
+       
       </main>
       <SiteFooter />
     </div>

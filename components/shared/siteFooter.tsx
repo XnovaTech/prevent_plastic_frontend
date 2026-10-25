@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { House } from "@phosphor-icons/react/dist/ssr"
+import { Leaf } from "@phosphor-icons/react/dist/ssr"
 
 export function SiteFooter() {
   return (
@@ -12,7 +12,7 @@ export function SiteFooter() {
             href="/"
           >
             <span className="flex size-9 items-center justify-center rounded-full bg-brand-2 text-brand-green">
-              <House aria-hidden="true" size={18} weight="fill" />
+              <Leaf aria-hidden="true" size={18} weight="fill" />
             </span>
             <span className="text-[16px] font-bold tracking-[-0.06em] text-[#173e36]">
               preventplastic

@@ -17,6 +17,7 @@ type CarouselPlugin = UseCarouselParameters[1]
 type CarouselProps = {
   opts?: CarouselOptions
   plugins?: CarouselPlugin
+  autoPlay?: boolean
   orientation?: "horizontal" | "vertical"
   setApi?: (api: CarouselApi) => void
 }
@@ -45,6 +46,7 @@ function useCarousel() {
 function Carousel({
   orientation = "horizontal",
   opts,
+  autoPlay = false,
   setApi,
   plugins,
   className,
@@ -60,6 +62,8 @@ function Carousel({
   )
   const [canScrollPrev, setCanScrollPrev] = React.useState(false)
   const [canScrollNext, setCanScrollNext] = React.useState(false)
+  const [isHovered, setIsHovered] = React.useState(false)
+  const [hasFocus, setHasFocus] = React.useState(false)
 
   const onSelect = React.useCallback((api: CarouselApi) => {
     if (!api) return
@@ -95,14 +99,32 @@ function Carousel({
 
   React.useEffect(() => {
     if (!api) return
-    onSelect(api)
+    const animationFrameId = window.requestAnimationFrame(() => onSelect(api))
     api.on("reInit", onSelect)
     api.on("select", onSelect)
 
     return () => {
-      api?.off("select", onSelect)
+      window.cancelAnimationFrame(animationFrameId)
+      api.off("reInit", onSelect)
+      api.off("select", onSelect)
     }
   }, [api, onSelect])
+
+  React.useEffect(() => {
+    if (!api || !autoPlay || isHovered || hasFocus) return
+
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    )
+
+    if (prefersReducedMotion.matches) return
+
+    const intervalId = window.setInterval(() => {
+      api.scrollNext()
+    }, 3000)
+
+    return () => window.clearInterval(intervalId)
+  }, [api, autoPlay, isHovered, hasFocus])
 
   return (
     <CarouselContext.Provider
@@ -120,6 +142,14 @@ function Carousel({
     >
       <div
         onKeyDownCapture={handleKeyDown}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        onFocusCapture={() => setHasFocus(true)}
+        onBlurCapture={(event) => {
+          if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+            setHasFocus(false)
+          }
+        }}
         className={cn("relative", className)}
         role="region"
         aria-roledescription="carousel"

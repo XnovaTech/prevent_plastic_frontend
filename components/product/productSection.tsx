@@ -1,7 +1,5 @@
-import Link from "next/link"
-import { ArrowRight } from "@phosphor-icons/react/dist/ssr"
-
 import { ProductCard } from "@/components/product/productCard"
+import { SectionBrowseLink } from "@/components/shared/sectionBrowseLink"
 import type { HomeProduct } from "@/mock/homePageMock"
 
 type ProductSectionProps = {
@@ -44,26 +42,24 @@ export function ProductSection({
               {description}
             </p>
           </div>
-          <Link
-            className="mb-1 hidden shrink-0 items-center gap-2 text-xs font-semibold text-brand-3 transition-colors hover:text-brand-orange sm:flex"
+          <SectionBrowseLink
             href="#more-finds"
-          >
-            {actionLabel}
-            <ArrowRight aria-hidden="true" size={16} />
-          </Link>
+            label={actionLabel}
+            placement="header"
+            screen="desktop"
+          />
         </div>
         <div className="grid grid-cols-2 gap-x-4 gap-y-7 sm:gap-x-6 lg:grid-cols-4">
           {products.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
-        <Link
-          className="mx-auto mt-8 flex w-fit items-center gap-2 rounded-full border border-[#d8e0d7] px-5 py-3 text-xs font-semibold text-brand-3 transition-colors hover:bg-white sm:hidden"
+        <SectionBrowseLink
           href="#more-finds"
-        >
-          {actionLabel}
-          <ArrowRight aria-hidden="true" size={15} />
-        </Link>
+          label={actionLabel}
+          placement="footer"
+          screen="mobile"
+        />
       </div>
     </section>
   )

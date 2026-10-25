@@ -1,7 +1,13 @@
 "use client"
 
-import { useMemo, useState } from "react"
-import { FunnelSimple, X } from "@phosphor-icons/react"
+import { useEffect, useMemo, useState } from "react"
+import {
+  FunnelSimple,
+  GridNine,
+  ListBullets,
+  SquaresFour,
+  X,
+} from "@phosphor-icons/react"
 
 import { CatalogFilterSheet } from "@/components/list/catalogFilterSheet"
 import { CatalogResults } from "@/components/list/catalogResults"
@@ -18,9 +24,26 @@ const emptyFilters: CatalogFilters = {
   priceRange: null,
 }
 
+const GRID_COLS_KEY = "catalog-grid-columns"
+
+type GridColumns = 1 | 3 | 5
+
 export function CatalogBrowser({ config }: CatalogBrowserProps) {
   const [filtersOpen, setFiltersOpen] = useState(false)
   const [filters, setFilters] = useState<CatalogFilters>(emptyFilters)
+  const [gridCols, setGridCols] = useState<GridColumns>(() => {
+  if (typeof window === "undefined") return 3
+  const stored = window.localStorage.getItem(GRID_COLS_KEY)
+  if (stored === "1" || stored === "3" || stored === "5") {
+    return Number(stored) as GridColumns
+  }
+  return 3
+})
+
+useEffect(() => {
+  if (typeof window === "undefined") return
+  window.localStorage.setItem(GRID_COLS_KEY, String(gridCols))
+}, [gridCols])
 
   const { copy } = config
 
@@ -134,6 +157,51 @@ export function CatalogBrowser({ config }: CatalogBrowserProps) {
                 ? copy.findSingular
                 : copy.findPlural}
             </span>
+            <div
+              aria-label="Product layout"
+              className="hidden items-center rounded-full border border-[#d8e0d7] bg-white/80 p-1 sm:flex"
+              role="group"
+            >
+              <button
+                aria-label="1 column view"
+                aria-pressed={gridCols === 1}
+                className={`flex size-9 items-center justify-center rounded-full transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#39745b] ${
+                  gridCols === 1
+                    ? "bg-brand-2 text-white"
+                    : "text-brand-gray-3 hover:bg-[#f1f5ed]"
+                }`}
+                onClick={() => setGridCols(1)}
+                type="button"
+              >
+                <ListBullets aria-hidden="true" size={19} weight="regular" />
+              </button>
+              <button
+                aria-label="3 column view"
+                aria-pressed={gridCols === 3}
+                className={`flex size-9 items-center justify-center rounded-full transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#39745b] ${
+                  gridCols === 3
+                    ? "bg-brand-2 text-white"
+                    : "text-brand-gray-3 hover:bg-[#f1f5ed]"
+                }`}
+                onClick={() => setGridCols(3)}
+                type="button"
+              >
+                <SquaresFour aria-hidden="true" size={19} weight="regular" />
+              </button>
+              <button
+                aria-label="5 column view"
+                aria-pressed={gridCols === 5}
+                className={`flex size-9 items-center justify-center rounded-full transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#39745b] ${
+                  gridCols === 5
+                    ? "bg-brand-2 text-white"
+                    : "text-brand-gray-3 hover:bg-[#f1f5ed]"
+                }`}
+                onClick={() => setGridCols(5)}
+                type="button"
+              >
+                <GridNine aria-hidden="true" size={19} weight="regular" />
+              </button>
+            </div>
             <Button
               className="h-10 rounded-full border-[#cfdccb] bg-white px-4 text-[11px] font-semibold text-brand-3 hover:bg-[#f1f5ed]"
               onPress={() => setFiltersOpen(true)}
@@ -180,7 +248,9 @@ export function CatalogBrowser({ config }: CatalogBrowserProps) {
 
         <CatalogResults
           copy={copy}
-          key={filterKey}
+          gridCols={gridCols}
+          key={`${filterKey}-${gridCols}`}
+          layout={gridCols === 1 ? "row" : "grid"}
           onResetFilters={resetFilters}
           products={filteredProducts}
         />

@@ -8,7 +8,7 @@ import { contactPageMock } from "@/mock/contactPageMock"
 
 export function HomeFaqSection() {
   return (
-    <section className="pb-16 sm:pb-20" id="faq">
+    <section className="py-8 sm:pb-10" id="faq">
       <div className="mx-auto max-w-[1440px] px-4 sm:px-8 lg:px-12">
         <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-start lg:gap-12">
           <div data-aos="fade-up">

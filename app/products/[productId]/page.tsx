@@ -86,7 +86,7 @@ export default async function Page({ params }: ProductPageProps) {
                 <span aria-hidden="true">/</span>
                 <Link
                   className="transition-colors hover:text-brand-3"
-                  href={shop.href}
+                  href={`/shop/${shop.slug}`}
                 >
                   {shop.label}
                 </Link>
@@ -100,7 +100,7 @@ export default async function Page({ params }: ProductPageProps) {
               </nav>
               <Link
                 className="inline-flex items-center gap-1.5 text-[10px] font-semibold text-brand-3 transition-colors hover:text-brand-orange"
-                href={shop.href}
+                href={`/shop/${shop.slug}`}
               >
                 <ArrowLeft aria-hidden="true" size={13} />
                 Back to shop
@@ -164,7 +164,7 @@ export default async function Page({ params }: ProductPageProps) {
                     </div>
                     <Link
                       className="inline-flex items-center gap-1 text-[10px] font-semibold text-brand-3 transition-colors hover:text-brand-orange"
-                      href={shop.href}
+                      href={`/shop/${shop.slug}`}
                     >
                       Visit shop
                       <ArrowUpRight aria-hidden="true" size={12} />
@@ -173,13 +173,7 @@ export default async function Page({ params }: ProductPageProps) {
 
                   <ProductActions product={product} />
 
-                  <p className="mt-4 flex items-start gap-2 rounded-[14px] border border-brand-yellow-border bg-brand-yellow/80 px-3.5 py-3 text-[10px] leading-5 text-brand-yellow-text backdrop-blur-md">
-                    <span
-                      aria-hidden="true"
-                      className="mt-1.5 size-1.5 shrink-0 rounded-full bg-brand-orange-2"
-                    />
-                    {detail.pendingNote}
-                  </p>
+             
                 </div>
 
                 <div className="mt-3 grid grid-cols-2 gap-2.5">
@@ -236,7 +230,7 @@ export default async function Page({ params }: ProductPageProps) {
                 </div>
                 <Link
                   className="inline-flex items-center gap-2 text-[10px] font-semibold text-brand-3 transition-colors hover:text-brand-orange"
-                  href={shop.href}
+                  href={`/shop/${shop.slug}`}
                 >
                   Browse {shop.label}
                   <ArrowRight aria-hidden="true" size={14} />

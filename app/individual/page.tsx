@@ -1,7 +1,6 @@
 import type { Metadata } from "next"
 
 import { CatalogBrowser } from "@/components/list/catalogBrowser"
-import { CatalogIntro } from "@/components/list/catalogIntro"
 import { AosInitializer } from "@/components/shared/aosInitializer"
 import { SiteFooter } from "@/components/shared/siteFooter"
 import { SiteHeader } from "@/components/shared/siteHeader"
@@ -27,7 +26,6 @@ export default function Page() {
       </a>
       <SiteHeader activeHref={config.href} />
       <main id="main-content">
-        <CatalogIntro config={config} />
         <CatalogBrowser config={config} />
       </main>
       <SiteFooter />

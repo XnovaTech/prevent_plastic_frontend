@@ -12,12 +12,23 @@ type CatalogResultsProps = {
   products: readonly HomeProduct[]
   copy: CatalogPageConfig["copy"]
   onResetFilters: () => void
+  gridCols?: 1 | 3 | 4 | 5
+  layout?: "grid" | "row"
+}
+
+const gridColsClass: Record<number, string> = {
+  1: "grid-cols-1",
+  3: "grid-cols-1 sm:grid-cols-3",
+  4: "grid-cols-2 sm:gap-x-6 lg:grid-cols-4",
+  5: "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5",
 }
 
 export function CatalogResults({
   products,
   copy,
   onResetFilters,
+  gridCols = 4,
+  layout = "grid",
 }: CatalogResultsProps) {
   const {
     hasMore,
@@ -64,9 +75,15 @@ export function CatalogResults({
         </p>
       </div>
 
-      <div className="grid grid-cols-2 gap-x-4 gap-y-7 sm:gap-x-6 lg:grid-cols-4">
+      <div
+        className={`grid gap-x-4 gap-y-7 ${
+          layout === "row"
+            ? "grid-cols-1"
+            : gridColsClass[gridCols] ?? gridColsClass[4]
+        }`}
+      >
         {visibleProducts.map((product) => (
-          <ProductCard key={product.id} product={product} />
+          <ProductCard key={product.id} layout={layout} product={product} />
         ))}
       </div>
 

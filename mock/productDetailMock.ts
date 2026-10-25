@@ -13,6 +13,7 @@ export type ProductShop = {
   kind: string
   label: string
   href: "/sme" | "/individual"
+  slug: string
 }
 
 export type ProductFact = {
@@ -94,6 +95,14 @@ const conditionNotes: Record<string, string> = {
   Good: "Gently used with visible character — a good find ready for its next chapter.",
 }
 
+function slugify(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "")
+}
+
 function isIndividualProduct(productId: string) {
   return catalogPageMock.individual.products.some(
     (product) => product.id === productId
@@ -128,11 +137,13 @@ export function getProductDetail(productId: string): ProductDetail | null {
   }
 
   const isIndividual = isIndividualProduct(product.id)
+  const shopName = product.merchant
   const shop: ProductShop = {
-    name: product.merchant,
+    name: shopName,
     kind: isIndividual ? "Independent seller" : "Local small business",
     label: isIndividual ? "Individual finds" : "SME finds",
     href: isIndividual ? "/individual" : "/sme",
+    slug: slugify(shopName),
   }
 
   return {
