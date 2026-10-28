@@ -92,10 +92,9 @@ export const contactPageMock = {
       "Something else",
     ],
     pendingNote:
-      "The message form is a design preview for now — sending isn't connected yet. Please email us directly at hello@preventplastic.com and we'll take it from there.",
+      "This form is a design preview and doesn't send messages yet.",
     responseNote:
-      "We read every note. Replies usually take a couple of working days.",
-    privacyNote: "We'll only use your details to reply to this note.",
+      "Email replies usually take a couple of working days.",
   },
   faqs: [
     {

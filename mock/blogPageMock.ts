@@ -18,15 +18,6 @@ export type BlogPost = {
 }
 
 export const blogPageMock = {
-  hero: {
-    eyebrow: "STORIES FROM THE MARKET",
-    heading: "The Prevent Plastic Journal",
-    highlight: "Thoughts on circular living.",
-    description:
-      "Notes on secondhand finds, local makers, repair & care, and living with less waste. A little journal for thoughtful everyday living.",
-    image: "/products/woodenWallShelf.jpg",
-    imageAlt: "Journal and ceramic mug on a wooden table",
-  },
   posts: [
     {
       id: "blog-001",

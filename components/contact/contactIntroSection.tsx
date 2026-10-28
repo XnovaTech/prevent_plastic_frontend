@@ -37,9 +37,7 @@ export function ContactIntroSection() {
             <div className="border-t border-[#d9e4d5] pt-6">
               <div className="flex items-end justify-between gap-3">
                 <div>
-                  <p className="text-[10px] font-bold tracking-[0.18em] text-brand-gray-5 uppercase">
-                    {methodsIntro.eyebrow}
-                  </p>
+                 
                   <h1 className="mt-1.5 font-serif text-[25px] leading-tight tracking-[-0.04em] text-brand sm:text-[28px]">
                     {methodsIntro.title}
                   </h1>

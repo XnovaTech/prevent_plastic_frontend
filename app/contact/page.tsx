@@ -26,21 +26,23 @@ export default function Page() {
       <SiteHeader activeHref="/contact" />
       <main id="main-content">
         <section
-          className="px-4 pb-16 sm:px-8 sm:pb-20 lg:px-6"
+          className="px-4 py-8 sm:px-8 sm:py-12 lg:px-12 lg:py-14"
           id="contact"
         >
           <div className="mx-auto max-w-[1440px]">
-            <div className="grid grid-cols-5 lg:items-start" data-aos="fade-up">
-              <div className="col-span-3 lg:col-span-2">
+            <div
+              className="grid grid-cols-1 gap-10 md:gap-12 lg:grid-cols-5 lg:items-start lg:gap-10"
+              data-aos="fade-up"
+            >
+              <div className="min-w-0 lg:col-span-2">
                 <ContactMethodsSection />
               </div>
-              <div className="col-span-3 lg:col-span-3">
+              <div className="min-w-0 lg:col-span-3">
                 <ContactForm />
               </div>
             </div>
           </div>
         </section>
-        
       </main>
       <SiteFooter />
     </div>
