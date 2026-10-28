@@ -1,6 +1,7 @@
 import { cartPageMock } from "@/mock/cartPageMock"
 import { catalogPageMock } from "@/mock/catalogPageMock"
 import { homePageMock, type HomeProduct } from "@/mock/homePageMock"
+import { getShopByName } from "@/mock/shopDetailMock"
 import { wishlistPageMock } from "@/mock/wishlistPageMock"
 
 export type ProductGalleryImage = {
@@ -13,7 +14,7 @@ export type ProductShop = {
   kind: string
   label: string
   href: "/sme" | "/individual"
-  slug: string
+  profileHref: string | null
 }
 
 export type ProductFact = {
@@ -95,14 +96,6 @@ const conditionNotes: Record<string, string> = {
   Good: "Gently used with visible character — a good find ready for its next chapter.",
 }
 
-function slugify(name: string): string {
-  return name
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "")
-}
-
 function isIndividualProduct(productId: string) {
   return catalogPageMock.individual.products.some(
     (product) => product.id === productId
@@ -138,12 +131,13 @@ export function getProductDetail(productId: string): ProductDetail | null {
 
   const isIndividual = isIndividualProduct(product.id)
   const shopName = product.merchant
+  const shopProfile = getShopByName(shopName)
   const shop: ProductShop = {
     name: shopName,
     kind: isIndividual ? "Independent seller" : "Local small business",
     label: isIndividual ? "Individual finds" : "SME finds",
     href: isIndividual ? "/individual" : "/sme",
-    slug: slugify(shopName),
+    profileHref: shopProfile ? `/shop/${shopProfile.slug}` : null,
   }
 
   return {

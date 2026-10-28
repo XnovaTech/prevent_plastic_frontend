@@ -29,8 +29,9 @@ export function SiteFooter() {
             className="flex flex-wrap gap-x-5 gap-y-3 text-xs font-medium text-[#59675f]"
           >
             <Link href="/">Home</Link>
+            <Link href="/blog">Journal</Link>
             <Link href="/#sme">For merchants</Link>
-            <Link href="/#about">About us</Link>
+            <Link href="/about">About us</Link>
             <Link href="/contact">Contact</Link>
           </nav>
           <p className="text-[10px] text-brand-gray-3">

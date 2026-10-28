@@ -1,9 +1,13 @@
+"use client"
+
+import { useState } from "react"
 import Link from "next/link"
 import {
   Heart,
   Leaf,
   MagnifyingGlass,
   Storefront,
+  X,
 } from "@phosphor-icons/react/dist/ssr"
 
 import { CartIndicator } from "@/components/shared/cartIndicator"
@@ -14,20 +18,24 @@ type SiteHeaderProps = {
 }
 
 export function SiteHeader({ activeHref = "/" }: SiteHeaderProps) {
+  const [mobileOpen, setMobileOpen] = useState(false)
+
   return (
     <>
-      <header className="sticky top-0 z-40 border-b border-[#173e3614] bg-white/60 backdrop-blur-xl">
+      <header className="sticky top-0 z-40 border-b border-white/60 bg-white/70 backdrop-blur-xl transition-colors duration-300">
         <div className="mx-auto flex h-[76px] max-w-[1440px] items-center justify-between gap-4 px-4 sm:px-8 lg:px-12">
           <Link
             aria-label="Prevent Plastic home"
-            className="flex shrink-0 items-center gap-2.5"
+            className="flex shrink-0 items-center gap-2.5 group"
             href="/"
           >
-            <span className="flex size-10 items-center justify-center rounded-full bg-brand-2 text-brand-green">
+            <span
+              className="group-hover:scale-105 transition-transform duration-300 flex size-10 items-center justify-center rounded-full bg-brand-2 text-brand-green shadow-lg shadow-brand-green/20"
+            >
               <Leaf aria-hidden="true" size={21} weight="fill" />
             </span>
             <span className="flex flex-col leading-none">
-              <span className="text-[17px] font-bold tracking-[-0.06em] text-[#173e36]">
+              <span className="text-[17px] font-bold tracking-[-0.06em] text-[#173e36] group-hover:text-brand-2 transition-colors">
                 preventplastic
               </span>
               <span className="mt-1 text-[9px] font-semibold tracking-[0.22em] text-[#6d827a] uppercase">
@@ -38,17 +46,24 @@ export function SiteHeader({ activeHref = "/" }: SiteHeaderProps) {
 
           <nav
             aria-label="Main navigation"
-            className="hidden items-center gap-7 lg:flex"
+            className="hidden items-center gap-6 lg:flex"
           >
             {homePageMock.navigation.map((item) => (
               <Link
                 key={item.label}
-                className={`text-[13px] font-medium transition-colors hover:text-[#247a65] ${
-                  item.href === activeHref ? "text-brand-2" : "text-[#56645e]"
-                }`}
+                className={`relative px-3 py-2 text-[13px] font-medium transition-all duration-300 ${
+                  item.href === activeHref
+                    ? "text-brand-2"
+                    : "text-[#56645e]"
+                } hover:text-brand-2`}
                 href={item.href}
               >
-                {item.label}
+                <span className="block relative">
+                  {item.label}
+                  {item.href === activeHref && (
+                    <span className="absolute -bottom-1 left-0 right-0 h-0.5 bg-brand-2 rounded-full" />
+                  )}
+                </span>
               </Link>
             ))}
           </nav>
@@ -56,21 +71,21 @@ export function SiteHeader({ activeHref = "/" }: SiteHeaderProps) {
           <div className="flex shrink-0 items-center gap-2 sm:gap-3">
             <Link
               aria-label="Browse products"
-              className="hidden size-10 items-center justify-center rounded-full text-[#344a42] transition-colors hover:bg-[#eaf0e7] sm:flex"
+              className="relative group hidden size-10 items-center justify-center rounded-full text-[#344a42] transition-all duration-300 hover:bg-[#eaf0e7] hover:scale-110 hover:shadow-sm sm:flex"
               href="/#popular"
             >
               <MagnifyingGlass aria-hidden="true" size={19} />
             </Link>
             <Link
               aria-label="Browse the shop"
-              className="flex size-10 items-center justify-center rounded-full text-[#344a42] transition-colors hover:bg-[#eaf0e7]"
+              className="relative group flex size-10 items-center justify-center rounded-full text-[#344a42] transition-all duration-300 hover:bg-[#eaf0e7] hover:scale-110 hover:shadow-sm"
               href="/sme"
             >
               <Storefront aria-hidden="true" size={19} />
             </Link>
             <Link
               aria-label="Wishlist"
-              className="flex size-10 items-center justify-center rounded-full text-[#344a42] transition-colors hover:bg-[#eaf0e7]"
+              className="relative group flex size-10 items-center justify-center rounded-full text-[#344a42] transition-all duration-300 hover:bg-[#eaf0e7] hover:scale-110 hover:shadow-sm"
               href="/wishlist"
             >
               <Heart aria-hidden="true" size={19} />
@@ -78,30 +93,84 @@ export function SiteHeader({ activeHref = "/" }: SiteHeaderProps) {
             <CartIndicator />
             <span className="hidden h-7 w-px bg-[#e4e7df] sm:block" />
             <Link
-              className="hidden items-center gap-1.5 rounded-full border border-[#dce4da] px-3.5 py-2 text-xs font-semibold text-[#344a42] transition-colors hover:border-[#174e46] hover:bg-[#f1f5ed] sm:flex"
+              className="relative group hidden items-center gap-1.5 rounded-full border border-[#dce4da] px-3.5 py-2 text-xs font-semibold text-[#344a42] transition-all duration-300 hover:border-[#174e46] hover:bg-[#f1f5ed] hover:-translate-y-0.5 hover:shadow-sm sm:flex"
               href="/#sme"
             >
               <span>Sell with us</span>
-              <span aria-hidden="true">↗</span>
+              <span className="transition-transform group-hover:translate-x-0.5" aria-hidden="true">↗</span>
             </Link>
           </div>
+
+          <button
+            aria-label="Toggle menu"
+            className="lg:hidden flex size-9 items-center justify-center rounded-full text-[#344a42] transition-colors hover:bg-[#eaf0e7]"
+            onClick={() => setMobileOpen(!mobileOpen)}
+          >
+            {mobileOpen ? (
+              <X aria-hidden="true" size={18} weight="bold" />
+            ) : (
+              <svg
+                aria-hidden="true"
+                width={18}
+                height={18}
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <line x1="3" y1="12" x2="21" y2="12" />
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <line x1="3" y1="18" x2="21" y2="18" />
+              </svg>
+            )}
+          </button>
         </div>
-        <nav
-          aria-label="Mobile navigation"
-          className="flex gap-6 overflow-x-auto border-t border-[#173e360d] px-4 py-3 text-xs font-medium whitespace-nowrap text-[#56645e] sm:px-8 lg:hidden"
-        >
-          {homePageMock.navigation.map((item) => (
-            <Link
-              key={item.label}
-              className={
-                item.href === activeHref ? "font-semibold text-brand-2" : ""
-              }
-              href={item.href}
+
+        {mobileOpen && (
+          <div
+            className="fixed inset-0 z-50 bg-white/95 backdrop-blur-md lg:hidden"
+            onClick={() => setMobileOpen(false)}
+          >
+            <div className="absolute top-6 right-6">
+              <button
+                aria-label="Close menu"
+                className="flex size-9 items-center justify-center rounded-full text-[#344a42] transition-colors hover:bg-[#eaf0e7]"
+                onClick={() => setMobileOpen(false)}
+              >
+                <X aria-hidden="true" size={18} weight="bold" />
+              </button>
+            </div>
+            <nav
+              aria-label="Mobile navigation"
+              className="mx-auto max-w-sm mt-20 px-6 space-y-6 text-lg font-medium"
             >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
+              {homePageMock.navigation.map((item) => (
+                <Link
+                  key={item.label}
+                  className={`block py-3 rounded-xl transition-colors ${
+                    item.href === activeHref
+                      ? "text-brand-2 bg-brand-2/10"
+                      : "text-[#56645e] hover:text-brand-2 hover:bg-white/50"
+                  }`}
+                  href={item.href}
+                  onClick={() => setMobileOpen(false)}
+                >
+                  {item.label}
+                </Link>
+              ))}
+              <div className="pt-6 border-t border-[#e4e7df]">
+                <Link
+                  className="block py-3 rounded-xl text-xs font-semibold text-[#344a42] transition-colors hover:bg-white/50 hover:border-brand-2 border-transparent"
+                  href="/#sme"
+                >
+                  Sell with us
+                </Link>
+              </div>
+            </nav>
+          </div>
+        )}
       </header>
     </>
   )

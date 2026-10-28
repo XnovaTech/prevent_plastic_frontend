@@ -24,6 +24,7 @@ export type HomeCategory = {
 
 export type FeaturedMerchant = {
   id: string
+  shopSlug: string
   name: string
   initials: string
   location: string
@@ -41,7 +42,8 @@ export const homePageMock = {
     { label: "SME", href: "/sme" },
     { label: "Individual", href: "/individual" },
     { label: "Repair", href: "/#repair" },
-    { label: "About us", href: "/#about" },
+    { label: "About us", href: "/about" },
+    { label: "Blog", href: "/blog" },
     { label: "Contact", href: "/contact" },
   ],
   hero: {
@@ -242,6 +244,7 @@ export const homePageMock = {
   featuredMerchants: [
     {
       id: "second-bloom",
+      shopSlug: "second-bloom-studio",
       name: "Second Bloom Studio",
       initials: "SB",
       location: "Yangon",
@@ -252,6 +255,7 @@ export const homePageMock = {
     },
     {
       id: "mya-thrift",
+      shopSlug: "myas-thrift-corner",
       name: "Mya's Thrift Corner",
       initials: "MT",
       location: "Mandalay",
@@ -262,6 +266,7 @@ export const homePageMock = {
     },
     {
       id: "thants-finds",
+      shopSlug: "thants-finds",
       name: "Thant's Finds",
       initials: "TF",
       location: "Yangon",
@@ -272,6 +277,7 @@ export const homePageMock = {
     },
     {
       id: "yangon-vintage",
+      shopSlug: "yangon-vintage",
       name: "Yangon Vintage",
       initials: "YV",
       location: "Yangon",
@@ -282,6 +288,7 @@ export const homePageMock = {
     },
     {
       id: "circular-home",
+      shopSlug: "circular-home",
       name: "Circular Home",
       initials: "CH",
       location: "Bago",
@@ -292,6 +299,7 @@ export const homePageMock = {
     },
     {
       id: "preloved-kids",
+      shopSlug: "preloved-kids",
       name: "Preloved Kids",
       initials: "PK",
       location: "Mandalay",
@@ -302,6 +310,7 @@ export const homePageMock = {
     },
     {
       id: "studio-repair",
+      shopSlug: "studio-repair",
       name: "Studio Repair",
       initials: "SR",
       location: "Yangon",
@@ -312,6 +321,7 @@ export const homePageMock = {
     },
     {
       id: "green-shelf",
+      shopSlug: "green-shelf",
       name: "Green Shelf",
       initials: "GS",
       location: "Naypyidaw",
@@ -322,6 +332,7 @@ export const homePageMock = {
     },
     {
       id: "urban-cycle",
+      shopSlug: "urban-cycle",
       name: "Urban Cycle",
       initials: "UC",
       location: "Yangon",
@@ -332,6 +343,7 @@ export const homePageMock = {
     },
     {
       id: "retro-sounds",
+      shopSlug: "retro-sounds",
       name: "Retro Sounds",
       initials: "RS",
       location: "Mandalay",

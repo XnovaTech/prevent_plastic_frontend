@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import { MapPin, Star } from "@phosphor-icons/react"
 
 import {
   Carousel,
@@ -25,74 +26,101 @@ export function CommunitySection() {
   return (
     <section className="py-12 sm:py-14" id="community">
       <div className="mx-auto max-w-[1440px] px-4 sm:px-8 lg:px-12">
-        <div className="mb-7 flex items-center justify-between gap-4 sm:mb-8" data-aos="fade-up">
-          <div>
-            <p className="mb-2 text-[10px] font-bold tracking-[0.18em] text-brand-gray-5 uppercase">
-              LOCAL SHOPS AND SELLERS
-            </p>
-            <h2 className="font-serif text-[32px] leading-tight tracking-[-0.04em] text-brand sm:text-[40px]">
-              Trusted shops
-            </h2>
-          </div>
-          <SectionBrowseLink
-            href="/sme"
-            label="Browse shops"
-            placement="header"
-            screen="desktop"
-          />
-        </div>
-
         <Carousel
-          aria-label="Official stores"
-          autoPlay
-          className="overflow-hidden relative"
-          opts={{ align: "start", loop: true }}
+          aria-label="Featured local shops"
+          className="relative"
+          opts={{
+            align: "start",
+            loop: true,
+            containScroll: "trimSnaps",
+          }}
         >
-          <CarouselContent className="-ml-0">
-            {featured.map((merchant) => {
-              const slug = merchant.name
-                .toLowerCase()
-                .replace(/[^a-z0-9]+/g, "-")
-                .replace(/-+/g, "-")
-                .replace(/^-|-$/g, "")
-              return (
+          <div
+            className="mb-6 flex items-end justify-between gap-4 sm:mb-8"
+            data-aos="fade-up"
+          >
+            <div>
+              <p className="mb-2 text-[10px] font-bold tracking-[0.18em] text-brand-gray-5 uppercase">
+                LOCAL SHOPS AND SELLERS
+              </p>
+              <h2 className="font-serif text-[32px] leading-tight tracking-[-0.04em] text-brand sm:text-[40px]">
+                Trusted shops
+              </h2>
+            </div>
+            <div className="flex shrink-0 items-center gap-2">
+              <SectionBrowseLink
+                href="/sme"
+                label="Browse shops"
+                placement="header"
+                screen="desktop"
+              />
+              <CarouselPrevious
+                aria-label="Previous shops"
+                className="!static !m-0 !size-10 !translate-x-0 !translate-y-0"
+                size="icon"
+                variant="outline"
+              />
+              <CarouselNext
+                aria-label="Next shops"
+                className="!static !m-0 !size-10 !translate-x-0 !translate-y-0"
+                size="icon"
+                variant="outline"
+              />
+            </div>
+          </div>
+
+          <CarouselContent className="-ml-3 sm:-ml-4">
+            {featured.map((merchant) => (
+              <CarouselItem
+                key={merchant.id}
+                className="basis-[82%] pl-3 sm:basis-1/2 sm:pl-4 md:basis-1/3 lg:basis-1/4"
+              >
                 <Link
-                  key={merchant.id}
-                  href={`/shop/${slug}`}
-                  className="block"
+                  aria-label={`Browse ${merchant.name} shop listings`}
+                  className="group flex h-full min-h-[148px] flex-col rounded-[22px] border border-[#e5e9e1] bg-white/70 p-4 shadow-[0_8px_24px_-22px_rgba(38,74,55,0.28)] transition-[transform,box-shadow,background-color] duration-200 hover:-translate-y-1 hover:bg-white hover:shadow-[0_18px_36px_-22px_rgba(38,74,55,0.24)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#39745b] sm:p-5"
+                  href={`/shop/${merchant.shopSlug}`}
                 >
-                  <CarouselItem
-                    key={merchant.id}
-                    className="basis-1/2 sm:basis-1/3 lg:basis-1/5 pl-4"
-                  >
-                    <div className="flex flex-col items-center">
-                      <div
-                        aria-hidden="true"
-                        className={`flex size-20 shrink-0 items-center justify-center rounded-[22px] border border-[#e9e9e1] text-base font-semibold text-brand-2 shadow-sm sm:size-24 sm:rounded-[26px] ${merchantToneClasses[merchant.tone]}`}
-                      >
-                        {merchant.initials}
-                      </div>
-                      <p className="text-[11px] font-medium text-brand-6 text-center leading-snug mt-2">
+                  <div className="flex items-start gap-3">
+                    <span
+                      aria-hidden="true"
+                      className={`flex size-12 shrink-0 items-center justify-center rounded-[16px] text-sm font-bold text-brand-2 transition-transform duration-200 group-hover:scale-105 ${merchantToneClasses[merchant.tone]}`}
+                    >
+                      {merchant.initials}
+                    </span>
+                    <div className="min-w-0 pt-0.5">
+                      <h3 className="line-clamp-2 text-sm font-semibold leading-snug text-brand-6">
                         {merchant.name}
+                      </h3>
+                      <p className="mt-1 line-clamp-2 text-[11px] leading-relaxed text-brand-gray-4">
+                        {merchant.specialty}
                       </p>
                     </div>
-                  </CarouselItem>
+                  </div>
+                  <div className="mt-auto flex items-center justify-between gap-2 pt-4 text-[10px] font-medium text-brand-gray-4">
+                    <span className="inline-flex min-w-0 items-center gap-1">
+                      <MapPin
+                        aria-hidden="true"
+                        className="shrink-0 text-brand-3"
+                        size={13}
+                      />
+                      <span className="truncate">{merchant.location}</span>
+                    </span>
+                    <span className="inline-flex shrink-0 items-center gap-1">
+                      <Star
+                        aria-hidden="true"
+                        className="text-[#b7823e]"
+                        size={13}
+                        weight="fill"
+                      />
+                      {merchant.rating}
+                    </span>
+                  </div>
                 </Link>
-              )
-            })}
+              </CarouselItem>
+            ))}
           </CarouselContent>
-
-          <CarouselPrevious
-            className="absolute inset-y-0 -left-3 z-20 my-auto"
-            variant="outline"
-            size="icon-sm"
-          />
-          <CarouselNext
-            className="absolute inset-y-0 -right-3 z-20 my-auto"
-            variant="outline"
-            size="icon-sm"
-          />
         </Carousel>
+
         <SectionBrowseLink
           href="/sme"
           label="Browse shops"

@@ -57,6 +57,8 @@ export default async function Page({ params }: ProductPageProps) {
   }
 
   const { product, shop } = detail
+  const shopDestination = shop.profileHref ?? shop.href
+  const shopDestinationLabel = shop.profileHref ? shop.label : "Browse shops"
   const relatedProducts = getRelatedProducts(productId)
 
   return (
@@ -86,9 +88,9 @@ export default async function Page({ params }: ProductPageProps) {
                 <span aria-hidden="true">/</span>
                 <Link
                   className="transition-colors hover:text-brand-3"
-                  href={`/shop/${shop.slug}`}
+                  href={shopDestination}
                 >
-                  {shop.label}
+                  {shopDestinationLabel}
                 </Link>
                 <span aria-hidden="true">/</span>
                 <span
@@ -100,10 +102,10 @@ export default async function Page({ params }: ProductPageProps) {
               </nav>
               <Link
                 className="inline-flex items-center gap-1.5 text-[10px] font-semibold text-brand-3 transition-colors hover:text-brand-orange"
-                href={`/shop/${shop.slug}`}
+                href={shopDestination}
               >
                 <ArrowLeft aria-hidden="true" size={13} />
-                Back to shop
+                {shop.profileHref ? "Back to shop" : "Back to browse"}
               </Link>
             </div>
 
@@ -164,9 +166,9 @@ export default async function Page({ params }: ProductPageProps) {
                     </div>
                     <Link
                       className="inline-flex items-center gap-1 text-[10px] font-semibold text-brand-3 transition-colors hover:text-brand-orange"
-                      href={`/shop/${shop.slug}`}
+                      href={shopDestination}
                     >
-                      Visit shop
+                      {shop.profileHref ? "Visit shop" : "Browse seller listings"}
                       <ArrowUpRight aria-hidden="true" size={12} />
                     </Link>
                   </div>
@@ -230,9 +232,11 @@ export default async function Page({ params }: ProductPageProps) {
                 </div>
                 <Link
                   className="inline-flex items-center gap-2 text-[10px] font-semibold text-brand-3 transition-colors hover:text-brand-orange"
-                  href={`/shop/${shop.slug}`}
+                  href={shopDestination}
                 >
-                  Browse {shop.label}
+                  {shop.profileHref
+                    ? `Browse ${shop.label}`
+                    : `Browse ${shop.label.toLowerCase()}`}
                   <ArrowRight aria-hidden="true" size={14} />
                 </Link>
               </div>
