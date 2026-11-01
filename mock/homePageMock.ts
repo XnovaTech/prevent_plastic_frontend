@@ -101,7 +101,7 @@ export const homePageMock = {
       image: "/products/ceramicPlates.jpg",
       count: "1,240 finds",
       tone: "sage",
-      href: "#popular",
+      href: "/categories/home-living",
     },
     {
       id: "fashion",
@@ -111,7 +111,7 @@ export const homePageMock = {
       image: "/products/denimJacket.jpg",
       count: "860 finds",
       tone: "peach",
-      href: "#popular",
+      href: "/categories/fashion",
     },
     {
       id: "everyday",
@@ -121,7 +121,7 @@ export const homePageMock = {
       image: "/products/succulentPot.jpg",
       count: "540 finds",
       tone: "lavender",
-      href: "#popular",
+      href: "/categories/everyday",
     },
     {
       id: "repair",
@@ -140,7 +140,7 @@ export const homePageMock = {
       icon: "everyday",
       count: "310 finds",
       tone: "sage",
-      href: "#popular",
+      href: "/categories/books",
     },
     {
       id: "kitchen",
@@ -150,7 +150,7 @@ export const homePageMock = {
       image: "/products/ceramicPlates.jpg",
       count: "420 finds",
       tone: "peach",
-      href: "#popular",
+      href: "/categories/kitchen",
     },
     {
       id: "plants",
@@ -160,7 +160,7 @@ export const homePageMock = {
       image: "/products/succulentPot.jpg",
       count: "280 finds",
       tone: "lavender",
-      href: "#popular",
+      href: "/categories/plants",
     },
     {
       id: "accessories",
@@ -170,7 +170,7 @@ export const homePageMock = {
       image: "/products/wovenMarketBag.jpg",
       count: "190 finds",
       tone: "butter",
-      href: "#popular",
+      href: "/categories/accessories",
     },
     {
       id: "electronics",
@@ -180,7 +180,7 @@ export const homePageMock = {
       image: "/products/filmCamera.jpg",
       count: "150 finds",
       tone: "sage",
-      href: "#popular",
+      href: "/categories/electronics",
     },
     {
       id: "toys",
@@ -190,7 +190,7 @@ export const homePageMock = {
       image: "/products/woodenStool.jpg",
       count: "220 finds",
       tone: "peach",
-      href: "#popular",
+      href: "/categories/toys",
     },
   ] satisfies HomeCategory[],
   popularProducts: [

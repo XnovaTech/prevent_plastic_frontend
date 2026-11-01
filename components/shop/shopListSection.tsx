@@ -39,18 +39,18 @@ export function ShopListCard({ shop }: ShopListCardProps) {
     <article className="h-full">
       <Link
         aria-label={`Visit ${shop.name}`}
-        className="group flex h-full flex-col overflow-hidden rounded-[24px] border border-[#e3e9df] bg-white shadow-[0_12px_35px_-28px_rgba(27,65,56,0.35)] transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-1 hover:border-[#cbd9c8] hover:shadow-[0_22px_48px_-30px_rgba(27,65,56,0.35)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-3"
+        className="group flex h-full flex-col overflow-hidden rounded-[20px] border border-[#e3e9df] bg-white shadow-[0_12px_35px_-28px_rgba(27,65,56,0.35)] transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-1 hover:border-[#cbd9c8] hover:shadow-[0_22px_48px_-30px_rgba(27,65,56,0.35)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-3 sm:rounded-[24px]"
         href={`/shop/${shop.slug}`}
       >
         <div
-          className={`relative aspect-[1.55] overflow-hidden ${shopToneClasses[shop.type]}`}
+          className={`relative aspect-[1.15] overflow-hidden sm:aspect-[1.55] ${shopToneClasses[shop.type]}`}
         >
           {featuredProduct ? (
             <Image
               alt={featuredProduct.name}
               className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
               fill
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              sizes="(max-width: 640px) 46vw, (max-width: 1024px) 50vw, 33vw"
               src={featuredProduct.image}
             />
           ) : (
@@ -61,19 +61,19 @@ export function ShopListCard({ shop }: ShopListCardProps) {
             </div>
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-[#172c24]/65 via-transparent to-[#172c24]/15" />
-          <div className="absolute inset-x-4 top-4 flex items-start justify-between gap-2">
-            <span className="rounded-full border border-white/50 bg-white/90 px-3 py-1.5 text-[10px] font-semibold text-brand-6 shadow-sm backdrop-blur">
+          <div className="absolute inset-x-2.5 top-2.5 flex items-start justify-between gap-1.5 sm:inset-x-4 sm:top-4 sm:gap-2">
+            <span className="max-w-full truncate rounded-full border border-white/50 bg-white/90 px-2 py-1 text-[9px] font-semibold text-brand-6 shadow-sm backdrop-blur sm:px-3 sm:py-1.5 sm:text-[10px]">
               {shop.kind}
             </span>
             {shop.badges.includes("Verified Seller") && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-[#e6f0e2] px-2.5 py-1.5 text-[10px] font-semibold text-[#38684f] shadow-sm">
-                <SealCheck aria-hidden="true" size={14} weight="fill" />
-                Verified
+              <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-[#e6f0e2] px-1.5 py-1 text-[9px] font-semibold text-[#38684f] shadow-sm sm:px-2.5 sm:py-1.5 sm:text-[10px]">
+                <SealCheck aria-hidden="true" size={12} weight="fill" />
+                <span className="hidden sm:inline">Verified</span>
               </span>
             )}
           </div>
-          <div className="absolute inset-x-4 bottom-4 flex items-end justify-between gap-3 text-white">
-            <div className="min-w-0">
+          <div className="absolute inset-x-2.5 bottom-2.5 flex items-end justify-end gap-2 text-white sm:inset-x-4 sm:bottom-4 sm:justify-between sm:gap-3">
+            <div className="hidden min-w-0 sm:block">
               <p className="truncate text-[10px] font-medium text-white/80">
                 {featuredProduct
                   ? `Featured find · ${featuredProduct.category}`
@@ -85,50 +85,51 @@ export function ShopListCard({ shop }: ShopListCardProps) {
                 </p>
               )}
             </div>
-            <span className="shrink-0 rounded-full bg-white/15 px-3 py-1.5 text-[10px] font-semibold backdrop-blur">
+            <span className="shrink-0 rounded-full bg-white/15 px-2 py-1 text-[9px] font-semibold backdrop-blur sm:px-3 sm:py-1.5 sm:text-[10px]">
               {shop.products.length} finds
             </span>
           </div>
         </div>
 
-        <div className="flex flex-1 flex-col p-5 sm:p-6">
-          <div className="flex items-start justify-between gap-3">
+        <div className="flex flex-1 flex-col p-3 sm:p-5 lg:p-6">
+          <div className="flex items-start justify-between gap-2 sm:gap-3">
             <div className="min-w-0">
-              <h2 className="font-serif text-[21px] leading-tight tracking-[-0.035em] text-brand sm:text-[24px]">
+              <h2 className="font-serif text-[15px] leading-tight tracking-[-0.03em] text-brand sm:text-[21px] sm:tracking-[-0.035em] lg:text-[24px]">
                 {shop.name}
               </h2>
-              <div className="mt-2 flex items-center gap-1.5 text-[11px] text-brand-gray-4">
-                <MapPin aria-hidden="true" size={13} weight="fill" />
-                <span>{shop.location}</span>
+              <div className="mt-1.5 flex items-center gap-1 text-[10px] text-brand-gray-4 sm:mt-2 sm:gap-1.5 sm:text-[11px]">
+                <MapPin aria-hidden="true" size={11} weight="fill" />
+                <span className="truncate">{shop.location}</span>
               </div>
             </div>
-            <div className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-[#faf7ed] px-2.5 py-1.5">
+            <div className="inline-flex shrink-0 items-center gap-1 rounded-full bg-[#faf7ed] px-2 py-1 sm:gap-1.5 sm:px-2.5 sm:py-1.5">
               <Star
                 aria-hidden="true"
                 className="text-[#b7823e]"
-                size={14}
+                size={11}
                 weight="fill"
               />
-              <span className="text-xs font-bold text-brand-6">
+              <span className="text-[10px] font-bold text-brand-6 sm:text-xs">
                 {shop.rating.toFixed(1)}
               </span>
             </div>
           </div>
 
-          <p className="mt-4 line-clamp-2 min-h-10 text-xs leading-5 text-brand-light">
+          <p className="mt-4 line-clamp-2 hidden min-h-10 text-xs leading-5 text-brand-light sm:block">
             {shop.description}
           </p>
 
-          <div className="mt-auto flex items-center justify-between border-t border-[#edf0e9] pt-4">
-            <span className="text-[10px] text-brand-gray-4">
-              {shop.reviewCount} customer reviews
+          <div className="mt-auto flex items-center justify-between gap-2 border-t border-[#edf0e9] pt-2.5 sm:pt-4">
+            <span className="truncate text-[10px] text-brand-gray-4">
+              {shop.reviewCount}
+              <span className="hidden sm:inline"> customer</span> reviews
             </span>
-            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-3 transition-colors group-hover:text-brand-orange">
-              Visit shop
+            <span className="inline-flex shrink-0 items-center gap-1 text-[10px] font-semibold text-brand-3 transition-colors group-hover:text-brand-orange sm:gap-1.5 sm:text-xs">
+              Visit<span className="hidden sm:inline"> shop</span>
               <ArrowUpRight
                 aria-hidden="true"
                 className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-                size={15}
+                size={12}
               />
             </span>
           </div>
@@ -188,7 +189,7 @@ export function ShopListSection({
             </p>
           </div>
         ) : (
-          <div className="mt-10 grid gap-6 sm:mt-16 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="mt-8 grid grid-cols-2 gap-3 sm:mt-16 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 xl:grid-cols-4">
             {smeShops.map((shop) => (
               <ShopListCard key={shop.slug} shop={shop} />
             ))}

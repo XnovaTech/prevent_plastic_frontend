@@ -1,23 +1,48 @@
 "use client"
 
-import Link from "next/link"
 import Image from "next/image"
+import Link from "next/link"
+import { useState } from "react"
+import {
+  Basket,
+  CaretLeft,
+  CaretRight,
+  House,
+  TShirt,
+  Wrench,
+} from "@phosphor-icons/react"
 
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
+  type CarouselApi,
 } from "@/components/ui/carousel"
-import { homePageMock } from "@/mock/homePageMock"
+import { Button } from "@/components/ui/button"
+import { homePageMock, type HomeCategory } from "@/mock/homePageMock"
+
+const categoryIcons = {
+  home: House,
+  fashion: TShirt,
+  everyday: Basket,
+  repair: Wrench,
+} satisfies Record<HomeCategory["icon"], typeof House>
+
+const categoryTones = {
+  sage: "bg-[#e8eee5] text-[#4c6b53]",
+  peach: "bg-[#f8ebe5] text-[#8a5a43]",
+  lavender: "bg-[#f0edf6] text-[#5b5378]",
+  butter: "bg-[#f5f1df] text-[#7c6c33]",
+} satisfies Record<HomeCategory["tone"], string>
 
 export function CategorySection() {
+  const [api, setApi] = useState<CarouselApi | null>(null)
+
   return (
-    <section className="pt-12 pb-14 sm:pt-16 sm:pb-20" id="individual">
+    <section className="pt-12 pb-14 sm:pt-16 sm:pb-20" id="categories">
       <div className="mx-auto max-w-[1440px] px-4 sm:px-8 lg:px-12">
         <div
-          className="mb-7 flex items-end justify-between gap-4"
+          className="mb-5 flex items-end justify-between gap-4 sm:mb-7"
           data-aos="fade-up"
         >
           <div>
@@ -28,44 +53,67 @@ export function CategorySection() {
               Find what you need
             </h2>
           </div>
-       
+
+          <div className="hidden items-center gap-2 sm:flex">
+            <Button
+              aria-label="Previous categories"
+              className="size-9 rounded-full border-[#d8e0d7] bg-white text-brand-3 hover:border-brand-3 hover:bg-[#f1f5ed]"
+              onPress={() => api?.scrollPrev()}
+              size="icon"
+              variant="outline"
+            >
+              <CaretLeft aria-hidden="true" size={15} />
+            </Button>
+            <Button
+              aria-label="Next categories"
+              className="size-9 rounded-full border-[#d8e0d7] bg-white text-brand-3 hover:border-brand-3 hover:bg-[#f1f5ed]"
+              onPress={() => api?.scrollNext()}
+              size="icon"
+              variant="outline"
+            >
+              <CaretRight aria-hidden="true" size={15} />
+            </Button>
+          </div>
         </div>
 
         <Carousel
           aria-label="Shop by category"
-          autoPlay
-          className="overflow-hidden relative"
+          className="relative"
           opts={{ align: "start", loop: true }}
+          setApi={setApi}
         >
-          <CarouselContent className="-ml-0">
+          <CarouselContent className="-ml-3 sm:-ml-4">
             {homePageMock.categories.map((category) => {
+              const Icon = categoryIcons[category.icon]
+
               return (
                 <CarouselItem
+                  className="basis-[30%] pl-3 min-[480px]:basis-[23.5%] sm:basis-[calc(100%/3)] sm:pl-4 lg:basis-[calc(100%/4)] xl:basis-[calc(100%/5)]"
                   key={category.id}
-                  className="pl-4 basis-[calc(100%/4)] sm:basis-[calc(100%/3)] lg:basis-[calc(100%/4)]"
                 >
                   <Link
-                    className="group flex flex-col items-center gap-3 rounded-[20px] border border-[#e9e9e1] bg-white/70 p-4 transition-all hover:-translate-y-1 hover:border-[#c7d8c7] hover:bg-white"
+                    className="group flex h-full flex-col items-center justify-between gap-2 rounded-[16px] border border-[#e9e9e1] bg-white/70 p-2.5 text-center transition-all duration-300 hover:-translate-y-0.5 hover:border-[#c7d8c7] hover:bg-white hover:shadow-[0_18px_40px_-32px_rgba(27,65,56,0.5)] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-brand-2 sm:gap-3 sm:rounded-[20px] sm:p-4"
                     href={category.href}
                   >
-                    <div
-                      className="relative size-24 shrink-0 rounded-full overflow-hidden border-2 border-white/40 bg-[#f0eee6]"
-                    >
+                    <span className="relative grid size-16 shrink-0 place-items-center overflow-hidden rounded-full border border-white/60 bg-[#f0eee6] max-[359px]:size-14 sm:size-20 lg:size-24">
                       {category.image ? (
                         <Image
-                          alt={category.title}
-                          className="object-cover transition-transform duration-500 group-hover:scale-[1.05]"
+                          alt=""
+                          className="object-cover transition-transform duration-500 group-hover:scale-105"
                           fill
-                          sizes="120px"
+                          sizes="(max-width: 639px) 64px, (max-width: 1023px) 80px, 96px"
                           src={category.image}
                         />
                       ) : (
-                        <div className="flex items-center justify-center h-full w-full bg-white/40">
-                          <span className="text-[#8aa18e]">{category.title.charAt(0)}</span>
-                        </div>
+                        <span
+                          aria-hidden="true"
+                          className={`grid size-full place-items-center rounded-full ${categoryTones[category.tone]}`}
+                        >
+                          <Icon size={22} />
+                        </span>
                       )}
-                    </div>
-                    <h3 className="text-[14px] font-semibold text-brand-6 leading-tight text-center sm:text-[15px]">
+                    </span>
+                    <h3 className="line-clamp-2 text-[12px] leading-[1.25] font-semibold text-brand-6 min-[480px]:text-[13px] sm:text-[14px]">
                       {category.title}
                     </h3>
                   </Link>
@@ -73,17 +121,6 @@ export function CategorySection() {
               )
             })}
           </CarouselContent>
-
-          <CarouselPrevious
-            className="absolute inset-y-0 -left-3 z-20 my-auto"
-            variant="outline"
-            size="icon-sm"
-          />
-          <CarouselNext
-            className="absolute inset-y-0 -right-3 z-20 my-auto"
-            variant="outline"
-            size="icon-sm"
-          />
         </Carousel>
       </div>
     </section>
