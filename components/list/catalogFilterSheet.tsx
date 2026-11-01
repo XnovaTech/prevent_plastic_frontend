@@ -1,7 +1,6 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import {
@@ -11,6 +10,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet"
+import { ArrowsCounterClockwise } from "@phosphor-icons/react"
 import type {
   CatalogFilters,
   CatalogPageConfig,
@@ -84,6 +84,7 @@ export function CatalogFilterSheet({
                 const count = config.products.filter(
                   (product) => product.category === category
                 ).length
+                const isSelected = filters.categories.includes(category)
 
                 return (
                   <div
@@ -91,11 +92,18 @@ export function CatalogFilterSheet({
                     key={category}
                   >
                     <div className="flex items-center gap-2.5">
-                      <Checkbox
-                        id={id}
-                        isSelected={filters.categories.includes(category)}
-                        onChange={() => onToggleCategory(category)}
-                      />
+                      <button
+                        aria-pressed={isSelected}
+                        className={`flex size-6 items-center justify-center rounded-full transition-all duration-200 ${
+                          isSelected
+                            ? "bg-brand-2 text-white"
+                            : "border border-[#d8e0d7] text-[#9aa39b] hover:bg-[#f1f5ed] hover:text-brand-2"
+                        }`}
+                        onClick={() => onToggleCategory(category)}
+                        type="button"
+                      >
+                        <ArrowsCounterClockwise aria-hidden="true" size={14} />
+                      </button>
                       <Label
                         className="cursor-pointer text-[12px] font-medium text-[#4b5d54]"
                         htmlFor={id}
@@ -120,6 +128,7 @@ export function CatalogFilterSheet({
                 const count = config.products.filter(
                   (product) => product.condition === condition
                 ).length
+                const isSelected = filters.conditions.includes(condition)
 
                 return (
                   <div
@@ -127,11 +136,18 @@ export function CatalogFilterSheet({
                     key={condition}
                   >
                     <div className="flex items-center gap-2.5">
-                      <Checkbox
-                        id={id}
-                        isSelected={filters.conditions.includes(condition)}
-                        onChange={() => onToggleCondition(condition)}
-                      />
+                      <button
+                        aria-pressed={isSelected}
+                        className={`flex size-6 items-center justify-center rounded-full transition-all duration-200 ${
+                          isSelected
+                            ? "bg-brand-2 text-white"
+                            : "border border-[#d8e0d7] text-[#9aa39b] hover:bg-[#f1f5ed] hover:text-brand-2"
+                        }`}
+                        onClick={() => onToggleCondition(condition)}
+                        type="button"
+                      >
+                        <ArrowsCounterClockwise aria-hidden="true" size={14} />
+                      </button>
                       <Label
                         className="cursor-pointer text-[12px] font-medium text-[#4b5d54]"
                         htmlFor={id}

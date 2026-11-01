@@ -85,7 +85,7 @@ export function HomeHeroSlider() {
                         <br />
                         <span className="relative inline-block text-[#39745b] italic">
                           {slide.highlight}
-                          <span className="absolute right-0 -bottom-1 h-1.5 w-[94%] -rotate-2 rounded-[50%] border-b-2 border-[#e9a27e]" />
+                          {/* <span className="absolute right-0 -bottom-1 h-1.5 w-[94%] -rotate-2 rounded-[50%] border-b-2 border-[#e9a27e]" /> */}
                         </span>
                       </HeadingTag>
                       <p className="mt-3 max-w-[440px] text-[12px] leading-5 text-brand-light sm:mt-4 sm:text-[13px] sm:leading-6">
@@ -121,14 +121,14 @@ export function HomeHeroSlider() {
           </CarouselContent>
         </Carousel>
 
-        <Image
+        {/* <Image
           alt=""
           aria-hidden="true"
           className="pointer-events-none absolute top-3 right-4 z-10 h-10 w-16 object-contain md:top-[31%] md:right-[43%] md:h-[76px] md:w-[112px]"
           height={100}
           src="/illustrations/marketDoodle.svg"
           width={150}
-        />
+        /> */}
 
         <div className="mt-2 flex items-center justify-between px-1">
           <div className="flex items-center gap-2">

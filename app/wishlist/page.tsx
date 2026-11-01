@@ -3,7 +3,6 @@ import type { Metadata } from "next"
 import { AosInitializer } from "@/components/shared/aosInitializer"
 import { SiteFooter } from "@/components/shared/siteFooter"
 import { SiteHeader } from "@/components/shared/siteHeader"
-import { WishlistClosing } from "@/components/wishlist/wishlistClosing"
 import { WishlistItems } from "@/components/wishlist/wishlistItems"
 
 export const metadata: Metadata = {
@@ -25,7 +24,7 @@ export default function Page() {
       <SiteHeader activeHref="" />
       <main id="main-content">
         <WishlistItems />
-        <WishlistClosing />
+   
       </main>
       <SiteFooter />
     </div>

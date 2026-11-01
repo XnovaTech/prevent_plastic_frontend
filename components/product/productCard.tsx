@@ -2,8 +2,10 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { Heart, Storefront } from "@phosphor-icons/react"
+import { useState } from "react"
+import { Storefront } from "@phosphor-icons/react"
 
+import { SeedlingIcon } from "@/components/ui/seedlingIcon"
 import type { HomeProduct } from "@/mock/homePageMock"
 
 type ProductCardProps = {
@@ -25,6 +27,7 @@ const conditionToneClass = {
 }
 
 export function ProductCard({ product, layout = "grid" }: ProductCardProps) {
+  const [saved, setSaved] = useState(false)
   const discount =
     product.originalPrice && product.price < product.originalPrice
       ? Math.round(
@@ -77,10 +80,25 @@ export function ProductCard({ product, layout = "grid" }: ProductCardProps) {
             </span>
           )}
           <button
-            aria-label={`Add ${product.name} to wishlist`}
-            className="absolute bottom-3 right-3 flex size-9 items-center justify-center rounded-full border border-white/70 bg-white/85 text-[#29443a] backdrop-blur opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+            aria-label={
+              saved
+                ? `Remove ${product.name} from wishlist`
+                : `Add ${product.name} to wishlist`
+            }
+            aria-pressed={saved}
+            className={`absolute bottom-3 right-3 flex size-10 items-center justify-center rounded-full ring-1 backdrop-blur-md transition-[color,background-color,box-shadow,transform] duration-200 outline-none hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
+              saved
+                ? "ring-white/80 bg-white/80 shadow-[0_4px_14px_-8px_rgba(57,116,91,0.6)]"
+                : "bg-white/70 ring-white/70 shadow-[0_4px_14px_-6px_rgba(20,50,38,0.55)] hover:bg-white/90"
+            }`}
+            onClick={(event) => {
+              event.preventDefault()
+              event.stopPropagation()
+              setSaved((prev) => !prev)
+            }}
+            type="button"
           >
-            <Heart size={16} weight="regular" />
+            <SeedlingIcon size={26} variant={saved ? "color" : "line"} />
           </button>
         </div>
         <div className={`px-0.5 pt-3 flex-1 flex flex-col ${layout === "row" ? "py-1.5 pt-1.5 pr-1.5" : ""}`}>

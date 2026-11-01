@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <g fill="none" stroke="currentColor" stroke-width="112" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Left leaf outer contour -->
+    <path d="M511 482 C470 447 415 405 345 397 C269 388 209 425 176 493 C153 540 145 601 112 650 C156 630 188 650 231 649 C300 648 344 604 393 572 C438 542 474 527 511 532"/>
+    <!-- Right leaf outer contour -->
+    <path d="M536 500 C530 441 520 371 544 300 C570 221 627 157 703 128 C763 105 825 111 889 112 C862 132 854 160 846 198 C828 278 790 333 727 366 C668 397 604 403 565 443"/>
+    <!-- Stem outer contour -->
+    <path d="M511 482 C535 531 549 596 549 664 C549 743 532 823 513 886 C508 905 526 917 553 917 C575 917 586 907 590 888 C607 810 615 728 605 651 C598 592 579 540 536 500"/>
+  </g>
+</svg>

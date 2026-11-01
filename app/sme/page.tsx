@@ -1,10 +1,9 @@
 import type { Metadata } from "next"
 
-import { CatalogBrowser } from "@/components/list/catalogBrowser"
+import { ShopListSection } from "@/components/shop/shopListSection"
 import { AosInitializer } from "@/components/shared/aosInitializer"
 import { SiteFooter } from "@/components/shared/siteFooter"
 import { SiteHeader } from "@/components/shared/siteHeader"
-import { catalogPageMock } from "@/mock/catalogPageMock"
 
 export const metadata: Metadata = {
   title: "SME finds — Prevent Plastic",
@@ -13,8 +12,6 @@ export const metadata: Metadata = {
 }
 
 export default function Page() {
-  const config = catalogPageMock.sme
-
   return (
     <div className="min-h-screen bg-transparent text-brand">
       <AosInitializer />
@@ -24,9 +21,14 @@ export default function Page() {
       >
         Skip to content
       </a>
-      <SiteHeader activeHref={config.href} />
+      <SiteHeader activeHref="/sme" />
       <main id="main-content">
-        <CatalogBrowser config={config} />
+        <ShopListSection
+          title="Small &amp; mighty finds."
+          eyebrow="SMALL BUSINESSES, GOOD FINDS"
+          description=
+            {"Meet the small businesses and makers giving useful things another chapter. Every find supports a local shop, studio, or workshop."}
+        />
       </main>
       <SiteFooter />
     </div>

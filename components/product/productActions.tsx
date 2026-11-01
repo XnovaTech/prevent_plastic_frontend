@@ -5,11 +5,11 @@ import { useState } from "react"
 import {
   ArrowRight,
   CheckCircle,
-  Heart,
   ShoppingBagOpen,
 } from "@phosphor-icons/react"
 
 import { Button } from "@/components/ui/button"
+import { SeedlingIcon } from "@/components/ui/seedlingIcon"
 import type { HomeProduct } from "@/mock/homePageMock"
 import { useCartStore } from "@/stores/cartStore"
 import { useWishlistStore } from "@/stores/wishlistStore"
@@ -64,7 +64,7 @@ export function ProductActions({ product }: ProductActionsProps) {
           {saved ? (
             <CheckCircle aria-hidden="true" size={16} weight="fill" />
           ) : (
-            <Heart aria-hidden="true" size={16} />
+            <SeedlingIcon size={16} />
           )}
           {saved ? "Saved to wishlist" : "Save for later"}
         </Button>

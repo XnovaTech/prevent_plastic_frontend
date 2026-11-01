@@ -41,7 +41,7 @@ export const homePageMock = {
     { label: "Home", href: "/" },
     { label: "SME", href: "/sme" },
     { label: "Individual", href: "/individual" },
-    { label: "Repair", href: "/#repair" },
+    { label: "Repair", href: "/repair" },
     { label: "About us", href: "/about" },
     { label: "Blog", href: "/blog" },
     { label: "Contact", href: "/contact" },
@@ -131,7 +131,7 @@ export const homePageMock = {
       image: "/products/deskLamp.jpg",
       count: "Meet local fixers",
       tone: "butter",
-      href: "#repair",
+      href: "/repair",
     },
     {
       id: "books",

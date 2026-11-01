@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="220 115 540 480" width="540" height="480">
+  <defs>
+    <linearGradient id="leafR" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#3f9f1c"/>
+      <stop offset="1" stop-color="#7fe030"/>
+    </linearGradient>
+    <linearGradient id="leafL" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#4bb826"/>
+      <stop offset="1" stop-color="#6fd02c"/>
+    </linearGradient>
+    <linearGradient id="stem" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#2f8a14"/>
+      <stop offset="0.5" stop-color="#58c224"/>
+      <stop offset="1" stop-color="#3a9a18"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Stem -->
+  <path d="M488 560 C484 500 492 380 500 322 L520 318 C540 380 552 480 545 545 C540 585 490 590 488 560 Z"
+        fill="url(#stem)" stroke="#2c7a10" stroke-width="8" stroke-linejoin="round"/>
+  <path d="M510 340 C520 400 528 470 524 540" fill="none" stroke="#9be85a" stroke-width="7" stroke-linecap="round" opacity="0.7"/>
+
+  <!-- Left leaf -->
+  <path d="M495 325 C470 280 400 255 340 275 C290 292 245 345 233 412 C245 410 255 405 268 408 C330 420 440 400 495 325 Z"
+        fill="url(#leafL)" stroke="#2c7a10" stroke-width="8" stroke-linejoin="round"/>
+  <ellipse cx="400" cy="320" rx="38" ry="16" transform="rotate(-20 400 320)" fill="#8ee83e" opacity="0.5"/>
+  <ellipse cx="330" cy="352" rx="30" ry="14" transform="rotate(-35 330 352)" fill="#8ee83e" opacity="0.45"/>
+  <ellipse cx="292" cy="338" rx="12" ry="7" transform="rotate(-45 292 338)" fill="#b6f56e" opacity="0.8"/>
+  <path d="M490 320 C420 330 330 360 262 395" fill="none" stroke="#a6ef63" stroke-width="5" stroke-linecap="round"/>
+  <g fill="none" stroke="#a6ef63" stroke-width="3" stroke-linecap="round" opacity="0.8">
+    <path d="M440 328 C430 310 415 298 395 292"/>
+    <path d="M395 345 C380 322 360 310 340 305"/>
+    <path d="M350 368 C335 350 318 342 300 340"/>
+  </g>
+
+  <!-- Right leaf -->
+  <path d="M503 312 C500 200 580 130 700 130 C725 130 740 135 746 140 C738 146 733 152 730 168 C715 255 620 305 515 325 Z"
+        fill="url(#leafR)" stroke="#2c7a10" stroke-width="8" stroke-linejoin="round"/>
+  <ellipse cx="620" cy="215" rx="55" ry="22" transform="rotate(-40 620 215)" fill="#9cf04a" opacity="0.5"/>
+  <ellipse cx="585" cy="170" rx="22" ry="40" transform="rotate(25 585 170)" fill="#9cf04a" opacity="0.4"/>
+  <ellipse cx="660" cy="170" rx="22" ry="12" transform="rotate(-35 660 170)" fill="#b6f56e" opacity="0.6"/>
+  <path d="M520 315 C580 250 640 190 692 158" fill="none" stroke="#b4f26e" stroke-width="5" stroke-linecap="round"/>
+  <g fill="none" stroke="#b4f26e" stroke-width="3" stroke-linecap="round" opacity="0.8">
+    <path d="M545 285 C535 255 540 225 555 205"/>
+    <path d="M590 250 C600 230 620 218 645 215"/>
+    <path d="M580 250 C575 225 578 195 590 175"/>
+    <path d="M630 205 C640 185 655 172 675 168"/>
+  </g>
+</svg>

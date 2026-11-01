@@ -3,7 +3,6 @@
 import { useState } from "react"
 import Link from "next/link"
 import {
-  Heart,
   Leaf,
   MagnifyingGlass,
   Storefront,
@@ -11,6 +10,7 @@ import {
 } from "@phosphor-icons/react/dist/ssr"
 
 import { CartIndicator } from "@/components/shared/cartIndicator"
+import { SeedlingIcon } from "@/components/ui/seedlingIcon"
 import { homePageMock } from "@/mock/homePageMock"
 
 type SiteHeaderProps = {
@@ -19,6 +19,7 @@ type SiteHeaderProps = {
 
 export function SiteHeader({ activeHref = "/" }: SiteHeaderProps) {
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [leafFilled, setLeafFilled] = useState(false)
 
   return (
     <>
@@ -26,19 +27,25 @@ export function SiteHeader({ activeHref = "/" }: SiteHeaderProps) {
         <div className="mx-auto flex h-[76px] max-w-[1440px] items-center justify-between gap-4 px-4 sm:px-8 lg:px-12">
           <Link
             aria-label="Prevent Plastic home"
-            className="flex shrink-0 items-center gap-2.5 group"
+            className="flex shrink-0 items-center gap-2.5 group cursor-pointer"
             href="/"
+            onClick={() => setLeafFilled((prev) => !prev)}
           >
             <span
-              className="group-hover:scale-105 transition-transform duration-300 flex size-10 items-center justify-center rounded-full bg-brand-2 text-brand-green shadow-lg shadow-brand-green/20"
+              className={`group-hover:scale-105 transition-transform duration-300 flex size-10 items-center justify-center rounded-full ${leafFilled ? "bg-brand-2" : "bg-white/90"} text-brand-green shadow-lg shadow-brand-green/20`}
             >
-              <Leaf aria-hidden="true" size={21} weight="fill" />
+              <Leaf
+                aria-hidden="true"
+                size={26}
+                weight={leafFilled ? "fill" : "regular"}
+                style={{ color: leafFilled ? "#39745b" : "#173e36" }}
+              />
             </span>
             <span className="flex flex-col leading-none">
-              <span className="text-[17px] font-bold tracking-[-0.06em] text-[#173e36] group-hover:text-brand-2 transition-colors">
+              <span className="text-[20px] font-bold tracking-[-0.06em] text-[#173e36] group-hover:text-brand-2 transition-colors">
                 preventplastic
               </span>
-              <span className="mt-1 text-[9px] font-semibold tracking-[0.22em] text-[#6d827a] uppercase">
+              <span className="mt-1 text-[10px] font-semibold tracking-[0.22em] text-[#6d827a] uppercase">
                 good things, again
               </span>
             </span>
@@ -51,7 +58,7 @@ export function SiteHeader({ activeHref = "/" }: SiteHeaderProps) {
             {homePageMock.navigation.map((item) => (
               <Link
                 key={item.label}
-                className={`relative px-3 py-2 text-[13px] font-medium transition-all duration-300 ${
+                className={`relative px-3 py-2 text-[15px] font-medium transition-all duration-300 ${
                   item.href === activeHref
                     ? "text-brand-2"
                     : "text-[#56645e]"
@@ -74,21 +81,21 @@ export function SiteHeader({ activeHref = "/" }: SiteHeaderProps) {
               className="relative group hidden size-10 items-center justify-center rounded-full text-[#344a42] transition-all duration-300 hover:bg-[#eaf0e7] hover:scale-110 hover:shadow-sm sm:flex"
               href="/#popular"
             >
-              <MagnifyingGlass aria-hidden="true" size={19} />
+              <MagnifyingGlass aria-hidden="true" size={22} />
             </Link>
             <Link
               aria-label="Browse the shop"
               className="relative group flex size-10 items-center justify-center rounded-full text-[#344a42] transition-all duration-300 hover:bg-[#eaf0e7] hover:scale-110 hover:shadow-sm"
               href="/sme"
             >
-              <Storefront aria-hidden="true" size={19} />
+              <Storefront aria-hidden="true" size={22} />
             </Link>
             <Link
               aria-label="Wishlist"
               className="relative group flex size-10 items-center justify-center rounded-full text-[#344a42] transition-all duration-300 hover:bg-[#eaf0e7] hover:scale-110 hover:shadow-sm"
               href="/wishlist"
             >
-              <Heart aria-hidden="true" size={19} />
+              <SeedlingIcon size={22} />
             </Link>
             <CartIndicator />
             <span className="hidden h-7 w-px bg-[#e4e7df] sm:block" />

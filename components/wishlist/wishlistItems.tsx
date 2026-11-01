@@ -5,12 +5,12 @@ import Link from "next/link"
 import { useState } from "react"
 import {
   ArrowRight,
-  Heart,
   ShoppingBagOpen,
   Trash,
 } from "@phosphor-icons/react"
 
 import { wishlistPageMock } from "@/mock/wishlistPageMock"
+import { SeedlingIcon } from "@/components/ui/seedlingIcon"
 import { useCartStore } from "@/stores/cartStore"
 import { useWishlistStore } from "@/stores/wishlistStore"
 
@@ -75,7 +75,7 @@ export function WishlistItems() {
             data-aos="fade-up"
           >
             <span className="mx-auto flex size-14 items-center justify-center rounded-full bg-[#f9e8df] text-[#a65e46]">
-              <Heart aria-hidden="true" size={26} weight="duotone" />
+              <SeedlingIcon size={26} />
             </span>
             <h3 className="mt-5 font-serif text-[27px] tracking-[-0.04em] text-brand">
               {empty.title}

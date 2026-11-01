@@ -47,7 +47,6 @@ export function CategorySection() {
                   <Link
                     className="group flex flex-col items-center gap-3 rounded-[20px] border border-[#e9e9e1] bg-white/70 p-4 transition-all hover:-translate-y-1 hover:border-[#c7d8c7] hover:bg-white"
                     href={category.href}
-                    id={category.id === "repair" ? "repair" : undefined}
                   >
                     <div
                       className="relative size-24 shrink-0 rounded-full overflow-hidden border-2 border-white/40 bg-[#f0eee6]"
