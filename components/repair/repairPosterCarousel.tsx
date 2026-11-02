@@ -1,14 +1,8 @@
 "use client"
 
 import Image from "next/image"
-import { useCallback, useState } from "react"
-import type { KeyboardEvent } from "react"
-import {
-  ArrowLeft,
-  ArrowRight,
-  ArrowsOut,
-  XIcon,
-} from "@phosphor-icons/react"
+import { useState } from "react"
+import { ArrowLeft, ArrowRight } from "@phosphor-icons/react"
 import { EffectCoverflow, Keyboard } from "swiper/modules"
 import { Swiper, SwiperSlide, type SwiperClass } from "swiper/react"
 
@@ -16,9 +10,9 @@ import "swiper/css"
 import "swiper/css/effect-coverflow"
 
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogClose, DialogTitle } from "@/components/ui/dialog"
 
-const posterDirectory = "/repair/Green Consumption and Production Map for Myanmar"
+const posterDirectory =
+  "/repair/Green Consumption and Production Map for Myanmar"
 
 const posterFiles = [
   "Green Consumption Hotel.png",
@@ -33,12 +27,7 @@ const posterFiles = [
   "Green Consumption Hotel (10).png",
 ]
 
-const posters = posterFiles.map((file, index) => ({
-  alt: `Poster of a green business featured on the Green Consumption and Production map for Myanmar (${index + 1} of ${posterFiles.length})`,
-  src: `${encodeURI(posterDirectory)}/${encodeURI(file)}`,
-}))
-
-const total = posters.length
+const total = posterFiles.length
 const totalLabel = String(total).padStart(2, "0")
 
 function formatIndex(index: number) {
@@ -48,32 +37,6 @@ function formatIndex(index: number) {
 export function RepairPosterCarousel() {
   const [swiper, setSwiper] = useState<SwiperClass | null>(null)
   const [activeIndex, setActiveIndex] = useState(0)
-  const [expandedIndex, setExpandedIndex] = useState<number | null>(null)
-
-  const stepPoster = useCallback((delta: number) => {
-    setExpandedIndex((current) =>
-      current === null ? current : (current + delta + total) % total
-    )
-  }, [])
-
-  const handleLightboxKeyDown = useCallback(
-    (event: KeyboardEvent<HTMLDivElement>) => {
-      if (event.key === "ArrowLeft") {
-        event.preventDefault()
-        event.stopPropagation()
-        stepPoster(-1)
-      }
-
-      if (event.key === "ArrowRight") {
-        event.preventDefault()
-        event.stopPropagation()
-        stepPoster(1)
-      }
-    },
-    [stepPoster]
-  )
-
-  const expandedPoster = expandedIndex === null ? null : posters[expandedIndex]
 
   return (
     <section aria-labelledby="repair-posters-title" className="mt-12 sm:mt-16">
@@ -94,7 +57,7 @@ export function RepairPosterCarousel() {
           </p>
         </div>
 
-        <div className="ml-auto flex items-center gap-3">
+        <div className="flex items-center gap-3">
           <span
             aria-hidden="true"
             className="hidden text-[11px] font-semibold text-brand-gray-4 tabular-nums sm:inline"
@@ -128,13 +91,13 @@ export function RepairPosterCarousel() {
 
       <Swiper
         breakpoints={{
-          640: { slidesPerView: 2.4, spaceBetween: 22 },
-          1024: { slidesPerView: 3.2, spaceBetween: 26 },
+          640: { slidesPerView: 2.4, spaceBetween: 20 },
+          1024: { slidesPerView: 3.2, spaceBetween: 24 },
         }}
-        centeredSlides
+        // removed centeredSlides so navigation is predictable
         className="!pb-2"
         coverflowEffect={{
-          depth: 180,
+          depth: 120,
           modifier: 1,
           rotate: 0,
           slideShadows: false,
@@ -147,152 +110,57 @@ export function RepairPosterCarousel() {
         modules={[EffectCoverflow, Keyboard]}
         onSlideChange={(instance) => setActiveIndex(instance.realIndex)}
         onSwiper={setSwiper}
-        slidesPerView={1.55}
-        spaceBetween={16}
+        // improved: 1 slide at a time, better spacing
+        slidesPerView={1}
+        spaceBetween={20}
       >
-        {posters.map((poster, index) => (
-          <SwiperSlide className="!h-auto" key={poster.src}>
-            {({ isActive }) => (
-              <button
-                aria-label={
-                  isActive
-                    ? `Read poster ${index + 1} of ${total} full size`
-                    : `Bring poster ${index + 1} of ${total} to the front`
-                }
-                className="group block w-full rounded-[22px] text-left outline-none focus-visible:ring-2 focus-visible:ring-brand-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[#f7f6f0]"
-                onClick={() =>
-                  isActive ? setExpandedIndex(index) : swiper?.slideToLoop(index)
-                }
-                type="button"
-              >
-                <figure className="relative aspect-[1414/2000] w-full overflow-hidden rounded-[22px] border border-white/80 bg-white shadow-[0_30px_60px_-40px_rgba(27,65,56,0.7)] transition-[transform,box-shadow] duration-300 group-hover:-translate-y-1 group-hover:shadow-[0_36px_70px_-38px_rgba(27,65,56,0.75)] group-active:translate-y-0">
-                  <Image
-                    alt={poster.alt}
-                    className="object-cover"
-                    fill
-                    sizes="(max-width: 640px) 62vw, (max-width: 1024px) 40vw, 400px"
-                    src={poster.src}
-                  />
-                  <span
-                    aria-hidden="true"
-                    className={`pointer-events-none absolute inset-0 bg-brand/25 transition-opacity duration-500 ${
-                      isActive ? "opacity-0" : "opacity-100"
-                    }`}
-                  />
-                  {isActive && (
-                    <span
-                      aria-hidden="true"
-                      className="pointer-events-none absolute right-2.5 bottom-2.5 flex size-8 items-center justify-center rounded-full bg-white/90 text-brand-3 shadow-sm backdrop-blur-sm transition-opacity duration-300 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-visible:opacity-100"
-                    >
-                      <ArrowsOut size={13} weight="bold" />
-                    </span>
-                  )}
-                </figure>
-              </button>
-            )}
+        {posterFiles.map((file, index) => (
+          <SwiperSlide
+            className="group relative aspect-[1414/2000] overflow-hidden rounded-[22px] border border-white/80 bg-white shadow-[0_12px_24px_-4px_rgba(23,62,54,0.15)] transition-[transform,box-shadow] duration-300"
+            key={file}
+          >
+            <Image
+              alt={`Poster ${index + 1} of ${totalLabel}`}
+              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.02] group-hover:shadow-[0_24px_50px_-8px_rgba(23,62,54,0.25)]"
+              fill
+              sizes="(max-width: 640px) 100%, (max-width: 1024px) 60vw, 400px"
+              src={`${encodeURI(posterDirectory)}/${encodeURI(file)}`}
+            />
+            {/* subtle focus state for keyboard navigation */}
+            <span
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 bg-brand/10 transition-opacity duration-300 group-focus-within:opacity-100"
+            />
           </SwiperSlide>
         ))}
       </Swiper>
 
-      <div className="mt-4 flex flex-col items-center gap-3">
-        <div
-          aria-label="Choose a poster"
-          className="flex items-center gap-0.5"
-          role="group"
-        >
-          {posters.map((poster, index) => (
-            <button
-              aria-current={index === activeIndex ? "true" : undefined}
-              aria-label={`Show poster ${index + 1} of ${total}`}
-              className="group grid size-7 place-items-center rounded-full outline-none focus-visible:ring-2 focus-visible:ring-brand-2"
-              key={poster.src}
-              onClick={() => swiper?.slideToLoop(index)}
-              type="button"
-            >
-              <span
-                className={`h-1.5 rounded-full transition-all duration-300 ${
-                  index === activeIndex
-                    ? "w-6 bg-[#39745b]"
-                    : "w-1.5 bg-[#cbd5c8] group-hover:w-3 group-hover:bg-[#8ba38f]"
-                }`}
-              />
-            </button>
-          ))}
-        </div>
-        <p aria-live="polite" className="sr-only">
-          Poster {formatIndex(activeIndex)} of {totalLabel} shown
-        </p>
+      {/* Improved bottom navigator - larger, more clickable, always visible */}
+      <div
+        className="mt-4 flex items-center justify-center gap-1.5"
+        role="group"
+        aria-label="Poster selection"
+      >
+        {posterFiles.map((file, index) => (
+          <button
+            key={file}
+            aria-label={`Show poster ${index + 1} of ${total}`}
+            className={`flex size-8 rounded-full transition-colors outline-none focus-visible:ring-2 focus-visible:ring-brand-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[#f7f6f0] ${
+              index === activeIndex
+                ? "bg-[#39745b] text-white"
+                : "bg-white/80 text-brand-2 hover:bg-[#eef4e8] hover:text-brand-2"
+            }`}
+            onClick={() => swiper?.slideToLoop(index)}
+            type="button"
+          >
+            <span className="size-1.5 rounded-full transition-all duration-200" />
+          </button>
+        ))}
       </div>
 
-      <Dialog
-        className="w-full gap-0 overflow-hidden rounded-[26px] bg-[#0d201a] p-0 text-white ring-1 ring-white/10 sm:max-w-[min(94vw,620px)]"
-        isOpen={expandedIndex !== null}
-        onOpenChange={(open) => {
-          if (!open) setExpandedIndex(null)
-        }}
-        showCloseButton={false}
-      >
-        {expandedPoster && expandedIndex !== null && (
-          <div onKeyDown={handleLightboxKeyDown}>
-            <DialogTitle className="sr-only">
-              Poster {formatIndex(expandedIndex)} of {totalLabel}
-            </DialogTitle>
-
-            <div className="relative bg-[#0d201a]">
-              <Image
-                alt={expandedPoster.alt}
-                className="mx-auto h-auto max-h-[72vh] w-auto max-w-full object-contain"
-                height={2000}
-                sizes="(max-width: 640px) 96vw, 620px"
-                src={expandedPoster.src}
-                width={1414}
-              />
-
-              <DialogClose
-                aria-label="Close poster"
-                className="absolute top-3 right-3 size-9 rounded-full border-white/20 bg-white/90 text-brand-3 shadow-md hover:bg-white"
-                size="icon"
-                variant="outline"
-              >
-                <XIcon aria-hidden="true" size={15} />
-              </DialogClose>
-
-              <Button
-                aria-label="Previous poster"
-                className="absolute top-1/2 left-3 size-9 -translate-y-1/2 rounded-full border-white/20 bg-white/90 text-brand-3 shadow-md hover:bg-white"
-                onPress={() => stepPoster(-1)}
-                size="icon"
-                variant="outline"
-              >
-                <ArrowLeft aria-hidden="true" size={15} />
-              </Button>
-              <Button
-                aria-label="Next poster"
-                className="absolute top-1/2 right-3 size-9 -translate-y-1/2 rounded-full border-white/20 bg-white/90 text-brand-3 shadow-md hover:bg-white"
-                onPress={() => stepPoster(1)}
-                size="icon"
-                variant="outline"
-              >
-                <ArrowRight aria-hidden="true" size={15} />
-              </Button>
-            </div>
-
-            <div className="flex items-center justify-between gap-3 border-t border-white/10 px-4 py-3">
-              <p className="text-[10px] font-semibold tracking-[0.16em] text-white/60 uppercase">
-                Green Consumption and Production map
-              </p>
-              <p className="hidden text-[10px] text-white/45 sm:block">
-                Use ← → to browse
-              </p>
-              <p className="text-[11px] font-semibold text-white/80 tabular-nums">
-                {formatIndex(expandedIndex)}
-                <span className="mx-1 text-white/40">/</span>
-                {totalLabel}
-              </p>
-            </div>
-          </div>
-        )}
-      </Dialog>
+      <p aria-live="polite" className="sr-only">
+        Poster {formatIndex(activeIndex)} of {totalLabel} shown
+      </p>
     </section>
   )
 }
