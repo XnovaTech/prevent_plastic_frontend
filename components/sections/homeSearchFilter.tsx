@@ -68,7 +68,7 @@ export function HomeSearchFilter() {
                   <span className="w w3">ဝင်ကြည့်လေ</span>
                 </h2>
 
-                <svg
+                {/* <svg
                   aria-hidden="true"
                   className="pointer-events-none absolute top-1/2 right-[-12%] hidden h-12 w-12 -translate-y-1/2 rotate-6 text-brand-3 opacity-75 sm:block"
                   fill="none"
@@ -83,6 +83,26 @@ export function HomeSearchFilter() {
                   />
                   <path
                     d="m40 37-8-3m-8 6 8 3m7-27-3 8"
+                    stroke="#df896b"
+                    strokeLinecap="round"
+                    strokeWidth="2.5"
+                  />
+                </svg> */}
+                 <svg
+                  aria-hidden="true"
+                   className="pointer-events-none absolute top-1/2 right-[-12%] hidden h-12 w-12 -translate-y-1/2 rotate-6 text-brand-3 opacity-75 sm:block"
+                  fill="none"
+                  viewBox="0 0 56 56"
+                >
+                  <path
+                    d="M13 24h30l-3 25H16l-3-25Zm6 0v-5a9 9 0 0 1 18 0v5m-9 20V32m0 0c-7 0-10-4-10-10 7 0 10 4 10 10Zm0-5c0-6 3-9 10-9 0 6-3 9-10 9Z"
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2.2"
+                  />
+                  <path
+                    d="m9 15 2 2m35 17 2 2"
                     stroke="#df896b"
                     strokeLinecap="round"
                     strokeWidth="2.5"
