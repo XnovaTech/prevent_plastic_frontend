@@ -27,18 +27,26 @@ const categoryGlyphs = [
 ]
 
 type MyanmarPlacesMapProps = {
+  divisionPlaces: MyanmarPlace[]
   places: MyanmarPlace[]
   selectedPlaceId: string | null
   onSelectPlace: (place: MyanmarPlace) => void
   focusPlace: MyanmarPlace | null
+  selectedDivision: string | null
 }
 
 function MapController({
+  divisionPlaces,
   places,
   focusPlace,
-}: Pick<MyanmarPlacesMapProps, "places" | "focusPlace">) {
+  selectedDivision,
+}: Pick<
+  MyanmarPlacesMapProps,
+  "divisionPlaces" | "places" | "focusPlace" | "selectedDivision"
+>) {
   const map = useMap()
   const fittedMap = useRef(false)
+  const previousDivision = useRef<string | null>(null)
 
   const resetView = () => {
     map.flyToBounds(MYANMAR_OVERVIEW_BOUNDS, {
@@ -58,6 +66,32 @@ function MapController({
     map.fitBounds(bounds, { padding: [28, 28], maxZoom: 7 })
     fittedMap.current = true
   }, [map, places])
+
+  useEffect(() => {
+    if (previousDivision.current === selectedDivision) return
+
+    const previous = previousDivision.current
+    previousDivision.current = selectedDivision
+
+    if (selectedDivision && divisionPlaces.length) {
+      const bounds = L.latLngBounds(
+        divisionPlaces.map((place) => [place.latitude, place.longitude])
+      )
+      map.flyToBounds(bounds, {
+        animate: true,
+        duration: 0.8,
+        padding: [36, 36],
+        maxZoom: 8,
+      })
+    } else if (previous !== null) {
+      map.flyToBounds(MYANMAR_OVERVIEW_BOUNDS, {
+        animate: true,
+        duration: 0.8,
+        padding: [28, 28],
+        maxZoom: 7,
+      })
+    }
+  }, [divisionPlaces, map, selectedDivision])
 
   useEffect(() => {
     if (!focusPlace) return
@@ -112,10 +146,12 @@ function MapController({
 }
 
 export function MyanmarPlacesMap({
+  divisionPlaces,
   places,
   selectedPlaceId,
   onSelectPlace,
   focusPlace,
+  selectedDivision,
 }: MyanmarPlacesMapProps) {
   const icons = useMemo(
     () =>
@@ -168,7 +204,12 @@ export function MyanmarPlacesMap({
         url="https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}"
         zIndex={300}
       />
-      <MapController focusPlace={focusPlace} places={places} />
+      <MapController
+        divisionPlaces={divisionPlaces}
+        focusPlace={focusPlace}
+        places={places}
+        selectedDivision={selectedDivision}
+      />
       <MarkerClusterGroup
         chunkedLoading
         iconCreateFunction={(cluster) => {

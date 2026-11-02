@@ -23,19 +23,22 @@ import {
 import {
   categoryColors,
   categoryLabels,
+  repairDivisionBoundarySourceUrl,
+  repairDivisions,
   repairMapSourceUrl,
 } from "@/components/repair/repairMapConfig"
 import { RepairPosterCarousel } from "@/components/repair/repairPosterCarousel"
 
 type RawMyanmarMap = {
   categories: string[]
-  places: [number, string, number, number][]
+  places: [number, string, number, number, number][]
 }
 
 export type MyanmarPlace = {
   id: string
   categoryIndex: number
   categoryLabel: string
+  division: string
   name: string
   latitude: number
   longitude: number
@@ -77,13 +80,16 @@ function isRawMap(value: unknown): value is RawMyanmarMap {
     places.every(
       (place) =>
         Array.isArray(place) &&
-        place.length === 4 &&
+        place.length === 5 &&
         Number.isInteger(place[0]) &&
         typeof place[1] === "string" &&
         typeof place[2] === "number" &&
         Number.isFinite(place[2]) &&
         typeof place[3] === "number" &&
-        Number.isFinite(place[3])
+        Number.isFinite(place[3]) &&
+        Number.isInteger(place[4]) &&
+        place[4] >= 0 &&
+        place[4] < repairDivisions.length
     )
   )
 }
@@ -110,6 +116,7 @@ export function RepairMapExperience() {
   const [loadError, setLoadError] = useState<string | null>(null)
   const [reloadKey, setReloadKey] = useState(0)
   const [query, setQuery] = useState("")
+  const [selectedDivision, setSelectedDivision] = useState<string | null>(null)
   const [activeCategories, setActiveCategories] = useState<string[] | null>(
     null
   )
@@ -140,11 +147,14 @@ export function RepairMapExperience() {
         }
 
         const places = payload.places.flatMap((place, index) => {
-          const [categoryIndex, name, latitude, longitude] = place
+          const [categoryIndex, name, latitude, longitude, divisionIndex] =
+            place
           const category = payload.categories[categoryIndex]
+          const division = repairDivisions[divisionIndex]
 
           if (
             !category ||
+            !division ||
             latitude < 5 ||
             latitude > 31 ||
             longitude < 88 ||
@@ -158,6 +168,7 @@ export function RepairMapExperience() {
               id: String(index),
               categoryIndex,
               categoryLabel: categoryLabels[category] ?? category,
+              division,
               name: name.trim() || "Unnamed place",
               latitude,
               longitude,
@@ -186,10 +197,31 @@ export function RepairMapExperience() {
     return () => controller.abort()
   }, [reloadKey])
 
-  const categoryCounts = useMemo(() => {
+  const categories = useMemo(() => mapData?.categories ?? [], [mapData])
+  const divisions = repairDivisions
+
+  const divisionPlaces = useMemo(() => {
+    if (!mapData) return []
+
+    return selectedDivision
+      ? mapData.places.filter((place) => place.division === selectedDivision)
+      : mapData.places
+  }, [mapData, selectedDivision])
+
+  const divisionCounts = useMemo(() => {
     const counts = new Map<string, number>()
 
     for (const place of mapData?.places ?? []) {
+      counts.set(place.division, (counts.get(place.division) ?? 0) + 1)
+    }
+
+    return counts
+  }, [mapData])
+
+  const categoryCounts = useMemo(() => {
+    const counts = new Map<string, number>()
+
+    for (const place of divisionPlaces) {
       counts.set(
         place.categoryLabel,
         (counts.get(place.categoryLabel) ?? 0) + 1
@@ -197,14 +229,12 @@ export function RepairMapExperience() {
     }
 
     return counts
-  }, [mapData])
+  }, [divisionPlaces])
 
   const visiblePlaces = useMemo(() => {
-    if (!mapData) return []
-
     const normalizedQuery = query.trim().toLocaleLowerCase()
 
-    return mapData.places.filter((place) => {
+    return divisionPlaces.filter((place) => {
       const matchesCategory =
         activeCategories === null ||
         activeCategories.includes(place.categoryLabel)
@@ -216,12 +246,11 @@ export function RepairMapExperience() {
 
       return matchesCategory && matchesQuery
     })
-  }, [activeCategories, mapData, query])
+  }, [activeCategories, divisionPlaces, query])
 
   const searchResults = query.trim() ? visiblePlaces.slice(0, 8) : []
   const selectedPlace =
     visiblePlaces.find((place) => place.id === selectedPlaceId) ?? null
-  const categories = useMemo(() => mapData?.categories ?? [], [mapData])
 
   const toggleCategory = useCallback(
     (category: string) => {
@@ -315,6 +344,36 @@ export function RepairMapExperience() {
               )}
             </label>
 
+            <label className="mt-4 block">
+              <span className="mb-2 block text-[11px] font-semibold text-brand-6">
+                Filter by division or state
+              </span>
+              <select
+                className="min-h-12 w-full rounded-[14px] border border-[#dfe6dc] bg-[#fbfcfa] px-3.5 text-sm text-brand transition-colors outline-none focus:border-brand-3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-2"
+                onChange={(event) => {
+                  setSelectedDivision(event.target.value || null)
+                  setSelectedPlaceId(null)
+                  setFocusPlace(null)
+                }}
+                value={selectedDivision ?? ""}
+              >
+                <option value="">All locations</option>
+                {divisions.map((division) => (
+                  <option key={division} value={division}>
+                    {division} (
+                    {formatPlaceCount(divisionCounts.get(division) ?? 0)})
+                  </option>
+                ))}
+              </select>
+              <span
+                aria-live="polite"
+                className="mt-2 block text-[10px] text-brand-gray-3"
+              >
+                {formatPlaceCount(divisionPlaces.length)} places in{" "}
+                {selectedDivision ?? "Myanmar"}
+              </span>
+            </label>
+
             {query.trim() && (
               <div aria-live="polite" className="mt-4">
                 <div className="mb-2 flex items-center justify-between">
@@ -340,7 +399,7 @@ export function RepairMapExperience() {
                             {place.name}
                           </span>
                           <span className="mt-1 block truncate text-[10px] text-brand-gray-3">
-                            {place.categoryLabel}
+                            {place.categoryLabel} · {place.division}
                           </span>
                         </button>
                       </li>
@@ -365,7 +424,7 @@ export function RepairMapExperience() {
                       {selectedPlace.name}
                     </p>
                     <p className="mt-1 text-[10px] leading-4 text-brand-gray-3">
-                      {selectedPlace.categoryLabel}
+                      {selectedPlace.categoryLabel} · {selectedPlace.division}
                     </p>
                     <a
                       className="mt-2 inline-flex items-center gap-1 text-[10px] font-semibold text-brand-3 hover:text-brand-orange"
@@ -491,9 +550,11 @@ export function RepairMapExperience() {
           ) : mapData ? (
             <>
               <MyanmarPlacesMap
+                divisionPlaces={divisionPlaces}
                 focusPlace={focusPlace}
                 onSelectPlace={(place) => setSelectedPlaceId(place.id)}
                 places={visiblePlaces}
+                selectedDivision={selectedDivision}
                 selectedPlaceId={selectedPlaceId}
               />
               <div
@@ -518,9 +579,20 @@ export function RepairMapExperience() {
 
       <p className="mt-4 text-[10px] leading-5 text-brand-gray-3">
         Location pins are based on the shared Green Consumption and Production
-        map for Myanmar. Map data may change; open the source map to confirm the
-        latest details. Satellite imagery and map labels © Esri, Maxar, and
-        Earthstar Geographics.
+        map for Myanmar. Division filters use 2019 administrative boundaries
+        from{" "}
+        <a
+          className="font-semibold text-brand-3 underline underline-offset-2 hover:text-brand-orange"
+          href={repairDivisionBoundarySourceUrl}
+          rel="noreferrer"
+          target="_blank"
+        >
+          geoBoundaries
+        </a>{" "}
+        (CC BY 4.0); coastal locations outside those simplified boundaries are
+        listed separately, and Naypyidaw is matched by place name. Map data may
+        change; open the source map to confirm the latest details. Satellite
+        imagery and map labels © Esri, Maxar, and Earthstar Geographics.
       </p>
 
       <RepairPosterCarousel />

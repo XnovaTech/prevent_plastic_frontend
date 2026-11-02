@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/sheet"
 import { homePageMock } from "@/mock/homePageMock"
 import { useCartStore } from "@/stores/cartStore"
+import { useWishlistStore } from "@/stores/wishlistStore"
 
 type SiteHeaderProps = {
   activeHref?: string
@@ -46,6 +47,7 @@ export function SiteHeader({ activeHref = "/" }: SiteHeaderProps) {
   const bagCount = useCartStore((state) =>
     state.items.reduce((total, item) => total + item.quantity, 0)
   )
+  const wishCount = useWishlistStore((state) => state.items.length)
 
   const closeMenu = () => setMenuOpen(false)
 
@@ -120,19 +122,24 @@ export function SiteHeader({ activeHref = "/" }: SiteHeaderProps) {
             >
               <MagnifyingGlass aria-hidden="true" size={22} />
             </Link>
-            <Link
+            {/* <Link
               aria-label="Browse the shop"
               className="group relative hidden size-10 items-center justify-center rounded-full text-[#344a42] transition-all duration-300 hover:scale-110 hover:bg-[#eaf0e7] hover:shadow-sm sm:flex"
               href="/sme"
             >
               <Storefront aria-hidden="true" size={22} />
-            </Link>
+            </Link> */}
             <Link
-              aria-label="Wishlist"
+              aria-label={`Wishlist, ${wishCount} items`}
               className="group relative hidden size-10 items-center justify-center rounded-full text-[#344a42] transition-all duration-300 hover:scale-110 hover:bg-[#eaf0e7] hover:shadow-sm sm:flex"
               href="/wishlist"
             >
               <SeedlingIcon size={22} />
+              {wishCount > 0 && (
+                <span className="absolute top-0.5 right-0.5 flex size-[17px] items-center justify-center rounded-full bg-[#e98869] text-[9px] font-bold text-white">
+                  {wishCount}
+                </span>
+              )}
             </Link>
             <CartIndicator />
             <span className="hidden h-7 w-px bg-[#e4e7df] sm:block" />
@@ -233,13 +240,13 @@ export function SiteHeader({ activeHref = "/" }: SiteHeaderProps) {
                         </span>
                         <span className="min-w-0 flex-1">
                           <span
-                            className={`block font-serif text-[21px] leading-tight tracking-[-0.03em] ${
+                            className={`block font-serif text-[12px] leading-tight tracking-[-0.03em] ${
                               isActive ? "text-brand-2" : "text-[#2b3d36]"
                             }`}
                           >
                             {item.label}
                           </span>
-                          <span className="mt-0.5 block text-[10px] font-medium tracking-[0.05em] text-[#8b988f]">
+                          <span className="mt-0.5 block text-[9px] font-medium tracking-[0.05em] text-[#8b988f]">
                             {navDescriptions[item.href] ?? ""}
                           </span>
                         </span>
@@ -309,7 +316,7 @@ export function SiteHeader({ activeHref = "/" }: SiteHeaderProps) {
                       {link.icon}
                     </span>
                     <span className="min-w-0">
-                      <span className="block truncate text-[11px] font-semibold text-[#2b3d36]">
+                      <span className="block truncate text-[9px] font-semibold text-[#2b3d36]">
                         {link.label}
                       </span>
                       <span className="block truncate text-[9px] text-[#8b988f]">

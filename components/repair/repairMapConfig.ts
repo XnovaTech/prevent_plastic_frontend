@@ -27,3 +27,25 @@ export const categoryColors = [
   "#81669b",
   "#57734c",
 ]
+
+export const repairDivisions = [
+  "Yangon",
+  "Mandalay",
+  "Chin",
+  "Naypyidaw Union Territory",
+  "Bago",
+  "Ayeyarwady",
+  "Kachin",
+  "Kayah",
+  "Kayin",
+  "Magway",
+  "Mon",
+  "Rakhine",
+  "Sagaing",
+  "Shan",
+  "Tanintharyi",
+  "Outside division boundaries",
+] as const
+
+export const repairDivisionBoundarySourceUrl =
+  "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/MMR/ADM1/geoBoundaries-MMR-ADM1_simplified.geojson"

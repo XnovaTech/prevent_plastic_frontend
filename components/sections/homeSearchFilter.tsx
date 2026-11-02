@@ -61,7 +61,7 @@ export function HomeSearchFilter() {
               <div className="relative inline-flex flex-col items-center gap-1 rounded-[999px] px-10 py-6 sm:px-14 sm:py-7">
                 <style>{style}</style>
                 <h2 className="relative txt sm:text-[25px] md:text-[36px]">
-                  <span className="w w1">ဘာလိုလဲ</span><span className="dot">•</span><span className="w w2">ဘာရှာလဲ</span><span className="dot">•</span><span className="w w3">ဝင်ကြည့်လေ</span>
+                  <span className="w w1">ဘာလိုလဲ</span><span className="dot">၊</span><span className="w w2">ဘာရှာလဲ</span><span className="dot">၊</span><span className="w w3">ဝင်ကြည့်လေ</span>
                 </h2>
          
               </div>
