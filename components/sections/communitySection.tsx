@@ -49,7 +49,7 @@ export function CommunitySection() {
             </div>
             <div className="flex shrink-0 items-center gap-2">
               <SectionBrowseLink
-                href="/sme"
+                href="/shops"
                 label="Browse shops"
                 placement="header"
                 screen="desktop"
@@ -88,7 +88,7 @@ export function CommunitySection() {
                       {merchant.initials}
                     </span>
                     <div className="min-w-0 pt-0.5">
-                      <h3 className="line-clamp-2 text-sm font-semibold leading-snug text-brand-6">
+                      <h3 className="line-clamp-2 text-sm leading-snug font-semibold text-brand-6">
                         {merchant.name}
                       </h3>
                       <p className="mt-1 line-clamp-2 text-[11px] leading-relaxed text-brand-gray-4">
@@ -122,7 +122,7 @@ export function CommunitySection() {
         </Carousel>
 
         <SectionBrowseLink
-          href="/sme"
+          href="/shops"
           label="Browse shops"
           placement="footer"
           screen="mobile"

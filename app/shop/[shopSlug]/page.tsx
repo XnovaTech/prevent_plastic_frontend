@@ -44,7 +44,7 @@ export default async function Page({ params }: ShopPageProps) {
       >
         Skip to content
       </a>
-      <SiteHeader activeHref={shop.type === "sme" ? "/sme" : "/individual"} />
+      <SiteHeader activeHref={shop.type === "sme" ? "/shops" : "/products"} />
       <main id="main-content">
         <ShopDetailView shop={shop} />
       </main>

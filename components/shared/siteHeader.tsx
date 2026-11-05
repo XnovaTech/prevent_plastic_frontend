@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useMemo } from "react"
 import Link from "next/link"
 import {
   ArrowUpRight,
@@ -15,6 +15,7 @@ import {
 
 import { CartIndicator } from "@/components/shared/cartIndicator"
 import { SeedlingIcon } from "@/components/ui/seedlingIcon"
+import { catalogPageMock } from "@/mock/catalogPageMock"
 import {
   Sheet,
   SheetClose,
@@ -33,8 +34,11 @@ type SiteHeaderProps = {
 
 const navDescriptions: Record<string, string> = {
   "/": "Good things, again",
-  "/sme": "Local shops & makers",
-  "/individual": "Finds from real homes",
+  "/shops": "Local shops & makers",
+  "/products": `Products(${catalogPageMock.individual.products
+    .slice(0, 3)
+    .map((p) => p.name)
+    .join(", ")}...${catalogPageMock.individual.products.length - 3}+ more)`,
   "/repair": "Fix, mend & care",
   "/about": "Why we started",
   "/blog": "The journal",
@@ -64,7 +68,7 @@ export function SiteHeader({ activeHref = "/" }: SiteHeaderProps) {
 
   return (
     <>
-      <header className="sticky top-0 z-40 border-b border-white/60 bg-white/70 backdrop-blur-xl transition-colors duration-300">
+      <header className="sticky top-0 z-50 border-b border-white/60 bg-white/70 backdrop-blur-xl transition-colors duration-300">
         <div className="mx-auto flex h-[76px] max-w-[1440px] items-center justify-between gap-4 px-4 sm:px-8 lg:px-12">
           <Link
             aria-label="Prevent Plastic home"
@@ -101,7 +105,7 @@ export function SiteHeader({ activeHref = "/" }: SiteHeaderProps) {
                 key={item.label}
                 className={`relative px-3 py-2 text-[15px] font-medium transition-all duration-300 ${
                   item.href === activeHref ? "text-brand-2" : "text-[#56645e]"
-                } hover:text-brand-2`}
+                } } hover:text-brand-2`}
                 href={item.href}
               >
                 <span className="relative block">
@@ -122,13 +126,6 @@ export function SiteHeader({ activeHref = "/" }: SiteHeaderProps) {
             >
               <MagnifyingGlass aria-hidden="true" size={22} />
             </Link>
-            {/* <Link
-              aria-label="Browse the shop"
-              className="group relative hidden size-10 items-center justify-center rounded-full text-[#344a42] transition-all duration-300 hover:scale-110 hover:bg-[#eaf0e7] hover:shadow-sm sm:flex"
-              href="/sme"
-            >
-              <Storefront aria-hidden="true" size={22} />
-            </Link> */}
             <Link
               aria-label={`Wishlist, ${wishCount} items`}
               className="group relative hidden size-10 items-center justify-center rounded-full text-[#344a42] transition-all duration-300 hover:scale-110 hover:bg-[#eaf0e7] hover:shadow-sm sm:flex"
@@ -145,7 +142,7 @@ export function SiteHeader({ activeHref = "/" }: SiteHeaderProps) {
             <span className="hidden h-7 w-px bg-[#e4e7df] sm:block" />
             <Link
               className="group relative hidden items-center gap-1.5 rounded-full border border-[#dce4da] px-3.5 py-2 text-xs font-semibold text-[#344a42] transition-all duration-300 hover:-translate-y-0.5 hover:border-[#174e46] hover:bg-[#f1f5ed] hover:shadow-sm md:flex"
-              href="/#sme"
+              href="/shops"
             >
               <span>Sell with us</span>
               <span
@@ -227,14 +224,14 @@ export function SiteHeader({ activeHref = "/" }: SiteHeaderProps) {
                           isActive
                             ? "bg-brand-2/10"
                             : "hover:bg-white focus-visible:bg-white"
-                        } focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-2`}
+                        } } focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-2`}
                         href={item.href}
                         onClick={closeMenu}
                       >
                         <span
                           className={`w-5 shrink-0 text-[9px] font-bold tabular-nums ${
                             isActive ? "text-brand-2" : "text-[#b3bdb4]"
-                          }`}
+                          } }`}
                         >
                           {String(index + 1).padStart(2, "0")}
                         </span>
@@ -242,7 +239,7 @@ export function SiteHeader({ activeHref = "/" }: SiteHeaderProps) {
                           <span
                             className={`block font-serif text-[12px] leading-tight tracking-[-0.03em] ${
                               isActive ? "text-brand-2" : "text-[#2b3d36]"
-                            }`}
+                            } }`}
                           >
                             {item.label}
                           </span>
@@ -344,7 +341,7 @@ export function SiteHeader({ activeHref = "/" }: SiteHeaderProps) {
               </p>
               <Link
                 className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-[#eaf3d8] px-3 py-2 text-[11px] font-semibold text-[#174e46] transition-transform duration-200 hover:-translate-y-0.5"
-                href="/#sme"
+                href="/shops"
                 onClick={closeMenu}
               >
                 Sell with us

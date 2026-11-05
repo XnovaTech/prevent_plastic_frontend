@@ -1,20 +1,18 @@
 import type { Metadata } from "next"
 
-import { CatalogBrowser } from "@/components/list/catalogBrowser"
+import { PrivacyPolicySection } from "@/components/privacy/privacyPolicySection"
 import { AosInitializer } from "@/components/shared/aosInitializer"
 import { SiteFooter } from "@/components/shared/siteFooter"
 import { SiteHeader } from "@/components/shared/siteHeader"
-import { catalogPageMock } from "@/mock/catalogPageMock"
+import { privacyPageMock } from "@/mock/privacyPageMock"
 
 export const metadata: Metadata = {
-  title: "Individual finds — Prevent Plastic",
+  title: "Privacy & Policy — Prevent Plastic",
   description:
-    "Browse good things passed on by individual sellers nearby, from one home to another.",
+    "How Prevent Plastic collects, uses, and protects your information — in plain language, with the choices you always have.",
 }
 
 export default function Page() {
-  const config = catalogPageMock.individual
-
   return (
     <div className="min-h-screen bg-transparent text-brand">
       <AosInitializer />
@@ -24,9 +22,9 @@ export default function Page() {
       >
         Skip to content
       </a>
-      <SiteHeader activeHref={config.href} />
+      <SiteHeader activeHref="" />
       <main id="main-content">
-        <CatalogBrowser config={config} />
+        <PrivacyPolicySection content={privacyPageMock} />
       </main>
       <SiteFooter />
     </div>

@@ -55,7 +55,7 @@ export function CatalogFilterSheet({
 
   return (
     <Sheet
-      className="border-l border-[#e3e8df] bg-[#fbfaf6]/80 backdrop-blur-2xl"
+      className="border-l border-[#e3e8df] bg-[#ffffff] backdrop-blur-2xl"
       isOpen={open}
       onOpenChange={onOpenChange}
       side="right"

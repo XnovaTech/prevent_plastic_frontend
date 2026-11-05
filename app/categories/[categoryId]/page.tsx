@@ -177,11 +177,11 @@ export default async function Page({ params }: CategoryPageProps) {
                           size={12}
                           weight="duotone"
                         />
-                        {stats.sme} from small businesses
+                        {stats.sme} from shops
                       </span>
                       <span className="inline-flex items-center gap-1.5 rounded-full border border-[#e3e8df] bg-white/70 px-3 py-1.5 text-[10px] font-semibold text-[#8a5a43]">
                         <User aria-hidden="true" size={12} weight="duotone" />
-                        {stats.individual} from individuals
+                        {stats.individual} from products
                       </span>
                     </>
                   ) : (

@@ -60,7 +60,7 @@ export const wishlistPageMock = {
     description:
       "Tap the heart on a find you love and it will find a home here.",
     actionLabel: "Find something lovely",
-    actionHref: "/sme",
+    actionHref: "/shops",
   },
   closing: {
     eyebrow: "KEEP WANDERING",
@@ -68,6 +68,6 @@ export const wishlistPageMock = {
     description:
       "Wander a little further. New pre-loved pieces and local makers are waiting to meet you.",
     actionLabel: "Browse the market",
-    actionHref: "/sme",
+    actionHref: "/shops",
   },
 }

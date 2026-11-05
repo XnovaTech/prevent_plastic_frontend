@@ -22,8 +22,8 @@ type TabId = "all" | CategorySellerType
 
 const tabLabels: Record<TabId, { label: string; shortLabel: string }> = {
   all: { label: "All finds", shortLabel: "All finds" },
-  sme: { label: "Small businesses", shortLabel: "Small business" },
-  individual: { label: "Individuals", shortLabel: "Individual" },
+  sme: { label: "Shops", shortLabel: "Shops" },
+  individual: { label: "Products", shortLabel: "Products" },
 }
 
 export function CategoryProducts({
@@ -101,17 +101,17 @@ export function CategoryProducts({
           <div className="mt-6 flex flex-col items-center justify-center gap-2 sm:flex-row">
             <Link
               className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-full bg-brand-2 px-5 text-[11px] font-semibold text-white transition-transform hover:-translate-y-0.5"
-              href="/sme"
+              href="/shops"
             >
               <Storefront aria-hidden="true" size={14} />
-              Browse small businesses
+              Browse shops
             </Link>
             <Link
               className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-full border border-[#d8e0d7] bg-white px-5 text-[11px] font-semibold text-brand-3 transition-colors hover:bg-[#f1f5ed]"
-              href="/individual"
+              href="/products"
             >
               <User aria-hidden="true" size={14} />
-              Browse individuals
+              Browse products
             </Link>
           </div>
         </div>
@@ -200,16 +200,11 @@ export function CategoryProducts({
           {activeTab === "all" ? (
             <>
               {" "}
-              from {counts.sme > 0 ? "small businesses" : "individuals"}
-              {counts.sme > 0 && counts.individual > 0
-                ? " and individuals"
-                : ""}
+              from {counts.sme > 0 ? "shops" : "products"}
+              {counts.sme > 0 && counts.individual > 0 ? " and products" : ""}
             </>
           ) : (
-            <>
-              {" "}
-              from {activeTab === "sme" ? "small businesses" : "individuals"}
-            </>
+            <> from {activeTab === "sme" ? "shops" : "products"}</>
           )}
         </p>
       </div>
@@ -255,7 +250,7 @@ export function CategoryProducts({
       <div className="mt-12 grid gap-3 sm:grid-cols-2">
         <Link
           className="group flex items-center justify-between gap-4 rounded-[22px] border border-[#e3e8df] bg-white/70 px-5 py-4 transition-all duration-300 hover:-translate-y-0.5 hover:border-[#c7d8c7] hover:bg-white hover:shadow-[0_18px_40px_-32px_rgba(27,65,56,0.5)]"
-          href="/sme"
+          href="/shops"
         >
           <span className="flex items-center gap-3">
             <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[#e8eee5] text-[#4c6b53]">
@@ -263,7 +258,7 @@ export function CategoryProducts({
             </span>
             <span>
               <span className="block text-[13px] font-semibold text-brand">
-                More from small businesses
+                More from shops
               </span>
               <span className="block text-[10px] text-brand-lighter">
                 Local shops, studios and makers
@@ -279,7 +274,7 @@ export function CategoryProducts({
 
         <Link
           className="group flex items-center justify-between gap-4 rounded-[22px] border border-[#e3e8df] bg-white/70 px-5 py-4 transition-all duration-300 hover:-translate-y-0.5 hover:border-[#e2c7ba] hover:bg-white hover:shadow-[0_18px_40px_-32px_rgba(27,65,56,0.5)]"
-          href="/individual"
+          href="/products"
         >
           <span className="flex items-center gap-3">
             <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[#f8ebe5] text-[#8a5a43]">
@@ -287,7 +282,7 @@ export function CategoryProducts({
             </span>
             <span>
               <span className="block text-[13px] font-semibold text-brand">
-                More from individuals
+                More from products
               </span>
               <span className="block text-[10px] text-brand-lighter">
                 Good things passed on from home

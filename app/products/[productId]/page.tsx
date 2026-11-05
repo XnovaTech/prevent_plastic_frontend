@@ -11,11 +11,14 @@ import {
 import { ProductCard } from "@/components/product/productCard"
 import { ProductActions } from "@/components/product/productActions"
 import { ProductGallery } from "@/components/product/productGallery"
+import { ProductReviews } from "@/components/product/productReviews"
 import { AosInitializer } from "@/components/shared/aosInitializer"
 import { SiteFooter } from "@/components/shared/siteFooter"
+import { ChatWithVendor } from "@/components/product/chatWithVendor"
 import { SiteHeader } from "@/components/shared/siteHeader"
 import {
   getProductDetail,
+  getProductReviews,
   getRelatedProducts,
   productIds,
 } from "@/mock/productDetailMock"
@@ -60,6 +63,7 @@ export default async function Page({ params }: ProductPageProps) {
   const shopDestination = shop.profileHref ?? shop.href
   const shopDestinationLabel = shop.profileHref ? shop.label : "Browse shops"
   const relatedProducts = getRelatedProducts(productId)
+  const reviewSummary = getProductReviews(productId)
 
   return (
     <div className="min-h-screen bg-transparent text-brand">
@@ -79,10 +83,7 @@ export default async function Page({ params }: ProductPageProps) {
                 aria-label="Breadcrumb"
                 className="flex min-w-0 flex-wrap items-center gap-2 text-[10px] text-brand-lighter"
               >
-                <Link
-                  className="transition-colors hover:text-brand-3"
-                  href="/"
-                >
+                <Link className="transition-colors hover:text-brand-3" href="/">
                   Home
                 </Link>
                 <span aria-hidden="true">/</span>
@@ -168,14 +169,20 @@ export default async function Page({ params }: ProductPageProps) {
                       className="inline-flex items-center gap-1 text-[10px] font-semibold text-brand-3 transition-colors hover:text-brand-orange"
                       href={shopDestination}
                     >
-                      {shop.profileHref ? "Visit shop" : "Browse seller listings"}
+                      {shop.profileHref
+                        ? "Visit shop"
+                        : "Browse seller listings"}
                       <ArrowUpRight aria-hidden="true" size={12} />
                     </Link>
+
+                    <ChatWithVendor
+                      merchant={product.merchant}
+                      productName={product.name}
+                      shopKind={shop.kind}
+                    />
                   </div>
 
                   <ProductActions product={product} />
-
-             
                 </div>
 
                 <div className="mt-3 grid grid-cols-2 gap-2.5">
@@ -217,6 +224,8 @@ export default async function Page({ params }: ProductPageProps) {
             </div>
           </div>
         </section>
+
+        <ProductReviews productName={product.name} summary={reviewSummary} />
 
         {relatedProducts.length > 0 && (
           <section className="pb-14 sm:pb-20">

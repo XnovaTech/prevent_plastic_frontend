@@ -44,7 +44,7 @@ export type CatalogCopy = {
 
 export type CatalogPageConfig = {
   id: "sme" | "individual"
-  href: "/sme" | "/individual"
+  href: "/shops" | "/products"
   eyebrow: string
   title: string
   highlight: string
@@ -440,13 +440,13 @@ const individualProducts: HomeProduct[] = [
 export const catalogPageMock = {
   sme: {
     id: "sme",
-    href: "/sme",
+    href: "/shops",
     eyebrow: "SMALL BUSINESSES, GOOD FINDS",
     title: "Small &",
     highlight: "mighty finds.",
     description:
       "Meet the small businesses and makers giving useful things another chapter. Every find supports a local shop, studio, or workshop.",
-    note: "A design preview while the final SME seller scope is confirmed.",
+    note: "A design preview while the final shops scope is confirmed.",
     stats: [
       { value: "38", label: "small businesses" },
       { value: "140+", label: "good finds" },
@@ -459,13 +459,13 @@ export const catalogPageMock = {
   },
   individual: {
     id: "individual",
-    href: "/individual",
+    href: "/products",
     eyebrow: "FROM ONE HOME TO ANOTHER",
     title: "Good things,",
     highlight: "passed on.",
     description:
       "Good things passed on by people nearby. Thoughtful finds from one home to another, with plenty of life left to give.",
-    note: "A design preview while the final individual-seller scope is confirmed.",
+    note: "A design preview while the final products scope is confirmed.",
     stats: [
       { value: "96", label: "individual sellers" },
       { value: "310+", label: "passed-on finds" },

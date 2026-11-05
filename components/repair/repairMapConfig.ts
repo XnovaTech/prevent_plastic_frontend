@@ -1,6 +1,9 @@
 export const repairMapSourceUrl =
   "https://www.google.com/maps/d/viewer?mid=13hN0tYdYSpHG86nOiIpqOjOaC03ZSo0&ehbc=2E312F"
 
+export const nearbyRadiusMiles = 10
+export const nearbyRadiusMeters = nearbyRadiusMiles * 1609.344
+
 export const categoryLabels: Record<string, string> = {
   "Repair, reuse, recycle": "Repair, reuse & recycle",
   "Key, Umbrella, Shoe": "Keys, shoes & umbrellas",

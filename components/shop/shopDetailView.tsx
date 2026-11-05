@@ -2,15 +2,16 @@
 
 import { useRef, useState, type KeyboardEvent } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import {
   ArrowLeft,
   CalendarBlank,
   ChatCircleDots,
+  Eye,
   MapPin,
   Package,
   ShieldCheck,
   Star,
-  Users,
 } from "@phosphor-icons/react"
 
 import { ProductCard } from "@/components/product/productCard"
@@ -18,21 +19,6 @@ import type { ShopDetail } from "@/mock/shopDetailMock"
 
 type ShopDetailViewProps = {
   shop: ShopDetail
-}
-
-const shopToneClasses = {
-  sme: "bg-[#e8eee5]",
-  individual: "bg-[#f8ebe5]",
-}
-
-function getShopInitials(name: string) {
-  return name
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((word) => word[0])
-    .join("")
-    .toUpperCase()
 }
 
 export function ShopDetailView({ shop }: ShopDetailViewProps) {
@@ -74,85 +60,122 @@ export function ShopDetailView({ shop }: ShopDetailViewProps) {
       <div className="mx-auto max-w-[1440px] px-4 sm:px-8 lg:px-12">
         <Link
           className="mb-5 inline-flex min-h-10 items-center gap-2 rounded-full px-3 text-xs font-semibold text-brand-3 transition-colors hover:bg-white/70 hover:text-brand-orange focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#39745b]"
-          href={shop.type === "sme" ? "/sme" : "/individual"}
+          href={shop.type === "sme" ? "/shops" : "/products"}
         >
           <ArrowLeft aria-hidden="true" size={16} />
           Back to shops
         </Link>
 
-        <header className="overflow-hidden rounded-[28px] border border-[#e3e9df] bg-[linear-gradient(125deg,rgba(239,245,235,0.94),rgba(255,255,255,0.88)_58%,rgba(250,243,235,0.82))] p-5 shadow-[0_20px_60px_-48px_rgba(38,74,55,0.42)] sm:rounded-[34px] sm:p-8 lg:p-10">
-          <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:gap-8">
+        <header className="overflow-hidden rounded-[28px] border border-[#e3e9df] bg-[linear-gradient(125deg,rgba(239,245,235,0.94),rgba(255,255,255,0.88)_58%,rgba(250,243,235,0.82))] shadow-[0_20px_60px_-48px_rgba(38,74,55,0.42)] sm:rounded-[34px]">
+          <div className="relative h-40 w-full sm:h-52 lg:h-56">
+            <Image
+              alt=""
+              className="object-cover"
+              fill
+              sizes="(min-width: 1024px) 1440px, 100vw"
+              src={shop.coverImage}
+            />
             <div
               aria-hidden="true"
-              className={`flex size-20 shrink-0 items-center justify-center rounded-[24px] border border-white/80 text-2xl font-bold text-brand-2 shadow-sm sm:size-24 sm:rounded-[28px] ${shopToneClasses[shop.type]}`}
-            >
-              {getShopInitials(shop.name)}
-            </div>
+              className="absolute inset-0 bg-gradient-to-t from-[#274b3e]/25 via-transparent to-transparent"
+            />
+          </div>
 
-            <div className="min-w-0 flex-1">
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="rounded-full border border-[#cfdccb] bg-white/70 px-3 py-1 text-[10px] font-semibold text-[#557360]">
-                  {shop.kind}
-                </span>
-                {shop.badges.map((badge) => (
-                  <span
-                    className="inline-flex items-center gap-1 rounded-full bg-[#e6f0e2] px-3 py-1 text-[10px] font-semibold text-[#38684f]"
-                    key={badge}
-                  >
-                    {badge === "Top Rated" ? (
-                      <Star aria-hidden="true" size={13} weight="fill" />
-                    ) : badge === "Quick Responder" ? (
-                      <ChatCircleDots aria-hidden="true" size={13} weight="fill" />
-                    ) : (
-                      <ShieldCheck aria-hidden="true" size={13} weight="fill" />
-                    )}
-                    {badge}
-                  </span>
-                ))}
-              </div>
-
-              <h1 className="mt-3 break-words font-serif text-[34px] leading-tight tracking-[-0.04em] text-brand sm:text-[44px] lg:text-[50px]">
-                {shop.name}
-              </h1>
-              <p className="mt-3 max-w-3xl text-sm leading-6 text-brand-light sm:text-[15px] sm:leading-7">
-                {shop.description}
-              </p>
-
-              <div className="mt-5 flex flex-wrap gap-x-5 gap-y-3 text-xs text-brand-gray-4">
-                <span className="inline-flex items-center gap-1.5">
-                  <MapPin aria-hidden="true" className="text-brand-3" size={15} />
-                  {shop.location}
-                </span>
-                <span className="inline-flex items-center gap-1.5">
-                  <CalendarBlank
-                    aria-hidden="true"
-                    className="text-brand-3"
-                    size={15}
+          <div className="p-5 sm:p-8 lg:p-10">
+            <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:gap-8">
+              <div className="-mt-16 shrink-0 sm:-mt-24">
+                <div className="relative size-24 overflow-hidden rounded-full border-[5px] border-white shadow-[0_14px_34px_-18px_rgba(38,74,55,0.75)] sm:size-28">
+                  <Image
+                    alt={`${shop.name} profile picture`}
+                    className="object-cover"
+                    fill
+                    sizes="112px"
+                    src={shop.avatarImage}
                   />
-                  Joined {shop.joinedYear}
-                </span>
-                <span className="inline-flex items-center gap-1.5">
-                  <Users aria-hidden="true" className="text-brand-3" size={15} />
-                  {shop.followers.toLocaleString("en-US")} followers
-                </span>
+                </div>
               </div>
-            </div>
 
-            <div className="flex shrink-0 items-center gap-3 self-start rounded-[20px] border border-[#dce6d8] bg-white/75 px-4 py-3 sm:min-w-[156px] sm:flex-col sm:items-center sm:gap-1 sm:px-5 sm:py-4">
-              <div className="inline-flex items-center gap-1.5">
-                <Star
-                  aria-hidden="true"
-                  className="text-[#b7823e]"
-                  size={20}
-                  weight="fill"
-                />
-                <span className="text-[26px] font-bold leading-none text-brand-2">
-                  {shop.rating.toFixed(1)}
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="rounded-full border border-[#cfdccb] bg-white/70 px-3 py-1 text-[10px] font-semibold text-[#557360]">
+                    {shop.kind}
+                  </span>
+                  {shop.badges.map((badge) => (
+                    <span
+                      className="inline-flex items-center gap-1 rounded-full bg-[#e6f0e2] px-3 py-1 text-[10px] font-semibold text-[#38684f]"
+                      key={badge}
+                    >
+                      {badge === "Top Rated" ? (
+                        <Star aria-hidden="true" size={13} weight="fill" />
+                      ) : badge === "Quick Responder" ? (
+                        <ChatCircleDots
+                          aria-hidden="true"
+                          size={13}
+                          weight="fill"
+                        />
+                      ) : (
+                        <ShieldCheck
+                          aria-hidden="true"
+                          size={13}
+                          weight="fill"
+                        />
+                      )}
+                      {badge}
+                    </span>
+                  ))}
+                </div>
+
+                <h1 className="mt-3 font-serif text-[34px] leading-tight tracking-[-0.04em] break-words text-brand sm:text-[44px] lg:text-[50px]">
+                  {shop.name}
+                </h1>
+                <p className="mt-3 max-w-3xl text-sm leading-6 text-brand-light sm:text-[15px] sm:leading-7">
+                  {shop.description}
+                </p>
+
+                <div className="mt-5 flex flex-wrap gap-x-5 gap-y-3 text-xs text-brand-gray-4">
+                  <span className="inline-flex items-center gap-1.5">
+                    <MapPin
+                      aria-hidden="true"
+                      className="text-brand-3"
+                      size={15}
+                    />
+                    {shop.location}
+                  </span>
+                  <span className="inline-flex items-center gap-1.5">
+                    <CalendarBlank
+                      aria-hidden="true"
+                      className="text-brand-3"
+                      size={15}
+                    />
+                    Joined {shop.joinedYear}
+                  </span>
+                  <span className="inline-flex items-center gap-1.5">
+                    <Eye
+                      aria-hidden="true"
+                      className="text-brand-3"
+                      size={15}
+                    />
+                    {shop.visitors.toLocaleString("en-US")} visitors
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex shrink-0 items-center gap-3 self-start rounded-[20px] border border-[#dce6d8] bg-white/75 px-4 py-3 sm:min-w-[156px] sm:flex-col sm:items-center sm:gap-1 sm:px-5 sm:py-4">
+                <div className="inline-flex items-center gap-1.5">
+                  <Star
+                    aria-hidden="true"
+                    className="text-[#b7823e]"
+                    size={20}
+                    weight="fill"
+                  />
+                  <span className="text-[26px] leading-none font-bold text-brand-2">
+                    {shop.rating.toFixed(1)}
+                  </span>
+                </div>
+                <span className="text-xs text-brand-gray-4">
+                  from {shop.reviewCount.toLocaleString("en-US")} reviews
                 </span>
               </div>
-              <span className="text-xs text-brand-gray-4">
-                from {shop.reviewCount.toLocaleString("en-US")} reviews
-              </span>
             </div>
           </div>
         </header>
@@ -180,8 +203,9 @@ export function ShopDetailView({ shop }: ShopDetailViewProps) {
                   onKeyDown={(event) => handleTabKeyDown(event, tab.id)}
                   onClick={() => setActiveTab(tab.id)}
                   ref={(element) => {
-                    tabRefs.current[tabs.findIndex((item) => item.id === tab.id)] =
-                      element
+                    tabRefs.current[
+                      tabs.findIndex((item) => item.id === tab.id)
+                    ] = element
                   }}
                   role="tab"
                   tabIndex={isSelected ? 0 : -1}
@@ -250,7 +274,10 @@ export function ShopDetailView({ shop }: ShopDetailViewProps) {
                       Average shop rating
                     </p>
                   </div>
-                  <div className="flex items-center gap-1" aria-label={`${shop.rating} out of 5 stars`}>
+                  <div
+                    className="flex items-center gap-1"
+                    aria-label={`${shop.rating} out of 5 stars`}
+                  >
                     {[1, 2, 3, 4, 5].map((star) => (
                       <Star
                         aria-hidden="true"
@@ -293,7 +320,9 @@ export function ShopDetailView({ shop }: ShopDetailViewProps) {
                               }
                               key={star}
                               size={13}
-                              weight={review.rating >= star ? "fill" : "regular"}
+                              weight={
+                                review.rating >= star ? "fill" : "regular"
+                              }
                             />
                           ))}
                         </div>

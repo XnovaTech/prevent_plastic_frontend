@@ -74,14 +74,14 @@ export const cartPageMock = {
     sessionNote:
       "Bag changes reset when you refresh for now — cart storage is still being confirmed.",
     continueLabel: "Continue shopping",
-    continueHref: "/sme",
+    continueHref: "/shops",
   },
   empty: {
     title: "Your bag is feeling light",
     description:
       "A good find is never far away. Wander the market and bring something lovely home.",
     actionLabel: "Find something good",
-    actionHref: "/sme",
+    actionHref: "/shops",
   },
   reassurance,
 }

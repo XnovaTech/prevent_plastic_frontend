@@ -91,14 +91,7 @@ export function ProductCard({
                   : "bg-[#fbeee7]/90 text-[#a65e46]"
               }`}
             >
-              {sellerType === "sme" ? (
-                <>
-                  <span className="sm:hidden">SME</span>
-                  <span className="hidden sm:inline">Small business</span>
-                </>
-              ) : (
-                "Individual"
-              )}
+              {sellerType === "sme" ? "Shops" : "Products"}
             </span>
           )}
 

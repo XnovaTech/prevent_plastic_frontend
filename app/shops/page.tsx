@@ -6,7 +6,7 @@ import { SiteFooter } from "@/components/shared/siteFooter"
 import { SiteHeader } from "@/components/shared/siteHeader"
 
 export const metadata: Metadata = {
-  title: "SME finds — Prevent Plastic",
+  title: "Shops — Prevent Plastic",
   description:
     "Browse good finds from local small businesses and makers giving useful things another chapter.",
 }
@@ -21,13 +21,14 @@ export default function Page() {
       >
         Skip to content
       </a>
-      <SiteHeader activeHref="/sme" />
+      <SiteHeader activeHref="/shops" />
       <main id="main-content">
         <ShopListSection
           title="Small &amp; mighty finds."
           eyebrow="SMALL BUSINESSES, GOOD FINDS"
-          description=
-            {"Meet the small businesses and makers giving useful things another chapter. Every find supports a local shop, studio, or workshop."}
+          description={
+            "Meet the small businesses and makers giving useful things another chapter. Every find supports a local shop, studio, or workshop."
+          }
         />
       </main>
       <SiteFooter />

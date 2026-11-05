@@ -23,11 +23,13 @@ import {
 import {
   categoryColors,
   categoryLabels,
+  nearbyRadiusMiles,
   repairDivisionBoundarySourceUrl,
   repairDivisions,
   repairMapSourceUrl,
 } from "@/components/repair/repairMapConfig"
 import { RepairPosterCarousel } from "@/components/repair/repairPosterCarousel"
+import { useGeolocation, type UserLocation } from "@/hooks/useGeolocation"
 
 type RawMyanmarMap = {
   categories: string[]
@@ -98,6 +100,36 @@ function formatPlaceCount(count: number) {
   return new Intl.NumberFormat("en-US").format(count)
 }
 
+function isInsideMapArea(location: UserLocation) {
+  return (
+    location.latitude >= 5 &&
+    location.latitude <= 31 &&
+    location.longitude >= 88 &&
+    location.longitude <= 105
+  )
+}
+
+function distanceInMiles(
+  from: UserLocation,
+  to: { latitude: number; longitude: number }
+) {
+  const toRadians = (degrees: number) => (degrees * Math.PI) / 180
+  const earthRadiusMiles = 3958.8
+
+  const deltaLatitude = toRadians(to.latitude - from.latitude)
+  const deltaLongitude = toRadians(to.longitude - from.longitude)
+  const latitude1 = toRadians(from.latitude)
+  const latitude2 = toRadians(to.latitude)
+
+  const haversine =
+    Math.sin(deltaLatitude / 2) ** 2 +
+    Math.cos(latitude1) *
+      Math.cos(latitude2) *
+      Math.sin(deltaLongitude / 2) ** 2
+
+  return 2 * earthRadiusMiles * Math.asin(Math.min(1, Math.sqrt(haversine)))
+}
+
 const categoryIcons = [
   Wrench,
   Key,
@@ -120,8 +152,19 @@ export function RepairMapExperience() {
   const [activeCategories, setActiveCategories] = useState<string[] | null>(
     null
   )
+  const [nearbyOnly, setNearbyOnly] = useState(true)
   const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(null)
   const [focusPlace, setFocusPlace] = useState<MyanmarPlace | null>(null)
+  const geolocation = useGeolocation()
+  const [dismissedLocation, setDismissedLocation] =
+    useState<UserLocation | null>(null)
+
+  // Auto-locate on mount so the map focuses on the user's nearby area
+  // instead of rendering the whole Myanmar overview first.
+  useEffect(() => {
+    geolocation.locate()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   useEffect(() => {
     const controller = new AbortController()
@@ -252,6 +295,36 @@ export function RepairMapExperience() {
   const selectedPlace =
     visiblePlaces.find((place) => place.id === selectedPlaceId) ?? null
 
+  const withinMapArea =
+    geolocation.location !== null && isInsideMapArea(geolocation.location)
+  const locationIsDismissed =
+    geolocation.location !== null && geolocation.location === dismissedLocation
+  const userLocation =
+    geolocation.location && !locationIsDismissed && withinMapArea
+      ? geolocation.location
+      : null
+  const outsideMapArea =
+    geolocation.location !== null && !locationIsDismissed && !withinMapArea
+
+  const mapPlaces = useMemo(() => {
+    if (!nearbyOnly || !userLocation) return visiblePlaces
+    return visiblePlaces.filter(
+      (place) => distanceInMiles(userLocation, place) <= nearbyRadiusMiles
+    )
+  }, [nearbyOnly, userLocation, visiblePlaces])
+
+  const nearbyCount = useMemo(() => {
+    if (!userLocation) return 0
+
+    return visiblePlaces.filter(
+      (place) => distanceInMiles(userLocation, place) <= nearbyRadiusMiles
+    ).length
+  }, [userLocation, visiblePlaces])
+
+  const locationMessage = outsideMapArea
+    ? "Your location is outside this map's area of Myanmar."
+    : geolocation.errorMessage
+
   const toggleCategory = useCallback(
     (category: string) => {
       setActiveCategories((current) => {
@@ -373,6 +446,23 @@ export function RepairMapExperience() {
                 {selectedDivision ?? "Myanmar"}
               </span>
             </label>
+
+            {userLocation && (
+              <button
+                className="mt-3 flex w-full items-center justify-between rounded-xl border border-[#dfe6dc] bg-[#f7f9f5] px-3 py-2 text-left text-[11px] font-semibold text-brand-6 transition-colors hover:bg-[#eef3ea]"
+                onClick={() => setNearbyOnly((value) => !value)}
+                type="button"
+              >
+                <span>
+                  {nearbyOnly
+                    ? `Showing nearby places (${nearbyCount} within ${nearbyRadiusMiles} miles)`
+                    : "Showing all places on the map"}
+                </span>
+                <span className="text-[10px] font-bold text-brand-3">
+                  {nearbyOnly ? "Show all" : "Nearby only"}
+                </span>
+              </button>
+            )}
 
             {query.trim() && (
               <div aria-live="polite" className="mt-4">
@@ -526,7 +616,7 @@ export function RepairMapExperience() {
 
         <section
           aria-label="Interactive map of green places in Myanmar"
-          className="relative h-[440px] overflow-hidden rounded-[24px] border border-[#dfe6dc] bg-[#e9eee7] shadow-[0_18px_48px_-34px_rgba(27,65,56,0.4)] sm:h-[540px] sm:rounded-[28px] lg:h-[680px]"
+          className="isolate relative h-[440px] overflow-hidden rounded-[24px] border border-[#dfe6dc] bg-[#e9eee7] shadow-[0_18px_48px_-34px_rgba(27,65,56,0.4)] sm:h-[540px] sm:rounded-[28px] lg:h-[680px]"
         >
           {loadError ? (
             <div
@@ -552,16 +642,45 @@ export function RepairMapExperience() {
               <MyanmarPlacesMap
                 divisionPlaces={divisionPlaces}
                 focusPlace={focusPlace}
+                locationStatus={geolocation.status}
+                onLocate={geolocation.locate}
+                onResetView={() => setDismissedLocation(geolocation.location)}
                 onSelectPlace={(place) => setSelectedPlaceId(place.id)}
-                places={visiblePlaces}
+                places={mapPlaces}
                 selectedDivision={selectedDivision}
                 selectedPlaceId={selectedPlaceId}
+                userLocation={userLocation}
               />
               <div
                 aria-live="polite"
-                className="pointer-events-none absolute bottom-4 left-4 z-[1000] rounded-full border border-white/80 bg-white/95 px-3.5 py-2 text-[10px] font-semibold text-brand-6 shadow-lg shadow-brand/10 backdrop-blur-sm sm:bottom-5 sm:left-5"
+                className="pointer-events-none absolute bottom-4 left-4  flex max-w-[calc(100%-2rem)] flex-col items-start gap-2 sm:bottom-5 sm:left-5"
               >
-                {formatPlaceCount(visiblePlaces.length)} places shown
+                <div className="rounded-full border border-white/80 bg-white/95 px-3.5 py-2 text-[10px] font-semibold text-brand-6 shadow-lg shadow-brand/10 backdrop-blur-sm">
+                  {formatPlaceCount(visiblePlaces.length)} places shown
+                </div>
+                {geolocation.status === "locating" && (
+                  <div className="rounded-full border border-white/80 bg-white/95 px-3.5 py-2 text-[10px] font-semibold text-brand-3 shadow-lg shadow-brand/10 backdrop-blur-sm">
+                    Finding your location…
+                  </div>
+                )}
+                {userLocation && (
+                  <div className="inline-flex items-center gap-2 rounded-full border border-white/80 bg-white/95 px-3.5 py-2 text-[10px] font-semibold text-brand-6 shadow-lg shadow-brand/10 backdrop-blur-sm">
+                    <span
+                      aria-hidden="true"
+                      className="size-2 shrink-0 rounded-full bg-brand-2 ring-2 ring-brand-2/25"
+                    />
+                    You&apos;re here · {formatPlaceCount(nearbyCount)} places
+                    within {nearbyRadiusMiles} miles
+                  </div>
+                )}
+                {locationMessage && (
+                  <div
+                    role="status"
+                    className="rounded-full border border-[#f0dcc9] bg-[#fff6ee] px-3.5 py-2 text-[10px] font-semibold text-brand-orange-3 shadow-lg shadow-brand/10 backdrop-blur-sm"
+                  >
+                    {locationMessage}
+                  </div>
+                )}
               </div>
             </>
           ) : (
@@ -570,7 +689,10 @@ export function RepairMapExperience() {
               className="flex h-full min-h-[440px] items-center justify-center sm:min-h-[540px] lg:min-h-[680px]"
               role="status"
             >
-              <span className="size-7 animate-spin rounded-full border-2 border-brand-2/20 border-t-brand-2" />
+              <Recycle
+                aria-hidden="true"
+                className="size-10 animate-spin text-brand-2"
+              />
               <span className="sr-only">Loading map locations</span>
             </div>
           )}

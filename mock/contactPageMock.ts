@@ -91,10 +91,8 @@ export const contactPageMock = {
       "Partnerships & press",
       "Something else",
     ],
-    pendingNote:
-      "This form is a design preview and doesn't send messages yet.",
-    responseNote:
-      "Email replies usually take a couple of working days.",
+    pendingNote: "This form is a design preview and doesn't send messages yet.",
+    responseNote: "Email replies usually take a couple of working days.",
   },
   faqs: [
     {
@@ -134,7 +132,7 @@ export const contactPageMock = {
     description:
       "Prevent Plastic is built by people who care about what already exists. Questions, ideas, and gentle nudges all help us make the marketplace a better place to wander.",
     actionLabel: "Meet the community",
-    actionHref: "/#sme",
+    actionHref: "/#community",
     stats: [
       { value: "2 days", label: "typical reply time" },
       { value: "180+", label: "local makers & merchants" },

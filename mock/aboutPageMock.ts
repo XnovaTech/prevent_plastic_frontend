@@ -110,8 +110,8 @@ export const aboutPageMock = {
     highlight: "another chapter.",
     description:
       "Prevent Plastic is a local marketplace for pre-loved finds and thoughtful sellers. We make it easier to discover useful things, give them another life, and support the people behind each find.",
-    primaryAction: { label: "Explore the market", href: "/individual" },
-    secondaryAction: { label: "Meet local shops", href: "/sme" },
+    primaryAction: { label: "Explore the market", href: "/products" },
+    secondaryAction: { label: "Meet local shops", href: "/shops" },
     image: "/products/woodenWallShelf.jpg",
     imageAlt: "A vintage wooden wall shelf ready for another home",
     imageLabel: "GOOD THINGS, AGAIN",
@@ -224,7 +224,7 @@ export const aboutPageMock = {
     featureCardTitle: "Discover local sellers",
     featureCardDescription:
       "Explore independent sellers and small shops bringing good finds to the marketplace.",
-    featureAction: { label: "Meet local shops", href: "/sme" },
+    featureAction: { label: "Meet local shops", href: "/shops" },
   },
   campaign: {
     eyebrow: "THE SECOND-LIFE CAMPAIGN",
@@ -238,7 +238,7 @@ export const aboutPageMock = {
     quote:
       "The most sustainable purchase is often the one that already exists.",
     quoteAttribution: "The idea behind the campaign",
-    primaryAction: { label: "Explore pre-loved finds", href: "/individual" },
+    primaryAction: { label: "Explore pre-loved finds", href: "/products" },
     secondaryAction: { label: "See what guides us", href: "#values" },
     actions: [
       {
@@ -357,7 +357,7 @@ export const aboutPageMock = {
     highlight: "another story.",
     description:
       "Explore pre-loved finds, discover local sellers, and see what might be useful in your everyday life.",
-    primaryAction: { label: "Explore the market", href: "/individual" },
+    primaryAction: { label: "Explore the market", href: "/products" },
     secondaryAction: { label: "Contact us", href: "/contact" },
     note: "This is a design preview. Checkout, payment, delivery, and seller onboarding are still being confirmed.",
   },

@@ -3,10 +3,24 @@
 import { useEffect, useMemo, useRef } from "react"
 import * as L from "leaflet"
 import MarkerClusterGroup from "react-leaflet-cluster"
-import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet"
+import {
+  Circle,
+  CircleMarker,
+  MapContainer,
+  Marker,
+  Popup,
+  TileLayer,
+  useMap,
+} from "react-leaflet"
 
+import { Recycle } from "@phosphor-icons/react"
 import type { MyanmarPlace } from "@/components/repair/repairMapExperience"
-import { categoryColors } from "@/components/repair/repairMapConfig"
+import {
+  categoryColors,
+  nearbyRadiusMiles,
+  nearbyRadiusMeters,
+} from "@/components/repair/repairMapConfig"
+import type { GeolocationStatus, UserLocation } from "@/hooks/useGeolocation"
 
 const MYANMAR_OVERVIEW_BOUNDS: L.LatLngBoundsExpression = [
   [8, 92],
@@ -33,6 +47,10 @@ type MyanmarPlacesMapProps = {
   onSelectPlace: (place: MyanmarPlace) => void
   focusPlace: MyanmarPlace | null
   selectedDivision: string | null
+  userLocation: UserLocation | null
+  locationStatus: GeolocationStatus
+  onLocate: () => void
+  onResetView: () => void
 }
 
 function MapController({
@@ -40,15 +58,28 @@ function MapController({
   places,
   focusPlace,
   selectedDivision,
+  userLocation,
+  locationStatus,
+  onLocate,
+  onResetView,
 }: Pick<
   MyanmarPlacesMapProps,
-  "divisionPlaces" | "places" | "focusPlace" | "selectedDivision"
+  | "divisionPlaces"
+  | "places"
+  | "focusPlace"
+  | "selectedDivision"
+  | "userLocation"
+  | "locationStatus"
+  | "onLocate"
+  | "onResetView"
 >) {
   const map = useMap()
   const fittedMap = useRef(false)
   const previousDivision = useRef<string | null>(null)
+  const hasAutoLocated = useRef(false)
 
   const resetView = () => {
+    onResetView()
     map.flyToBounds(MYANMAR_OVERVIEW_BOUNDS, {
       animate: true,
       duration: 0.8,
@@ -57,15 +88,26 @@ function MapController({
     })
   }
 
+  // Auto-locate on first mount so we focus on the user's nearby area
+  // instead of rendering the whole Myanmar overview.
   useEffect(() => {
-    if (!places.length || fittedMap.current) return
+    if (hasAutoLocated.current) return
+    hasAutoLocated.current = true
+    if (locationStatus === "idle") {
+      onLocate()
+    }
+  }, [locationStatus, onLocate])
+
+  // Only fit to all places if there is no user location yet.
+  useEffect(() => {
+    if (!places.length || fittedMap.current || userLocation) return
 
     const bounds = L.latLngBounds(
       places.map((place) => [place.latitude, place.longitude])
     )
     map.fitBounds(bounds, { padding: [28, 28], maxZoom: 7 })
     fittedMap.current = true
-  }, [map, places])
+  }, [map, places, userLocation])
 
   useEffect(() => {
     if (previousDivision.current === selectedDivision) return
@@ -101,8 +143,62 @@ function MapController({
     })
   }, [focusPlace, map])
 
+  useEffect(() => {
+    if (!userLocation) return
+
+    const nearbyBounds = L.latLng(
+      userLocation.latitude,
+      userLocation.longitude
+    ).toBounds(nearbyRadiusMeters * 2)
+
+    map.flyToBounds(nearbyBounds, {
+      animate: true,
+      duration: 0.8,
+      padding: [36, 36],
+      maxZoom: 12,
+    })
+  }, [map, userLocation])
+
   return (
-    <div className="absolute top-4 right-4 z-[1000] flex flex-col gap-2">
+    <div className="absolute top-4 right-4  flex flex-col gap-2">
+      <button
+        aria-label={
+          locationStatus === "locating"
+            ? "Finding your location"
+            : userLocation
+              ? `Your location — showing ${nearbyRadiusMiles} miles around you`
+              : "Focus the map on my location"
+        }
+        className={`flex size-10 items-center justify-center rounded-xl border shadow-lg shadow-brand/10 transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-2 ${
+          userLocation
+            ? "border-brand-2 bg-brand-2 text-white hover:bg-brand-3"
+            : "border-[#e1e8df] bg-white/95 text-brand-3 hover:bg-white"
+        }`}
+        onClick={onLocate}
+        type="button"
+      >
+        {locationStatus === "locating" ? (
+          <Recycle
+            aria-hidden="true"
+            className="size-5 animate-spin text-brand-2"
+          />
+        ) : (
+          <svg
+            aria-hidden="true"
+            fill="none"
+            height="17"
+            stroke="currentColor"
+            strokeLinecap="round"
+            strokeWidth="1.7"
+            viewBox="0 0 24 24"
+            width="17"
+          >
+            <circle cx="12" cy="12" r="6.5" />
+            <circle cx="12" cy="12" r="2" fill="currentColor" stroke="none" />
+            <path d="M12 2.5V6M12 18v3.5M2.5 12H6M18 12h3.5" />
+          </svg>
+        )}
+      </button>
       <button
         aria-label="Zoom in"
         className="flex size-10 items-center justify-center rounded-xl border border-[#e1e8df] bg-white/95 text-xl text-brand shadow-lg shadow-brand/10 transition hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-2"
@@ -152,6 +248,10 @@ export function MyanmarPlacesMap({
   onSelectPlace,
   focusPlace,
   selectedDivision,
+  userLocation,
+  locationStatus,
+  onLocate,
+  onResetView,
 }: MyanmarPlacesMapProps) {
   const icons = useMemo(
     () =>
@@ -207,12 +307,41 @@ export function MyanmarPlacesMap({
       <MapController
         divisionPlaces={divisionPlaces}
         focusPlace={focusPlace}
+        locationStatus={locationStatus}
+        onLocate={onLocate}
+        onResetView={onResetView}
         places={places}
         selectedDivision={selectedDivision}
+        userLocation={userLocation}
       />
+      {userLocation && (
+        <>
+          <Circle
+            center={[userLocation.latitude, userLocation.longitude]}
+            pathOptions={{
+              color: "#174e46",
+              dashArray: "7 9",
+              fillColor: "#2f7d63",
+              fillOpacity: 0.07,
+              weight: 2,
+            }}
+            radius={nearbyRadiusMeters}
+          />
+          <CircleMarker
+            center={[userLocation.latitude, userLocation.longitude]}
+            pathOptions={{
+              color: "#ffffff",
+              fillColor: "#174e46",
+              fillOpacity: 1,
+              weight: 2,
+            }}
+            radius={7}
+          />
+        </>
+      )}
       <MarkerClusterGroup
         chunkedLoading
-        iconCreateFunction={(cluster) => {
+        iconCreateFunction={(cluster: any) => {
           const count = cluster.getChildCount()
           const label = count.toLocaleString()
           const width = Math.max(64, 34 + label.length * 11)

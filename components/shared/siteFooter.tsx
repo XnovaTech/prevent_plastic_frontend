@@ -30,9 +30,10 @@ export function SiteFooter() {
           >
             <Link href="/">Home</Link>
             <Link href="/blog">Journal</Link>
-            <Link href="/#sme">For merchants</Link>
+            <Link href="/shops">For merchants</Link>
             <Link href="/about">About us</Link>
             <Link href="/contact">Contact</Link>
+            <Link href="/privacy">Privacy &amp; Policy</Link>
           </nav>
           <p className="text-[10px] text-brand-gray-3">
             Contact details are placeholders until confirmed.

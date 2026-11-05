@@ -19,7 +19,9 @@ export type ShopDetail = {
   rating: number
   reviewCount: number
   joinedYear: string
-  followers: number
+  visitors: number
+  coverImage: string
+  avatarImage: string
   products: HomeProduct[]
   reviews: ShopReview[]
   badges: string[]
@@ -37,7 +39,9 @@ export const shops: ShopDetail[] = [
     rating: 4.9,
     reviewCount: 128,
     joinedYear: "2023",
-    followers: 842,
+    visitors: 842,
+    coverImage: "/products/ceramicPlates.jpg",
+    avatarImage: "/products/woodenStool.jpg",
     badges: ["Verified Seller", "Top Rated"],
     products: catalogPageMock.sme.products.filter(
       (p) => p.merchant === "Second Bloom Studio"
@@ -77,7 +81,9 @@ export const shops: ShopDetail[] = [
     rating: 4.8,
     reviewCount: 96,
     joinedYear: "2024",
-    followers: 654,
+    visitors: 654,
+    coverImage: "/products/denimJacket.jpg",
+    avatarImage: "/products/wovenMarketBag.jpg",
     badges: ["Quick Responder"],
     products: [
       ...catalogPageMock.sme.products.filter(
@@ -122,7 +128,9 @@ export const shops: ShopDetail[] = [
     rating: 4.9,
     reviewCount: 84,
     joinedYear: "2024",
-    followers: 521,
+    visitors: 521,
+    coverImage: "/products/deskLamp.jpg",
+    avatarImage: "/products/filmCamera.jpg",
     badges: ["Verified Seller"],
     products: [
       ...catalogPageMock.sme.products.filter(
@@ -167,7 +175,9 @@ export const shops: ShopDetail[] = [
     rating: 4.7,
     reviewCount: 63,
     joinedYear: "2024",
-    followers: 410,
+    visitors: 410,
+    coverImage: "/products/wovenMarketBag.jpg",
+    avatarImage: "/products/denimJacket.jpg",
     badges: ["Quick Responder"],
     products: catalogPageMock.individual.products.filter(
       (p) => p.merchant === "Yangon Vintage"
@@ -200,7 +210,9 @@ export const shops: ShopDetail[] = [
     rating: 4.9,
     reviewCount: 156,
     joinedYear: "2023",
-    followers: 720,
+    visitors: 720,
+    coverImage: "/products/woodenStool.jpg",
+    avatarImage: "/products/succulentPot.jpg",
     badges: ["Verified Seller", "Top Rated"],
     products: [
       {
@@ -265,7 +277,9 @@ export const shops: ShopDetail[] = [
     rating: 4.6,
     reviewCount: 89,
     joinedYear: "2024",
-    followers: 390,
+    visitors: 390,
+    coverImage: "/products/woodenWallShelf.jpg",
+    avatarImage: "/products/succulentPot.jpg",
     badges: [],
     products: catalogPageMock.individual.products.filter(
       (p) => p.merchant === "Preloved Kids"
@@ -291,7 +305,9 @@ export const shops: ShopDetail[] = [
     rating: 4.8,
     reviewCount: 71,
     joinedYear: "2023",
-    followers: 280,
+    visitors: 280,
+    coverImage: "/products/filmCamera.jpg",
+    avatarImage: "/products/deskLamp.jpg",
     badges: ["Verified Seller"],
     products: [
       {
@@ -349,7 +365,9 @@ export const shops: ShopDetail[] = [
     rating: 4.5,
     reviewCount: 44,
     joinedYear: "2024",
-    followers: 195,
+    visitors: 195,
+    coverImage: "/products/succulentPot.jpg",
+    avatarImage: "/products/ceramicPlates.jpg",
     badges: [],
     products: [
       {
@@ -399,7 +417,9 @@ export const shops: ShopDetail[] = [
     rating: 4.9,
     reviewCount: 38,
     joinedYear: "2023",
-    followers: 310,
+    visitors: 310,
+    coverImage: "/products/deskLamp.jpg",
+    avatarImage: "/products/wovenMarketBag.jpg",
     badges: ["Verified Seller"],
     products: [
       {
@@ -457,7 +477,9 @@ export const shops: ShopDetail[] = [
     rating: 4.7,
     reviewCount: 52,
     joinedYear: "2024",
-    followers: 265,
+    visitors: 265,
+    coverImage: "/products/filmCamera.jpg",
+    avatarImage: "/products/denimJacket.jpg",
     badges: [],
     products: catalogPageMock.individual.products.filter(
       (p) => p.merchant === "Retro Sounds"

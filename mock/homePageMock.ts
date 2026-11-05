@@ -39,8 +39,8 @@ export const homePageMock = {
   announcement: "A little less new. A lot more meaningful.",
   navigation: [
     { label: "Home", href: "/" },
-    { label: "SME", href: "/sme" },
-    { label: "Individual", href: "/individual" },
+    { label: "Products", href: "/products" },
+    { label: "Shops", href: "/shops" },
     { label: "Repair", href: "/repair" },
     { label: "About us", href: "/about" },
     { label: "Blog", href: "/blog" },
@@ -84,7 +84,7 @@ export const homePageMock = {
         description:
           "Shop local and keep useful everyday things in circulation, for a little longer.",
         actionLabel: "Meet the community",
-        actionHref: "#sme",
+        actionHref: "#community",
         image: "/products/deskLamp.jpg",
         imageAlt: "A secondhand desk lamp displayed on a shelf",
         imageLabel: "LOCAL FINDS, BIG HEART",

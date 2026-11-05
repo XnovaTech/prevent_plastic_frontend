@@ -26,7 +26,7 @@ export function ProductFeedSection() {
             </p>
           </div>
           <SectionBrowseLink
-            href="/individual"
+            href="/products"
             label="Browse more"
             placement="header"
             screen="desktop"
@@ -38,7 +38,7 @@ export function ProductFeedSection() {
           ))}
         </div>
         <SectionBrowseLink
-          href="/individual"
+          href="/products"
           label="Browse more"
           placement="footer"
           screen="mobile"
