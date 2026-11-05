@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { MagnifyingGlass } from "@phosphor-icons/react"
 
 import { Button } from "@/components/ui/button"
@@ -28,15 +28,42 @@ const style = `
   .dot { display:inline-block; margin:0 .35em; color:var(--leaf); }
   @keyframes reveal { to { clip-path: inset(-30px -30px -30px -8px); } }
   @keyframes wave { 0%,100% { transform:translateY(0) rotate(0); } 50% { transform:translateY(-10px) rotate(-2deg); } }
-  @keyframes miniFloat { 0%,100% { transform:translateY(0) scale(1) rotate(0deg); } 25% { transform:translateY(-6px) scale(1.03) rotate(-3deg); } 50% { transform:translateY(0) scale(1.06) rotate(0deg); } 75% { transform:translateY(6px) scale(1.03) rotate(3deg); } }
+  @keyframes miniFloat { 0%,100% { transform:translateY(0) scale(1) rotate(0deg); } 25% { transform:translateY(-8px) scale(1.04) rotate(-4deg); } 50% { transform:translateY(0) scale(1.08) rotate(0deg); } 75% { transform:translateY(8px) scale(1.04) rotate(4deg); } }
   .placeholder-burmese::placeholder {
     font-family:"BurmeseHandwriting",sans-serif;
   }
   .btn-burmese {
     font-family:"BurmeseHandwriting",sans-serif;
   }
+  .mini-gif {
+    animation: miniFloat 2.5s ease-in-out infinite;
+    transform-origin: center center;
+  }
 `
 
+function LoopingGif({ src, width, height }: { src: string; width: number; height: number }) {
+  const [tick, setTick] = useState(0)
+
+  useEffect(() => {
+    // mini.gif is ~2s long; force an infinite loop by re-triggering src.
+    const interval = setInterval(() => {
+      setTick((t) => t + 1)
+    }, 2000)
+    return () => clearInterval(interval)
+  }, [])
+
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      alt=""
+      className="mini-gif h-full w-full object-contain mix-blend-multiply"
+      height={height}
+      key={tick}
+      src={`${src}?t=${tick}`}
+      width={width}
+    />
+  )
+}
 const quickFilters = [
   { id: "all", label: "အားလုံး" },
   { id: "clothes", label: "အဝတ်အစား" },
@@ -45,19 +72,6 @@ const quickFilters = [
   { id: "accessories", label: "အသုံးအဆောင်" },
   { id: "repair", label: "ပြုပြင်ခွင့်" },
 ]
-
-function LoopingGif({ src, width, height }: { src: string; width: number; height: number }) {
-  return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
-      alt=""
-      className="h-full w-full object-contain animate-[miniFloat_3s_ease-in-out_infinite]"
-      height={height}
-      src={src}
-      width={width}
-    />
-  )
-}
 
 export function HomeSearchFilter() {
   const [activeFilter, setActiveFilter] = useState("all")
@@ -69,11 +83,9 @@ export function HomeSearchFilter() {
       id="search-filter"
     >
       <div className="relative mx-auto max-w-[1440px]">
-        <div className="relative overflow-hidden rounded-[28px] border border-[#e3e9df] bg-white/90 sm:rounded-[36px] sm:px-10 sm:py-11 lg:px-16 lg:py-12">
+        <div className="relative overflow-hidden rounded-[28px] border border-[#e3e9df] bg-[linear-gradient(135deg,#ffffff_0%,#f8fbf6_38%,#edf5e9_58%,#ffffff_100%)] px-5 py-8 shadow-[0_20px_60px_-48px_rgba(38,74,55,0.4)] sm:rounded-[36px] sm:px-10 sm:py-11 lg:px-16 lg:py-12">
           <div className="relative z-10 mx-auto flex max-w-[1040px] flex-col items-center text-center">
             <div className="relative mb-8 w-full">
-               {/* Decorative looping gif on the right */}
-             
               <div className="relative inline-flex flex-col items-center gap-1 rounded-[999px] px-10 py-6 sm:px-14 sm:py-7">
                 <style>{style}</style>
                 <h2 className="txt relative sm:text-[25px] md:text-[36px]">
@@ -83,10 +95,11 @@ export function HomeSearchFilter() {
                   <span className="dot">၊</span>
                   <span className="w w3">ဝင်ကြည့်လေ</span>
                 </h2>
-       <div className="pointer-events-none absolute left-[-8%] top-1/2 hidden h-24 w-24 -translate-y-1/2 opacity-90 md:block lg:right-[-4%] lg:h-28 lg:w-28">
-                  <LoopingGif height={350} src="/gif/mini.gif" width={350} />
+
+                {/* Decorative looping gif on the left */}
+                <div className="pointer-events-none absolute left-[-18%] top-1/2 hidden h-32 w-32 -translate-y-1/2 opacity-90 md:block lg:right-[-4%] lg:h-40 lg:w-40">
+                  <LoopingGif height={160} src="/gif/mini.gif" width={160} />
                 </div>
-               
               </div>
             </div>
 
