@@ -40,7 +40,7 @@ export const shops: ShopDetail[] = [
     reviewCount: 128,
     joinedYear: "2023",
     visitors: 842,
-    coverImage: "/products/ceramicPlates.jpg",
+    coverImage: "/prevent/cover.avif",
     avatarImage: "/products/woodenStool.jpg",
     badges: ["Verified Seller", "Top Rated"],
     products: catalogPageMock.sme.products.filter(
@@ -82,7 +82,7 @@ export const shops: ShopDetail[] = [
     reviewCount: 96,
     joinedYear: "2024",
     visitors: 654,
-    coverImage: "/products/denimJacket.jpg",
+    coverImage: "/prevent/cover.avif",
     avatarImage: "/products/wovenMarketBag.jpg",
     badges: ["Quick Responder"],
     products: [
@@ -129,7 +129,7 @@ export const shops: ShopDetail[] = [
     reviewCount: 84,
     joinedYear: "2024",
     visitors: 521,
-    coverImage: "/products/deskLamp.jpg",
+    coverImage: "/prevent/cover.avif",
     avatarImage: "/products/filmCamera.jpg",
     badges: ["Verified Seller"],
     products: [
@@ -176,7 +176,7 @@ export const shops: ShopDetail[] = [
     reviewCount: 63,
     joinedYear: "2024",
     visitors: 410,
-    coverImage: "/products/wovenMarketBag.jpg",
+    coverImage: "/prevent/cover.avif",
     avatarImage: "/products/denimJacket.jpg",
     badges: ["Quick Responder"],
     products: catalogPageMock.individual.products.filter(
@@ -211,7 +211,7 @@ export const shops: ShopDetail[] = [
     reviewCount: 156,
     joinedYear: "2023",
     visitors: 720,
-    coverImage: "/products/woodenStool.jpg",
+    coverImage: "/prevent/cover.avif",
     avatarImage: "/products/succulentPot.jpg",
     badges: ["Verified Seller", "Top Rated"],
     products: [
@@ -278,7 +278,7 @@ export const shops: ShopDetail[] = [
     reviewCount: 89,
     joinedYear: "2024",
     visitors: 390,
-    coverImage: "/products/woodenWallShelf.jpg",
+    coverImage: "/prevent/cover.avif",
     avatarImage: "/products/succulentPot.jpg",
     badges: [],
     products: catalogPageMock.individual.products.filter(
@@ -306,7 +306,7 @@ export const shops: ShopDetail[] = [
     reviewCount: 71,
     joinedYear: "2023",
     visitors: 280,
-    coverImage: "/products/filmCamera.jpg",
+    coverImage: "/prevent/cover.avif",
     avatarImage: "/products/deskLamp.jpg",
     badges: ["Verified Seller"],
     products: [
@@ -366,7 +366,7 @@ export const shops: ShopDetail[] = [
     reviewCount: 44,
     joinedYear: "2024",
     visitors: 195,
-    coverImage: "/products/succulentPot.jpg",
+    coverImage: "/prevent/cover.avif",
     avatarImage: "/products/ceramicPlates.jpg",
     badges: [],
     products: [
@@ -418,7 +418,7 @@ export const shops: ShopDetail[] = [
     reviewCount: 38,
     joinedYear: "2023",
     visitors: 310,
-    coverImage: "/products/deskLamp.jpg",
+    coverImage: "/prevent/cover.avif",
     avatarImage: "/products/wovenMarketBag.jpg",
     badges: ["Verified Seller"],
     products: [
@@ -478,7 +478,7 @@ export const shops: ShopDetail[] = [
     reviewCount: 52,
     joinedYear: "2024",
     visitors: 265,
-    coverImage: "/products/filmCamera.jpg",
+    coverImage: "/prevent/cover.avif",
     avatarImage: "/products/denimJacket.jpg",
     badges: [],
     products: catalogPageMock.individual.products.filter(

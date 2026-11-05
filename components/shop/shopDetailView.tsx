@@ -56,7 +56,7 @@ export function ShopDetailView({ shop }: ShopDetailViewProps) {
   }
 
   return (
-    <section className="py-8 sm:py-12" id="shop-detail">
+    <section className="py-8 sm:py-12 max-w-7xl mx-auto" id="shop-detail">
       <div className="mx-auto max-w-[1440px] px-4 sm:px-8 lg:px-12">
         <Link
           className="mb-5 inline-flex min-h-10 items-center gap-2 rounded-full px-3 text-xs font-semibold text-brand-3 transition-colors hover:bg-white/70 hover:text-brand-orange focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#39745b]"

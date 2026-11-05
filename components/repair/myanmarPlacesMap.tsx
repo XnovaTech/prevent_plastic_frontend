@@ -341,7 +341,7 @@ export function MyanmarPlacesMap({
       )}
       <MarkerClusterGroup
         chunkedLoading
-        iconCreateFunction={(cluster: any) => {
+        iconCreateFunction={(cluster) => {
           const count = cluster.getChildCount()
           const label = count.toLocaleString()
           const width = Math.max(64, 34 + label.length * 11)

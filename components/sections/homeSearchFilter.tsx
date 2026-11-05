@@ -28,6 +28,7 @@ const style = `
   .dot { display:inline-block; margin:0 .35em; color:var(--leaf); }
   @keyframes reveal { to { clip-path: inset(-30px -30px -30px -8px); } }
   @keyframes wave { 0%,100% { transform:translateY(0) rotate(0); } 50% { transform:translateY(-10px) rotate(-2deg); } }
+  @keyframes miniFloat { 0%,100% { transform:translateY(0) scale(1) rotate(0deg); } 25% { transform:translateY(-6px) scale(1.03) rotate(-3deg); } 50% { transform:translateY(0) scale(1.06) rotate(0deg); } 75% { transform:translateY(6px) scale(1.03) rotate(3deg); } }
   .placeholder-burmese::placeholder {
     font-family:"BurmeseHandwriting",sans-serif;
   }
@@ -45,6 +46,19 @@ const quickFilters = [
   { id: "repair", label: "ပြုပြင်ခွင့်" },
 ]
 
+function LoopingGif({ src, width, height }: { src: string; width: number; height: number }) {
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      alt=""
+      className="h-full w-full object-contain animate-[miniFloat_3s_ease-in-out_infinite]"
+      height={height}
+      src={src}
+      width={width}
+    />
+  )
+}
+
 export function HomeSearchFilter() {
   const [activeFilter, setActiveFilter] = useState("all")
   const [searchQuery, setSearchQuery] = useState("")
@@ -55,9 +69,11 @@ export function HomeSearchFilter() {
       id="search-filter"
     >
       <div className="relative mx-auto max-w-[1440px]">
-        <div className="relative overflow-hidden rounded-[28px] border border-[#e3e9df] bg-[linear-gradient(135deg,rgba(239,245,235,0.9),rgba(255,255,255,0.88)_52%,rgba(250,243,235,0.86))] px-5 py-8 shadow-[0_20px_60px_-48px_rgba(38,74,55,0.4)] sm:rounded-[36px] sm:px-10 sm:py-11 lg:px-16 lg:py-12">
+        <div className="relative overflow-hidden rounded-[28px] border border-[#e3e9df] bg-white/90 sm:rounded-[36px] sm:px-10 sm:py-11 lg:px-16 lg:py-12">
           <div className="relative z-10 mx-auto flex max-w-[1040px] flex-col items-center text-center">
             <div className="relative mb-8 w-full">
+               {/* Decorative looping gif on the right */}
+             
               <div className="relative inline-flex flex-col items-center gap-1 rounded-[999px] px-10 py-6 sm:px-14 sm:py-7">
                 <style>{style}</style>
                 <h2 className="txt relative sm:text-[25px] md:text-[36px]">
@@ -65,95 +81,12 @@ export function HomeSearchFilter() {
                   <span className="dot">၊</span>
                   <span className="w w2">ဘာရှာလဲ</span>
                   <span className="dot">၊</span>
-                  <span className="w w3">ဝင်ကြည့်လေ</span>
+                  <span className="w w3">ဝင်ကြည့်လေ</span>
                 </h2>
-
-                {/* <svg
-                  aria-hidden="true"
-                  className="pointer-events-none absolute top-1/2 right-[-12%] hidden h-12 w-12 -translate-y-1/2 rotate-6 text-brand-3 opacity-75 sm:block"
-                  fill="none"
-                  viewBox="0 0 64 64"
-                >
-                  <path
-                    d="m43 16 8 2-2 8M51 18c-6-7-15-10-24-8M19 24l-2 8-8-3m7 4c2-9 9-16 17-19m20 29 5 7-8 5m2-8c-8 5-18 5-26 1"
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2.5"
-                  />
-                  <path
-                    d="m40 37-8-3m-8 6 8 3m7-27-3 8"
-                    stroke="#df896b"
-                    strokeLinecap="round"
-                    strokeWidth="2.5"
-                  />
-                </svg> */}
-                 <svg
-                  aria-hidden="true"
-                   className="pointer-events-none absolute top-1/2 right-[-12%] hidden h-12 w-12 -translate-y-1/2 rotate-6 text-brand-3 opacity-75 sm:block"
-                  fill="none"
-                  viewBox="0 0 56 56"
-                >
-                  <path
-                    d="M13 24h30l-3 25H16l-3-25Zm6 0v-5a9 9 0 0 1 18 0v5m-9 20V32m0 0c-7 0-10-4-10-10 7 0 10 4 10 10Zm0-5c0-6 3-9 10-9 0 6-3 9-10 9Z"
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2.2"
-                  />
-                  <path
-                    d="m9 15 2 2m35 17 2 2"
-                    stroke="#df896b"
-                    strokeLinecap="round"
-                    strokeWidth="2.5"
-                  />
-                </svg>
-
-                <svg
-                  aria-hidden="true"
-                  className="pointer-events-none absolute bottom-[-18%] left-[14%] hidden h-10 w-10 -rotate-6 text-[#82974f] opacity-80 md:block"
-                  fill="none"
-                  viewBox="0 0 56 56"
-                >
-                  <path
-                    d="M13 24h30l-3 25H16l-3-25Zm6 0v-5a9 9 0 0 1 18 0v5m-9 20V32m0 0c-7 0-10-4-10-10 7 0 10 4 10 10Zm0-5c0-6 3-9 10-9 0 6-3 9-10 9Z"
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2.2"
-                  />
-                  <path
-                    d="m9 15 2 2m35 17 2 2"
-                    stroke="#df896b"
-                    strokeLinecap="round"
-                    strokeWidth="2.5"
-                  />
-                </svg>
-
-                <div className="absolute top-1/2 left-[-10%] h-12 w-12 -rotate-12 opacity-75 md:left-[-12%]">
-                  <svg
-                    viewBox="0 0 64 64"
-                    fill="none"
-                    stroke="#39745b"
-                    strokeWidth="2.2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M31 55c1-13 2-22 8-32M37 31c-12 1-19-5-19-16 11-1 19 5 19 16Zm3-10c0-11 7-18 18-17 0 11-7 18-18 17Zm-18-8 13 15m20-11L39 29" />
-                  </svg>
+       <div className="pointer-events-none absolute left-[-8%] top-1/2 hidden h-24 w-24 -translate-y-1/2 opacity-90 md:block lg:right-[-4%] lg:h-28 lg:w-28">
+                  <LoopingGif height={350} src="/gif/mini.gif" width={350} />
                 </div>
-                <div className="hidden">
-                  <svg
-                    viewBox="0 0 64 64"
-                    fill="none"
-                    stroke="#39745b"
-                    strokeWidth="3"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M12 22s-4 2-4-6s4-6 4-6s4 2 4 6s-4 6-4 6ZM18 14s2 2 2-2s-2-2-2-2s-2 2-2 2s2 2 2 2ZM6 14s2 2 2-2s-2-2-2-2s-2 2-2 2s2 2 2 2Z" />
-                  </svg>
-                </div>
+               
               </div>
             </div>
 

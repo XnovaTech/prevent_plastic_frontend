@@ -8,6 +8,7 @@ import {
   Calendar,
   Clock,
   MagnifyingGlass,
+  PenNib,
   X,
 } from "@phosphor-icons/react/dist/ssr"
 
@@ -127,27 +128,36 @@ export function BlogSection({ posts }: BlogSectionProps) {
               </p>
             </div>
 
-            <label className="flex min-h-12 w-full items-center gap-3 rounded-full border border-[#dfe5dc] bg-white px-4 text-brand-3 transition-colors focus-within:border-brand-3 lg:max-w-[360px]">
-              <MagnifyingGlass aria-hidden="true" size={18} />
-              <span className="sr-only">Search journal stories</span>
-              <input
-                className="min-w-0 flex-1 bg-transparent text-sm text-brand outline-none placeholder:text-brand-gray-4"
-                onChange={(event) => setSearchTerm(event.target.value)}
-                placeholder="Search stories"
-                type="search"
-                value={searchTerm}
-              />
-              {searchTerm && (
-                <button
-                  aria-label="Clear search"
-                  className="inline-flex size-8 items-center justify-center rounded-full text-brand-gray-4 transition-colors hover:bg-[#f1f3ee] hover:text-brand"
-                  onClick={() => setSearchTerm("")}
-                  type="button"
-                >
-                  <X aria-hidden="true" size={16} />
-                </button>
-              )}
-            </label>
+            <div className="flex w-full flex-col gap-3 lg:w-auto lg:flex-row lg:items-center">
+              <label className="flex min-h-12 w-full items-center gap-3 rounded-full border border-[#dfe5dc] bg-white px-4 text-brand-3 transition-colors focus-within:border-brand-3 lg:max-w-[360px]">
+                <MagnifyingGlass aria-hidden="true" size={18} />
+                <span className="sr-only">Search journal stories</span>
+                <input
+                  className="min-w-0 flex-1 bg-transparent text-sm text-brand outline-none placeholder:text-brand-gray-4"
+                  onChange={(event) => setSearchTerm(event.target.value)}
+                  placeholder="Search stories"
+                  type="search"
+                  value={searchTerm}
+                />
+                {searchTerm && (
+                  <button
+                    aria-label="Clear search"
+                    className="inline-flex size-8 items-center justify-center rounded-full text-brand-gray-4 transition-colors hover:bg-[#f1f3ee] hover:text-brand"
+                    onClick={() => setSearchTerm("")}
+                    type="button"
+                  >
+                    <X aria-hidden="true" size={16} />
+                  </button>
+                )}
+              </label>
+              <Link
+                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-brand-2 px-5 text-xs font-bold text-white transition-colors hover:bg-brand-3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-2"
+                href="/blog/submit"
+              >
+                <PenNib aria-hidden="true" size={16} />
+                Submit your story
+              </Link>
+            </div>
           </header>
 
           <div className="flex flex-wrap items-center gap-2 py-5">
