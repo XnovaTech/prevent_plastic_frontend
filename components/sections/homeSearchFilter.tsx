@@ -83,7 +83,7 @@ export function HomeSearchFilter() {
       id="search-filter"
     >
       <div className="relative mx-auto max-w-[1440px]">
-        <div className="relative overflow-hidden rounded-[28px] border border-[#e3e9df] bg-[linear-gradient(135deg,#ffffff_0%,#f8fbf6_38%,#edf5e9_58%,#ffffff_100%)] px-5 py-8 shadow-[0_20px_60px_-48px_rgba(38,74,55,0.4)] sm:rounded-[36px] sm:px-10 sm:py-11 lg:px-16 lg:py-12">
+        <div className="relative overflow-visible rounded-[28px] border border-[#e3e9df] bg-[linear-gradient(135deg,#ffffff_0%,#f8fbf6_38%,#edf5e9_58%,#ffffff_100%)] px-5 py-8 shadow-[0_20px_60px_-48px_rgba(38,74,55,0.4)] sm:rounded-[36px] sm:px-10 sm:py-11 lg:px-16 lg:py-12">
           <div className="relative z-10 mx-auto flex max-w-[1040px] flex-col items-center text-center">
             <div className="relative mb-8 w-full">
               <div className="relative inline-flex flex-col items-center gap-1 rounded-[999px] px-10 py-6 sm:px-14 sm:py-7">
@@ -97,7 +97,7 @@ export function HomeSearchFilter() {
                 </h2>
 
                 {/* Decorative looping gif on the left */}
-                <div className="pointer-events-none absolute left-[-18%] top-1/2 hidden h-32 w-32 -translate-y-1/2 opacity-90 md:block lg:right-[-4%] lg:h-40 lg:w-40">
+                <div className="pointer-events-none absolute left-[-32%] hidden h-32 w-32 -translate-y-1/2 opacity-90 md:block  lg:right-auto lg:h-72 lg:w-72">
                   <LoopingGif height={160} src="/gif/mini.gif" width={160} />
                 </div>
               </div>
