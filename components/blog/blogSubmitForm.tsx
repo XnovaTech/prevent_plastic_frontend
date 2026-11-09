@@ -1,5 +1,7 @@
 "use client"
 
+import Link from "next/link"
+
 import { ArrowRight, UploadSimple } from "@phosphor-icons/react"
 
 import { Button } from "@/components/ui/button"
@@ -173,13 +175,13 @@ export function BlogSubmitForm() {
             >
               Submitting unavailable in preview
             </Button>
-            <a
+            <Link
               className="inline-flex min-h-10 items-center justify-center gap-2 text-xs font-semibold text-brand-3 transition-colors hover:text-brand-orange focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-2 sm:justify-end"
               href="/blog"
             >
               Back to journal
               <ArrowRight aria-hidden="true" size={15} />
-            </a>
+            </Link>
           </div>
 
           <p className="mt-4 flex items-center gap-2 text-[10px] leading-5 text-brand-gray-3">
