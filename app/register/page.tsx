@@ -4,12 +4,11 @@ import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 
+import { AuthLayout } from "@/components/auth/authLayout"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { AosInitializer } from "@/components/shared/aosInitializer"
-import { SiteFooter } from "@/components/shared/siteFooter"
-import { SiteHeader } from "@/components/shared/siteHeader"
 import { api } from "@/lib/api"
 import { useAuthStore } from "@/stores/authStore"
 
@@ -50,7 +49,9 @@ export default function RegisterPage() {
       router.push("/")
     } catch (err: unknown) {
       const axiosError = err as {
-        response?: { data?: { message?: string; errors?: Record<string, string[]> } }
+        response?: {
+          data?: { message?: string; errors?: Record<string, string[]> }
+        }
       }
 
       const backendErrors = axiosError?.response?.data?.errors
@@ -58,149 +59,167 @@ export default function RegisterPage() {
         ? Object.values(backendErrors).flat()[0]
         : null
 
-      setError(firstError ?? axiosError?.response?.data?.message ?? "Registration failed. Please try again.")
+      setError(
+        firstError ??
+          axiosError?.response?.data?.message ??
+          "Registration failed. Please try again."
+      )
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div className="min-h-screen bg-transparent text-brand">
-      <AosInitializer />
+    <AuthLayout>
       <a
         className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-full focus:bg-white focus:px-4 focus:py-2"
         href="#main-content"
       >
         Skip to content
       </a>
-      <SiteHeader activeHref="/register" />
-      <main id="main-content">
-        <section className="px-4 py-8 sm:px-8 sm:py-12 lg:px-12 lg:py-14">
-          <div className="mx-auto max-w-md">
-            <div
-              className="rounded-[24px] border border-[#e6eae2] bg-white/85 p-5 shadow-[0_16px_50px_-40px_rgba(27,65,56,0.5)] sm:rounded-[28px] sm:p-7 lg:p-8"
-              data-aos="fade-up"
-            >
-              <div className="mb-6 border-b border-[#e9ece4] pb-5">
-                <p className="text-[9px] font-bold tracking-[0.16em] text-brand-gray-5 uppercase">
-                  Join the community
-                </p>
-                <h1 className="mt-1.5 font-serif text-[27px] leading-tight tracking-[-0.04em] text-brand sm:text-[30px]">
-                  Create your account
-                </h1>
-                <p className="mt-2 text-[12px] leading-6 text-brand-light">
-                  Start buying, selling, and repairing with purpose.
-                </p>
-              </div>
-
-              <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
-                <div className="flex flex-col gap-2">
-                  <Label className={labelClassName} htmlFor="register-name">
-                    Full name <span aria-hidden="true">*</span>
-                  </Label>
-                  <Input
-                    autoComplete="name"
-                    className={fieldClassName}
-                    id="register-name"
-                    name="name"
-                    placeholder="Your name"
-                    required
-                    value={name}
-                    onChange={(event) => setName(event.target.value)}
-                  />
-                </div>
-
-                <div className="flex flex-col gap-2">
-                  <Label className={labelClassName} htmlFor="register-email">
-                    Email address <span aria-hidden="true">*</span>
-                  </Label>
-                  <Input
-                    autoComplete="email"
-                    className={fieldClassName}
-                    id="register-email"
-                    name="email"
-                    placeholder="you@example.com"
-                    required
-                    type="email"
-                    value={email}
-                    onChange={(event) => setEmail(event.target.value)}
-                  />
-                </div>
-
-                <div className="flex flex-col gap-2">
-                  <Label className={labelClassName} htmlFor="register-phone">
-                    Phone number
-                  </Label>
-                  <Input
-                    autoComplete="tel"
-                    className={fieldClassName}
-                    id="register-phone"
-                    name="phone"
-                    placeholder="09xxxxxxxxx"
-                    type="tel"
-                    value={phone}
-                    onChange={(event) => setPhone(event.target.value)}
-                  />
-                </div>
-
-                <div className="flex flex-col gap-2">
-                  <Label className={labelClassName} htmlFor="register-password">
-                    Password <span aria-hidden="true">*</span>
-                  </Label>
-                  <Input
-                    autoComplete="new-password"
-                    className={fieldClassName}
-                    id="register-password"
-                    name="password"
-                    placeholder="At least 8 characters"
-                    required
-                    type="password"
-                    value={password}
-                    onChange={(event) => setPassword(event.target.value)}
-                  />
-                </div>
-
-                <div className="flex flex-col gap-2">
-                  <Label className={labelClassName} htmlFor="register-password-confirmation">
-                    Confirm password <span aria-hidden="true">*</span>
-                  </Label>
-                  <Input
-                    autoComplete="new-password"
-                    className={fieldClassName}
-                    id="register-password-confirmation"
-                    name="password_confirmation"
-                    placeholder="Repeat your password"
-                    required
-                    type="password"
-                    value={passwordConfirmation}
-                    onChange={(event) => setPasswordConfirmation(event.target.value)}
-                  />
-                </div>
-
-                {error ? (
-                  <p className="text-[12px] font-medium text-red-600">{error}</p>
-                ) : null}
-
-                <Button
-                  className="h-11 w-full rounded-full bg-brand-2 px-5 text-xs font-bold text-white hover:bg-[#1f6157] disabled:cursor-not-allowed disabled:bg-[#dfe6dc] disabled:text-[#69786f]"
-                  isDisabled={loading}
-                  type="submit"
-                >
-                  {loading ? "Creating account..." : "Create account"}
-                </Button>
-              </form>
-
-              <p className="mt-6 text-center text-[12px] text-brand-light">
-                Already have an account?{" "}
-                <Link className="font-semibold text-brand-3 hover:text-brand-orange" href="/login">
-                  Sign in
-                </Link>
+      <main id="main-content" className="w-full">
+        <section className="rounded-[28px] border border-border bg-card p-6 shadow-[0_24px_70px_-42px_rgba(27,65,56,0.45)] sm:p-8">
+          <div className="mb-7">
+            <div className="flex items-center justify-between gap-4">
+              <p className="text-xs font-bold tracking-[0.16em] text-brand-4 uppercase">
+                Join the community
               </p>
+              <span className="rounded-full bg-brand-yellow-bg px-3 py-1 text-[10px] font-semibold text-brand-4">
+                Free to join
+              </span>
             </div>
+            <h1 className="mt-2 font-serif text-3xl leading-tight tracking-[-0.04em] text-brand sm:text-[2.15rem]">
+              Make room for better things.
+            </h1>
+            <p className="mt-3 text-sm leading-6 text-muted-foreground">
+              Create an account to buy, sell, and repair with purpose.
+            </p>
           </div>
+
+          <form
+            className="flex flex-col gap-5"
+            onSubmit={handleSubmit}
+            noValidate
+          >
+            <div className="flex flex-col gap-2">
+              <Label className={labelClassName} htmlFor="register-name">
+                Full name <span aria-hidden="true">*</span>
+              </Label>
+              <Input
+                autoComplete="name"
+                className={fieldClassName}
+                id="register-name"
+                name="name"
+                placeholder="Your name"
+                required
+                value={name}
+                onChange={(event) => setName(event.target.value)}
+              />
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <Label className={labelClassName} htmlFor="register-email">
+                Email address <span aria-hidden="true">*</span>
+              </Label>
+              <Input
+                autoComplete="email"
+                className={fieldClassName}
+                id="register-email"
+                name="email"
+                placeholder="you@example.com"
+                required
+                type="email"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+              />
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <Label className={labelClassName} htmlFor="register-phone">
+                Phone number
+              </Label>
+              <Input
+                autoComplete="tel"
+                className={fieldClassName}
+                id="register-phone"
+                name="phone"
+                placeholder="09xxxxxxxxx"
+                type="tel"
+                value={phone}
+                onChange={(event) => setPhone(event.target.value)}
+              />
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <Label className={labelClassName} htmlFor="register-password">
+                Password <span aria-hidden="true">*</span>
+              </Label>
+              <Input
+                autoComplete="new-password"
+                className={fieldClassName}
+                id="register-password"
+                name="password"
+                placeholder="At least 8 characters"
+                required
+                type="password"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+              />
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <Label
+                className={labelClassName}
+                htmlFor="register-password-confirmation"
+              >
+                Confirm password <span aria-hidden="true">*</span>
+              </Label>
+              <Input
+                autoComplete="new-password"
+                className={fieldClassName}
+                id="register-password-confirmation"
+                name="password_confirmation"
+                placeholder="Repeat your password"
+                required
+                type="password"
+                value={passwordConfirmation}
+                onChange={(event) =>
+                  setPasswordConfirmation(event.target.value)
+                }
+              />
+            </div>
+
+            {error ? (
+              <Alert
+                aria-live="polite"
+                className="border-destructive/25 bg-destructive/5 text-destructive"
+                role="alert"
+                variant="destructive"
+              >
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            ) : null}
+
+            <Button
+              className="h-12 w-full rounded-full bg-primary px-5 text-sm font-bold text-primary-foreground hover:bg-primary/90"
+              isDisabled={loading}
+              type="submit"
+            >
+              {loading ? "Creating account..." : "Create account"}
+            </Button>
+          </form>
+
+          <p className="mt-7 text-center text-sm text-muted-foreground">
+            Already have an account?{" "}
+            <Link
+              className="font-semibold text-brand-3 hover:text-brand-orange"
+              href="/login"
+            >
+              Sign in
+            </Link>
+          </p>
         </section>
       </main>
-      <SiteFooter />
-    </div>
+    </AuthLayout>
   )
 }
