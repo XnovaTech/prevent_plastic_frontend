@@ -9,8 +9,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { api } from "@/lib/api"
-import { useAuthStore } from "@/stores/authStore"
+import { useAuth } from "@/hooks/useAuth"
 
 const fieldClassName =
   "h-12 rounded-[14px] border-[#dfe6dc] bg-white px-3.5 text-[13px] text-brand-6 shadow-sm shadow-[#274b3e]/[0.02] placeholder:text-[#98a49a] transition-[border-color,box-shadow] focus-visible:border-[#7fa88c] focus-visible:ring-3 focus-visible:ring-[#7fa88c]/20"
@@ -20,52 +19,26 @@ const labelClassName =
 
 export default function RegisterPage() {
   const router = useRouter()
-  const setAuth = useAuthStore((state) => state.setAuth)
+  const { error, isLoading: loading, register } = useAuth()
 
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [phone, setPhone] = useState("")
   const [password, setPassword] = useState("")
   const [passwordConfirmation, setPasswordConfirmation] = useState("")
-  const [error, setError] = useState("")
-  const [loading, setLoading] = useState(false)
-
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    setLoading(true)
-    setError("")
+    const result = await register({
+      name,
+      email,
+      phone: phone || undefined,
+      password,
+      password_confirmation: passwordConfirmation,
+      device_name: "web",
+    })
 
-    try {
-      const { data } = await api.post("/auth/register", {
-        name,
-        email,
-        phone: phone || undefined,
-        password,
-        password_confirmation: passwordConfirmation,
-        device_name: "web",
-      })
-
-      setAuth(data.data.user, data.data.token)
+    if (result) {
       router.push("/")
-    } catch (err: unknown) {
-      const axiosError = err as {
-        response?: {
-          data?: { message?: string; errors?: Record<string, string[]> }
-        }
-      }
-
-      const backendErrors = axiosError?.response?.data?.errors
-      const firstError = backendErrors
-        ? Object.values(backendErrors).flat()[0]
-        : null
-
-      setError(
-        firstError ??
-          axiosError?.response?.data?.message ??
-          "Registration failed. Please try again."
-      )
-    } finally {
-      setLoading(false)
     }
   }
 

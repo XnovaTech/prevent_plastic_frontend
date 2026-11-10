@@ -9,8 +9,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { api } from "@/lib/api"
-import { useAuthStore } from "@/stores/authStore"
+import { useAuth } from "@/hooks/useAuth"
 
 const fieldClassName =
   "h-12 rounded-[14px] border-[#dfe6dc] bg-white px-3.5 text-[13px] text-brand-6 shadow-sm shadow-[#274b3e]/[0.02] placeholder:text-[#98a49a] transition-[border-color,box-shadow] focus-visible:border-[#7fa88c] focus-visible:ring-3 focus-visible:ring-[#7fa88c]/20"
@@ -20,41 +19,22 @@ const labelClassName =
 
 export default function LoginPage() {
   const router = useRouter()
-  const setAuth = useAuthStore((state) => state.setAuth)
+  const { error, isLoading: loading, login } = useAuth()
 
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const [error, setError] = useState("")
-  const [loading, setLoading] = useState(false)
-
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    setLoading(true)
-    setError("")
+    const result = await login({ email, password, device_name: "web" })
 
-    try {
-      const { data } = await api.post("/auth/login", {
-        email,
-        password,
-        device_name: "web",
-      })
-
-      setAuth(data.data.user, data.data.token)
-      const destination = data.data.user.roles?.includes("admin")
+    if (result) {
+      const destination = result.user.roles?.includes("admin")
         ? "/admin"
-        : "/vendor"
+        : result.user.roles?.includes("vendor")
+          ? "/vendor"
+          : "/customer"
 
       router.push(destination)
-    } catch (err: unknown) {
-      const axiosError = err as {
-        response?: { data?: { message?: string } }
-      }
-
-      setError(
-        axiosError?.response?.data?.message ?? "Login failed. Please try again."
-      )
-    } finally {
-      setLoading(false)
     }
   }
 

@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState, useMemo } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import {
   ArrowUpRight,
@@ -9,7 +9,8 @@ import {
   MagnifyingGlass,
   MapPin,
   ShoppingBagOpen,
-  Storefront,
+  SignIn,
+  SignOut,
   X,
 } from "@phosphor-icons/react/dist/ssr"
 
@@ -27,6 +28,8 @@ import {
 import { homePageMock } from "@/mock/homePageMock"
 import { useCartStore } from "@/stores/cartStore"
 import { useWishlistStore } from "@/stores/wishlistStore"
+import { api } from "@/lib/api"
+import { useAuthStore } from "@/stores/authStore"
 
 type SiteHeaderProps = {
   activeHref?: string
@@ -48,12 +51,28 @@ const navDescriptions: Record<string, string> = {
 export function SiteHeader({ activeHref = "/" }: SiteHeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [leafFilled, setLeafFilled] = useState(false)
+  const user = useAuthStore((state) => state.user)
+  const logout = useAuthStore((state) => state.logout)
   const bagCount = useCartStore((state) =>
     state.items.reduce((total, item) => total + item.quantity, 0)
   )
   const wishCount = useWishlistStore((state) => state.items.length)
 
   const closeMenu = () => setMenuOpen(false)
+  const accountHref = user?.roles?.includes("admin")
+    ? "/admin"
+    : user?.roles?.includes("vendor")
+      ? "/vendor"
+      : "/customer"
+
+  const handleLogout = async () => {
+    try {
+      await api.post("/auth/logout")
+    } finally {
+      logout()
+      closeMenu()
+    }
+  }
 
   useEffect(() => {
     const desktop = window.matchMedia("(min-width: 1024px)")
@@ -140,18 +159,42 @@ export function SiteHeader({ activeHref = "/" }: SiteHeaderProps) {
             </Link>
             <CartIndicator />
             <span className="hidden h-7 w-px bg-[#e4e7df] sm:block" />
-            <Link
-              className="group relative hidden items-center gap-1.5 rounded-full border border-[#dce4da] px-3.5 py-2 text-xs font-semibold text-[#344a42] transition-all duration-300 hover:-translate-y-0.5 hover:border-[#174e46] hover:bg-[#f1f5ed] hover:shadow-sm md:flex"
-              href="/shops"
-            >
-              <span>Sell with us</span>
-              <span
-                className="transition-transform group-hover:translate-x-0.5"
-                aria-hidden="true"
-              >
-                ↗
-              </span>
-            </Link>
+            {user ? (
+              <div className="hidden items-center gap-1 rounded-full border border-[#dce4da] bg-white/75 p-1 md:flex">
+                <Link
+                  className="flex items-center gap-2 rounded-full px-2.5 py-1.5 text-xs font-semibold text-brand-3 transition-colors hover:bg-brand-yellow-bg"
+                  href={accountHref}
+                >
+                  <span className="flex size-6 items-center justify-center rounded-full bg-brand-green text-[10px] font-bold text-brand-3">
+                    {user.name.charAt(0).toUpperCase()}
+                  </span>
+                  <span className="max-w-20 truncate">{user.name}</span>
+                </Link>
+                <button
+                  aria-label="Log out"
+                  className="flex size-8 items-center justify-center rounded-full text-brand-light transition-colors hover:bg-brand-peach-bg hover:text-brand-orange-3"
+                  onClick={handleLogout}
+                  type="button"
+                >
+                  <SignOut aria-hidden="true" size={16} />
+                </button>
+              </div>
+            ) : (
+              <div className="hidden items-center gap-1 rounded-full border border-[#dce4da] bg-white/75 p-1 md:flex">
+                <Link
+                  className="rounded-full px-3 py-1.5 text-xs font-semibold text-brand-3 transition-colors hover:bg-brand-yellow-bg"
+                  href="/login"
+                >
+                  Log in
+                </Link>
+                <Link
+                  className="rounded-full bg-brand-2 px-3.5 py-1.5 text-xs font-bold text-white transition-colors hover:bg-brand-3"
+                  href="/register"
+                >
+                  Join
+                </Link>
+              </div>
+            )}
           </div>
 
           <button
@@ -179,7 +222,8 @@ export function SiteHeader({ activeHref = "/" }: SiteHeaderProps) {
           <SheetHeader className="flex shrink-0 flex-row items-center justify-between gap-3 border-b border-[#e9ece4] px-5 py-3.5">
             <SheetTitle className="sr-only">Site menu</SheetTitle>
             <SheetDescription className="sr-only">
-              Browse the marketplace, jump to quick links, or sell with us.
+              Browse the marketplace, manage your account, or join the
+              community.
             </SheetDescription>
 
             <Link
@@ -326,27 +370,67 @@ export function SiteHeader({ activeHref = "/" }: SiteHeaderProps) {
             </div>
 
             <div
-              className="mobile-nav-item mt-6 overflow-hidden rounded-[20px] bg-[linear-gradient(140deg,#174e46,#2f6d58)] p-4 text-white"
+              className="mobile-nav-item mt-6 overflow-hidden rounded-[20px] bg-[linear-gradient(140deg,#f0eef8,#edf5e9)] p-4"
               style={{ animationDelay: "440ms" }}
             >
-              <p className="text-[9px] font-bold tracking-[0.18em] text-white/55 uppercase">
-                For merchants
-              </p>
-              <p className="mt-1 font-serif text-[19px] leading-tight tracking-[-0.02em]">
-                Sell your good things
-              </p>
-              <p className="mt-1.5 text-[11px] leading-5 text-white/70">
-                Join local shops and makers putting useful things back in
-                circulation.
-              </p>
-              <Link
-                className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-[#eaf3d8] px-3 py-2 text-[11px] font-semibold text-[#174e46] transition-transform duration-200 hover:-translate-y-0.5"
-                href="/shops"
-                onClick={closeMenu}
-              >
-                Sell with us
-                <ArrowUpRight aria-hidden="true" size={13} weight="bold" />
-              </Link>
+              {user ? (
+                <>
+                  <p className="text-[9px] font-bold tracking-[0.18em] text-brand-4 uppercase">
+                    Your account
+                  </p>
+                  <p className="mt-1 font-serif text-[19px] leading-tight tracking-[-0.02em] text-brand">
+                    Welcome back, {user.name}
+                  </p>
+                  <Link
+                    className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-brand-2 px-3 py-2 text-[11px] font-semibold text-white transition-transform duration-200 hover:-translate-y-0.5"
+                    href={accountHref}
+                    onClick={closeMenu}
+                  >
+                    Open dashboard{" "}
+                    <ArrowUpRight aria-hidden="true" size={13} weight="bold" />
+                  </Link>
+                  <button
+                    className="mt-3 ml-3 inline-flex items-center gap-1.5 text-[11px] font-semibold text-brand-3 hover:text-brand-orange-3"
+                    onClick={handleLogout}
+                    type="button"
+                  >
+                    <SignOut aria-hidden="true" size={13} /> Log out
+                  </button>
+                </>
+              ) : (
+                <>
+                  <p className="text-[9px] font-bold tracking-[0.18em] text-brand-4 uppercase">
+                    Welcome in
+                  </p>
+                  <p className="mt-1 font-serif text-[19px] leading-tight tracking-[-0.02em] text-brand">
+                    Find your next good thing
+                  </p>
+                  <p className="mt-1.5 text-[11px] leading-5 text-brand-light">
+                    Save finds, follow your orders, and join the community.
+                  </p>
+                  <div className="mt-3 flex items-center gap-2">
+                    <Link
+                      className="inline-flex items-center gap-1.5 rounded-full bg-brand-2 px-3 py-2 text-[11px] font-semibold text-white transition-transform duration-200 hover:-translate-y-0.5"
+                      href="/register"
+                      onClick={closeMenu}
+                    >
+                      Create account{" "}
+                      <ArrowUpRight
+                        aria-hidden="true"
+                        size={13}
+                        weight="bold"
+                      />
+                    </Link>
+                    <Link
+                      className="inline-flex items-center gap-1.5 rounded-full border border-white bg-white/70 px-3 py-2 text-[11px] font-semibold text-brand-3"
+                      href="/login"
+                      onClick={closeMenu}
+                    >
+                      <SignIn aria-hidden="true" size={13} /> Log in
+                    </Link>
+                  </div>
+                </>
+              )}
             </div>
           </div>
 
