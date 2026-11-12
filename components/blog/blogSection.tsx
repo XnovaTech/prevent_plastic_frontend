@@ -34,6 +34,7 @@ function BlogPostCard({ post }: { post: BlogPost }) {
       <article className="flex h-full flex-col">
         <div className="relative aspect-[16/10] overflow-hidden bg-[#edf1ea]">
           <Image
+              unoptimized
             alt={post.imageAlt}
             className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
             fill
@@ -198,6 +199,7 @@ export function BlogSection({ posts }: BlogSectionProps) {
                 >
                   <div className="relative min-h-[250px] overflow-hidden bg-[#edf1ea] sm:min-h-[340px] lg:min-h-[420px]">
                     <Image
+                      unoptimized
                       alt={leadPost.imageAlt}
                       className="object-cover transition-transform duration-700 group-hover:scale-[1.035]"
                       fill

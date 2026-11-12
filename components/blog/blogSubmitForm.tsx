@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import { useState, type FormEvent } from "react"
 
 import { ArrowRight, UploadSimple } from "@phosphor-icons/react"
 
@@ -9,6 +10,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { NativeSelect } from "@/components/ui/native-select"
 import { Textarea } from "@/components/ui/textarea"
+import { useBlogSubmission } from "@/hooks/useBlogs"
+import { useAuthStore } from "@/stores/authStore"
 
 const fieldClassName =
   "h-12 rounded-[14px] border-[#dfe6dc] bg-white px-3.5 text-[13px] text-brand-6 shadow-sm shadow-[#274b3e]/[0.02] placeholder:text-[#98a49a] transition-[border-color,box-shadow] focus-visible:border-[#7fa88c] focus-visible:ring-3 focus-visible:ring-[#7fa88c]/20"
@@ -25,6 +28,26 @@ const categories = [
 ]
 
 export function BlogSubmitForm() {
+  const user = useAuthStore((state) => state.user)
+  const { submit, isSubmitting, error } = useBlogSubmission()
+  const [success, setSuccess] = useState("")
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    const form = new FormData(event.currentTarget)
+    if (!user) {
+      setSuccess("Please sign in before submitting a story.")
+      return
+    }
+    try {
+      await submit({ title: String(form.get("title") ?? ""), excerpt: String(form.get("excerpt") ?? ""), body: String(form.get("body") ?? "") })
+      event.currentTarget.reset()
+      setSuccess("Thank you — your story was submitted for review.")
+    } catch {
+      // The hook exposes a user-safe API error message.
+    }
+  }
+
   return (
     <section className="py-8 sm:py-12" data-aos="fade-up" data-aos-delay="100">
       <div className="mx-auto max-w-[960px] px-4 sm:px-8 lg:px-12">
@@ -44,7 +67,7 @@ export function BlogSubmitForm() {
         <form
           className="scroll-mt-28 rounded-[24px] border border-[#e6eae2] bg-white/85 p-5 shadow-[0_16px_50px_-40px_rgba(27,65,56,0.5)] sm:rounded-[28px] sm:p-7 lg:p-8"
           id="blog-submit-form"
-          onSubmit={(event) => event.preventDefault()}
+          onSubmit={handleSubmit}
         >
           <div className="flex flex-col gap-5 sm:gap-6">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5">
@@ -130,7 +153,7 @@ export function BlogSubmitForm() {
               <Textarea
                 className="min-h-[200px] rounded-[16px] border-[#dfe6dc] bg-white px-3.5 py-3 text-[13px] leading-6 text-brand-6 shadow-sm shadow-[#274b3e]/[0.02] transition-[border-color,box-shadow] placeholder:text-[#98a49a] focus-visible:border-[#7fa88c] focus-visible:ring-3 focus-visible:ring-[#7fa88c]/20"
                 id="blog-content"
-                name="content"
+                name="body"
                 placeholder="Tell your story here…"
                 required
                 rows={8}
@@ -170,10 +193,10 @@ export function BlogSubmitForm() {
           <div className="mt-6 flex flex-col gap-4 border-t border-[#e9ece4] pt-5 sm:mt-8 sm:flex-row sm:items-center sm:justify-between sm:pt-6">
             <Button
               className="h-11 w-full rounded-full bg-brand-2 px-5 text-xs font-bold text-white hover:bg-[#1f6157] disabled:cursor-not-allowed disabled:bg-[#dfe6dc] disabled:text-[#69786f] sm:w-auto"
-              isDisabled
-              type="button"
+              isDisabled={isSubmitting}
+              type="submit"
             >
-              Submitting unavailable in preview
+              {isSubmitting ? "Submitting…" : "Submit for review"}
             </Button>
             <Link
               className="inline-flex min-h-10 items-center justify-center gap-2 text-xs font-semibold text-brand-3 transition-colors hover:text-brand-orange focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-2 sm:justify-end"
@@ -192,6 +215,7 @@ export function BlogSubmitForm() {
             Submissions are reviewed before publishing. We&apos;ll email you once
             your story is live.
           </p>
+          {(error || success) && <p className="mt-3 text-xs text-brand-3" role="status">{error || success}</p>}
         </form>
       </div>
     </section>

@@ -1,7 +1,6 @@
 import type { Metadata } from "next"
 
-import { BlogSection } from "@/components/blog/blogSection"
-import { blogPageMock } from "@/mock/blogPageMock"
+import { PublicBlogList } from "@/components/blog/publicBlogList"
 import { AosInitializer } from "@/components/shared/aosInitializer"
 import { SiteFooter } from "@/components/shared/siteFooter"
 import { SiteHeader } from "@/components/shared/siteHeader"
@@ -24,7 +23,7 @@ export default function Page() {
       </a>
       <SiteHeader activeHref="/blog" />
       <main id="main-content">
-        <BlogSection posts={blogPageMock.posts} />
+        <PublicBlogList />
       </main>
       <SiteFooter />
     </div>
