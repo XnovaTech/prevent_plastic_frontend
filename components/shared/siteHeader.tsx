@@ -15,6 +15,7 @@ import {
 } from "@phosphor-icons/react/dist/ssr"
 
 import { CartIndicator } from "@/components/shared/cartIndicator"
+import { getAppRole, getDashboardPath } from "@/lib/auth"
 import { SeedlingIcon } from "@/components/ui/seedlingIcon"
 import { catalogPageMock } from "@/mock/catalogPageMock"
 import {
@@ -28,7 +29,7 @@ import {
 import { homePageMock } from "@/mock/homePageMock"
 import { useCartStore } from "@/stores/cartStore"
 import { useWishlistStore } from "@/stores/wishlistStore"
-import { api } from "@/lib/api"
+import { authService } from "@/services/authService"
 import { useAuthStore } from "@/stores/authStore"
 
 type SiteHeaderProps = {
@@ -52,24 +53,21 @@ export function SiteHeader({ activeHref = "/" }: SiteHeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [leafFilled, setLeafFilled] = useState(false)
   const user = useAuthStore((state) => state.user)
-  const logout = useAuthStore((state) => state.logout)
+  const clearUser = useAuthStore((state) => state.clearUser)
   const bagCount = useCartStore((state) =>
     state.items.reduce((total, item) => total + item.quantity, 0)
   )
   const wishCount = useWishlistStore((state) => state.items.length)
 
   const closeMenu = () => setMenuOpen(false)
-  const accountHref = user?.roles?.includes("admin")
-    ? "/admin"
-    : user?.roles?.includes("vendor")
-      ? "/vendor"
-      : "/customer"
+  const appRole = getAppRole(user)
+  const accountHref = appRole ? getDashboardPath(appRole) : "/customer"
 
   const handleLogout = async () => {
     try {
-      await api.post("/auth/logout")
+      await authService.logout()
     } finally {
-      logout()
+      clearUser()
       closeMenu()
     }
   }

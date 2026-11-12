@@ -22,7 +22,7 @@ function getErrorMessage(error: unknown, fallback: string): string {
 }
 
 export function useAuth() {
-  const setAuth = useAuthStore((state) => state.setAuth)
+  const setUser = useAuthStore((state) => state.setUser)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
 
@@ -35,7 +35,7 @@ export function useAuth() {
 
     try {
       const result = await request()
-      setAuth(result.user, result.token)
+      setUser(result.user)
 
       return result
     } catch (requestError: unknown) {

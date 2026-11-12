@@ -7,18 +7,19 @@ export type AuthUser = {
   status?: string
   roles?: string[]
   permissions?: string[]
+  vendor?: {
+    id: number
+    status: string
+  } | null
 }
 
 export type AuthResult = {
-  token: string
-  token_type: string
   user: AuthUser
 }
 
 export type LoginInput = {
   email: string
   password: string
-  device_name?: string
 }
 
 export type RegisterInput = {
@@ -27,7 +28,6 @@ export type RegisterInput = {
   phone?: string
   password: string
   password_confirmation: string
-  device_name?: string
 }
 
 export type ApiResponse<T> = {

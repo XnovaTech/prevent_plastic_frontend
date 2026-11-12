@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import axios from "axios"
 import { useRouter } from "next/navigation"
 import {
@@ -51,6 +51,30 @@ function formatPrice(value: string | number) {
   return `Ks ${Number(value).toLocaleString()}`
 }
 
+function sanitizeDescription(value?: string | null) {
+  if (!value || typeof window === "undefined") return ""
+
+  const document = new DOMParser().parseFromString(value, "text/html")
+  document
+    .querySelectorAll("script, style, iframe, object, embed, form")
+    .forEach((element) => element.remove())
+  document.querySelectorAll("*").forEach((element) => {
+    Array.from(element.attributes).forEach((attribute) => {
+      const name = attribute.name.toLowerCase()
+      const content = attribute.value.trim().toLowerCase()
+      if (
+        name.startsWith("on") ||
+        ((name === "href" || name === "src") &&
+          content.startsWith("javascript:"))
+      ) {
+        element.removeAttribute(attribute.name)
+      }
+    })
+  })
+
+  return document.body.innerHTML
+}
+
 export function ProductDetail({
   product,
   basePath = "/vendor/products",
@@ -69,6 +93,10 @@ export function ProductDetail({
     .map((variant) => Number(variant.price))
     .filter(Boolean)
   const totalStock = currentProduct.stock_quantity ?? 0
+  const sanitizedDescription = useMemo(
+    () => sanitizeDescription(currentProduct.description),
+    [currentProduct.description]
+  )
   const priceLabel =
     prices.length === 0
       ? "—"
@@ -380,9 +408,16 @@ export function ProductDetail({
             <CardTitle className="text-base text-brand">Description</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm leading-7 text-brand-light">
-              {currentProduct.description || "No description yet."}
-            </p>
+            {sanitizedDescription ? (
+              <div
+                className="text-sm leading-7 text-brand-light [&_a]:text-brand-3 [&_a]:underline [&_blockquote]:my-4 [&_blockquote]:border-l-2 [&_blockquote]:border-brand-green [&_blockquote]:pl-4 [&_h1]:mb-3 [&_h1]:font-serif [&_h1]:text-2xl [&_h1]:font-semibold [&_h2]:mb-2 [&_h2]:font-serif [&_h2]:text-xl [&_h2]:font-semibold [&_li]:ml-5 [&_li]:list-disc [&_ol]:my-3 [&_ol]:list-decimal [&_p]:mb-3 [&_strong]:font-semibold [&_ul]:my-3 [&_ul]:list-disc"
+                dangerouslySetInnerHTML={{ __html: sanitizedDescription }}
+              />
+            ) : (
+              <p className="text-sm leading-7 text-brand-light">
+                No description yet.
+              </p>
+            )}
           </CardContent>
         </Card>
 

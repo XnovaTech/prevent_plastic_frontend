@@ -9,8 +9,8 @@ import { Button, LinkButton } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
 import { productService, type Product } from "@/services/productService"
+import { RichTextEditor } from "@/components/shared/richTextEditor"
 
 type ProductEditFormProps = { product: Product }
 
@@ -96,9 +96,11 @@ export function ProductEditForm({ product }: ProductEditFormProps) {
           </div>
           <div className="space-y-2">
             <Label htmlFor="edit-product-description">Description</Label>
-            <Textarea
+            <RichTextEditor
               id="edit-product-description"
-              onChange={(event) => setDescription(event.target.value)}
+              nullable
+              onChange={(value) => setDescription(value ?? "")}
+              placeholder="Tell the story honestly and clearly."
               value={description}
             />
           </div>

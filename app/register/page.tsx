@@ -34,7 +34,6 @@ export default function RegisterPage() {
       phone: phone || undefined,
       password,
       password_confirmation: passwordConfirmation,
-      device_name: "web",
     })
 
     if (result) {

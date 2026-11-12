@@ -4,6 +4,7 @@ import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { AuthLayout } from "@/components/auth/authLayout"
+import { getDashboardPath, getAppRole } from "@/lib/auth"
 
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
@@ -25,14 +26,11 @@ export default function LoginPage() {
   const [password, setPassword] = useState("")
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    const result = await login({ email, password, device_name: "web" })
+    const result = await login({ email, password })
 
     if (result) {
-      const destination = result.user.roles?.includes("admin")
-        ? "/admin"
-        : result.user.roles?.includes("vendor")
-          ? "/vendor"
-          : "/customer"
+      const role = getAppRole(result.user)
+      const destination = role ? getDashboardPath(role) : "/"
 
       router.push(destination)
     }

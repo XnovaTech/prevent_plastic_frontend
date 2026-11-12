@@ -2,6 +2,7 @@ import { Geist_Mono, IBM_Plex_Sans } from "next/font/google"
 
 import "./globals.css"
 import { SiteBackdrop } from "@/components/shared/siteBackdrop"
+import { AuthProvider } from "@/components/auth/authProvider"
 import { cn } from "@/lib/utils"
 
 const ibmPlexSans = IBM_Plex_Sans({
@@ -32,7 +33,9 @@ export default function RootLayout({
     >
       <body suppressHydrationWarning>
                   <SiteBackdrop />
-          <div className="relative z-10">{children}</div>
+          <div className="relative z-10">
+            <AuthProvider>{children}</AuthProvider>
+          </div>
               </body>
     </html>
   )

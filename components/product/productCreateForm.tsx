@@ -16,6 +16,7 @@ import { useProducts } from "@/hooks/useProducts"
 import { useVendors } from "@/hooks/useVendors"
 import { ProductImageUploader } from "@/components/product/productImageUploader"
 import { ProductVariantBuilder } from "@/components/product/productVariantBuilder"
+import { RichTextEditor } from "@/components/shared/richTextEditor"
 
 type ProductCreateFormProps = { adminMode?: boolean }
 
@@ -168,10 +169,11 @@ export function ProductCreateForm({
           </div>
           <div className="space-y-2 sm:col-span-2">
             <Label htmlFor="product-description">Description</Label>
-            <Textarea
+            <RichTextEditor
               id="product-description"
               name="description"
-              placeholder="Tell the story honestly and clearly."
+              nullable
+              placeholder="Tell the story honestly and clearly. Add details, care notes, and what makes this item useful."
             />
           </div>
         </CardContent>

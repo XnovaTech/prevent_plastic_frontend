@@ -1,25 +1,20 @@
 import { create } from "zustand"
-import { persist } from "zustand/middleware"
-
 import type { AuthUser } from "@/types/auth"
 
 export type { AuthUser } from "@/types/auth"
 
 type AuthState = {
   user: AuthUser | null
-  token: string | null
-  setAuth: (user: AuthUser, token: string) => void
-  logout: () => void
+  isReady: boolean
+  setUser: (user: AuthUser) => void
+  clearUser: () => void
+  setReady: () => void
 }
 
-export const useAuthStore = create<AuthState>()(
-  persist(
-    (set) => ({
-      user: null,
-      token: null,
-      setAuth: (user, token) => set({ user, token }),
-      logout: () => set({ user: null, token: null }),
-    }),
-    { name: "prevent-plastic-auth" }
-  )
-)
+export const useAuthStore = create<AuthState>((set) => ({
+  user: null,
+  isReady: false,
+  setUser: (user) => set({ user }),
+  clearUser: () => set({ user: null }),
+  setReady: () => set({ isReady: true }),
+}))
