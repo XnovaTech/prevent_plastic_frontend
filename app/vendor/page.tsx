@@ -8,7 +8,7 @@ import {
 } from "@phosphor-icons/react/dist/ssr"
 
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import { LinkButton } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 
 const stats = [
@@ -43,12 +43,13 @@ export default function VendorPage() {
               is finding you.
             </p>
           </div>
-          <Button
+          <LinkButton
+            href="/vendor/products/new"
             className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-brand-2 px-5 text-xs font-bold text-white transition-transform hover:-translate-y-0.5"
             size="lg"
           >
             <Plus size={17} weight="bold" /> Add product
-          </Button>
+          </LinkButton>
         </div>
       </section>
       <section
