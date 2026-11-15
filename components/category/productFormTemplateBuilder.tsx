@@ -5,6 +5,7 @@ import Link from "next/link"
 import { ArrowLeft, Check, Plus, Trash } from "@phosphor-icons/react"
 
 import { Badge } from "@/components/ui/badge"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -29,17 +30,35 @@ function id(prefix: string) {
   return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
 }
 
+function optionValue(name: string) {
+  return name
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_|_$/g, "")
+}
+
+function newOption(): ProductFormField["options"][number] {
+  return {
+    id: id("option"),
+    label: "",
+    value: "",
+  }
+}
+
 function newField(): ProductFormField {
   return {
-    id: id("field"),
+    id: id("new-field"),
     field_key: "new_field",
-    label: "New field",
+    label: "",
     help_text: "",
     field_type: "text",
     placeholder: "",
     is_required: false,
     is_filterable: false,
     is_searchable: false,
+    validation_rules: null,
+    default_value: null,
     options: [],
   }
 }
@@ -47,7 +66,7 @@ function newField(): ProductFormField {
 function newSection(): ProductFormSection {
   return {
     id: id("section"),
-    title: "New section",
+    title: "",
     description: "",
     fields: [newField()],
   }
@@ -56,7 +75,10 @@ function newSection(): ProductFormSection {
 type BuilderProps = {
   categoryName: string
   template: ProductFormTemplate
-  onSave: (template: ProductFormTemplate) => Promise<unknown>
+  onSave: (
+    template: ProductFormTemplate,
+    status: ProductFormTemplate["status"]
+  ) => Promise<ProductFormTemplate>
 }
 
 export function ProductFormTemplateBuilder({
@@ -66,6 +88,8 @@ export function ProductFormTemplateBuilder({
 }: BuilderProps) {
   const [draft, setDraft] = useState(template)
   const [saved, setSaved] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
+  const [error, setError] = useState("")
 
   const updateSection = (
     sectionId: number | string,
@@ -101,10 +125,81 @@ export function ProductFormTemplateBuilder({
     setSaved(false)
   }
 
-  const save = async () => {
-    await onSave({ ...draft, status: "active", version: draft.version + 1 })
-    setSaved(true)
+  const updateOption = (
+    sectionId: number | string,
+    fieldId: number | string,
+    optionId: number | string,
+    update: Partial<ProductFormField["options"][number]>
+  ) => {
+    setDraft((current) => ({
+      ...current,
+      sections: current.sections.map((section) =>
+        section.id === sectionId
+          ? {
+              ...section,
+              fields: section.fields.map((field) =>
+                field.id === fieldId
+                  ? {
+                      ...field,
+                      options: field.options.map((option) =>
+                        option.id === optionId ? { ...option, ...update } : option
+                      ),
+                    }
+                  : field
+              ),
+            }
+          : section
+      ),
+    }))
+    setSaved(false)
   }
+
+  const save = async (status: ProductFormTemplate["status"]) => {
+    setError("")
+    if (!draft.name.trim() || draft.sections.length === 0) {
+      setError("Add a template name and at least one section before saving.")
+      return
+    }
+    if (draft.sections.some((section) => section.fields.length === 0)) {
+      setError("Every section needs at least one field.")
+      return
+    }
+    if (draft.sections.some((section) => !section.title.trim())) {
+      setError("Every section needs a title before saving.")
+      return
+    }
+    const invalidSelect = draft.sections.some((section) =>
+      section.fields.some(
+        (field) =>
+          field.field_type === "select" &&
+          (field.options.length === 0 ||
+            field.options.some((option) => !option.label.trim()) ||
+            new Set(
+              field.options.map((option) => option.label.trim().toLowerCase())
+            ).size !== field.options.length)
+      )
+    )
+    if (invalidSelect) {
+      setError("Each select field needs unique, non-empty option names.")
+      return
+    }
+
+    setIsSaving(true)
+    try {
+      const savedTemplate = await onSave(
+        { ...draft, name: draft.name.trim() },
+        status
+      )
+      setDraft(savedTemplate)
+      setSaved(true)
+    } catch {
+      setError("Unable to save this template. Please check the fields and try again.")
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  const nextVersion = draft.status === "active" ? draft.version + 1 : draft.version
 
   return (
     <div className="mx-auto max-w-6xl">
@@ -132,13 +227,26 @@ export function ProductFormTemplateBuilder({
             className="border-0 bg-brand-yellow-bg text-brand-3"
             variant="outline"
           >
-            v{draft.version}
+            v{nextVersion}
           </Badge>
-          <Button onPress={save}>
-            <Check size={16} /> {saved ? "Saved" : "Activate template"}
+          <Button
+            isDisabled={isSaving}
+            onPress={() => void save("draft")}
+            variant="outline"
+          >
+            {saved ? "Saved" : "Save draft"}
+          </Button>
+          <Button isDisabled={isSaving} onPress={() => void save("active")}>
+            <Check size={16} /> {isSaving ? "Saving…" : "Activate version"}
           </Button>
         </div>
       </div>
+
+      {error ? (
+        <Alert className="mb-5 border-red-200 bg-red-50 text-red-800" variant="destructive">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      ) : null}
 
       <Card className="mb-5 rounded-[24px] border-[#e3e9df] bg-white shadow-none">
         <CardContent className="grid gap-4 p-5 sm:grid-cols-2">
@@ -173,6 +281,7 @@ export function ProductFormTemplateBuilder({
                 <Input
                   aria-label={`Section ${sectionIndex + 1} title`}
                   className="text-base font-semibold"
+                  placeholder="Section title"
                   value={section.title}
                   onChange={(event) =>
                     updateSection(section.id, { title: event.target.value })
@@ -191,6 +300,7 @@ export function ProductFormTemplateBuilder({
               </div>
               <Button
                 aria-label={`Remove section ${section.title}`}
+                isDisabled={draft.sections.length === 1}
                 onPress={() =>
                   setDraft({
                     ...draft,
@@ -208,20 +318,26 @@ export function ProductFormTemplateBuilder({
             <CardContent className="space-y-3">
               {section.fields.map((field) => (
                 <div
-                  className="grid gap-3 rounded-2xl border border-[#edf0ea] bg-[#fbfcf8] p-4 lg:grid-cols-[1.1fr_1fr_0.8fr_auto]"
+                  className="grid gap-3 rounded-2xl border border-[#edf0ea] bg-[#fbfcf8] p-4 lg:grid-cols-[1.1fr_1fr_auto_auto]"
                   key={field.id}
                 >
                   <div className="space-y-2">
                     <Label>Field label</Label>
                     <Input
+                      placeholder="Field label"
                       value={field.label}
                       onChange={(event) =>
                         updateField(section.id, field.id, {
                           label: event.target.value,
-                          field_key: event.target.value
-                            .toLowerCase()
-                            .replace(/[^a-z0-9]+/g, "_")
-                            .replace(/^_|_$/g, ""),
+                          ...(String(field.id).startsWith("new-field-")
+                            ? {
+                                field_key:
+                                  event.target.value
+                                    .toLowerCase()
+                                    .replace(/[^a-z0-9]+/g, "_")
+                                    .replace(/^_|_$/g, "") || "new_field",
+                              }
+                            : {}),
                         })
                       }
                     />
@@ -245,8 +361,17 @@ export function ProductFormTemplateBuilder({
                       value={field.field_type}
                       onChange={(event) =>
                         updateField(section.id, field.id, {
-                          field_type: event.target
-                            .value as ProductFormFieldType,
+                          field_type: event.target.value as ProductFormFieldType,
+                          placeholder:
+                            event.target.value === "select"
+                              ? ""
+                              : field.placeholder,
+                          options:
+                            event.target.value === "select" && field.options.length === 0
+                              ? [newOption()]
+                              : event.target.value === "select"
+                                ? field.options
+                                : [],
                         })
                       }
                     >
@@ -257,7 +382,28 @@ export function ProductFormTemplateBuilder({
                       ))}
                     </select>
                   </div>
-                  <div className="flex items-end gap-3 pb-1 text-xs text-brand-light">
+                  <Button
+                    aria-label={`Remove ${field.label || "field"}`}
+                    className="self-end"
+                    isDisabled={section.fields.length === 1}
+                    onPress={() =>
+                      updateSection(section.id, {
+                        fields: section.fields.filter(
+                          (item) => item.id !== field.id
+                        ),
+                      })
+                    }
+                    size="icon"
+                    variant="ghost"
+                  >
+                    <Trash size={15} />
+                  </Button>
+                  <details className="rounded-xl border border-[#edf0ea] bg-white lg:col-span-full">
+                    <summary className="cursor-pointer list-none px-3 py-2 text-sm font-semibold text-brand-light">
+                      Field settings
+                    </summary>
+                    <div className="space-y-4 border-t border-[#edf0ea] p-3">
+                  <div className="flex flex-wrap items-center gap-3 text-xs text-brand-light">
                     <label className="flex items-center gap-2">
                       <input
                         checked={field.is_required}
@@ -270,21 +416,101 @@ export function ProductFormTemplateBuilder({
                       />{" "}
                       Required
                     </label>
-                    <Button
-                      aria-label={`Remove ${field.label}`}
-                      onPress={() =>
-                        updateSection(section.id, {
-                          fields: section.fields.filter(
-                            (item) => item.id !== field.id
-                          ),
-                        })
-                      }
-                      size="icon-xs"
-                      variant="ghost"
+                    <label
+                      className="flex items-center gap-2"
+                      title="Show this field as a filter on the shop page"
                     >
-                      <Trash size={14} />
-                    </Button>
+                      <input
+                        checked={field.is_filterable}
+                        onChange={(event) =>
+                          updateField(section.id, field.id, {
+                            is_filterable: event.target.checked,
+                          })
+                        }
+                        type="checkbox"
+                      />{" "}
+                      Use as shop filter
+                    </label>
+                    <label
+                      className="flex items-center gap-2"
+                      title="Include this field when customers search products"
+                    >
+                      <input
+                        checked={field.is_searchable}
+                        onChange={(event) =>
+                          updateField(section.id, field.id, {
+                            is_searchable: event.target.checked,
+                          })
+                        }
+                        type="checkbox"
+                      />{" "}
+                      Include in search
+                    </label>
                   </div>
+                  {field.field_type !== "select" ? (
+                    <div className="space-y-2">
+                      <Label>Placeholder</Label>
+                      <Input
+                        placeholder="Optional hint shown in the product form"
+                        value={field.placeholder}
+                        onChange={(event) =>
+                          updateField(section.id, field.id, {
+                            placeholder: event.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                  ) : null}
+                  {field.field_type === "select" ? (
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between gap-3">
+                        <Label>Options</Label>
+                        <Button
+                          onPress={() =>
+                            updateField(section.id, field.id, {
+                              options: [...field.options, newOption()],
+                            })
+                          }
+                          size="sm"
+                          variant="outline"
+                        >
+                          <Plus size={14} /> Add option
+                        </Button>
+                      </div>
+                      {field.options.map((option) => (
+                        <div className="grid gap-2 sm:grid-cols-[1fr_auto]" key={option.id}>
+                          <Input
+                            aria-label={`${field.label} option label`}
+                            placeholder="Option name"
+                            value={option.label}
+                            onChange={(event) =>
+                              updateOption(section.id, field.id, option.id, {
+                                label: event.target.value,
+                                value: optionValue(event.target.value),
+                              })
+                            }
+                          />
+                          <Button
+                            aria-label={`Remove ${option.label}`}
+                            isDisabled={field.options.length === 1}
+                            onPress={() =>
+                              updateField(section.id, field.id, {
+                                options: field.options.filter(
+                                  (item) => item.id !== option.id
+                                ),
+                              })
+                            }
+                            size="icon"
+                            variant="ghost"
+                          >
+                            <Trash size={15} />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  ) : null}
+                    </div>
+                  </details>
                 </div>
               ))}
               <Button

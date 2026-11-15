@@ -1,43 +1,55 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import axios from "axios"
 
 import { createStarterTemplate } from "@/mock/productFormTemplates"
 import { productFormTemplateService } from "@/services/productFormTemplateService"
 import type { ProductFormTemplate } from "@/types/productFormTemplate"
 
-const storageKey = (categoryId: number) => `product-form-template:${categoryId}`
-
 export function useProductFormTemplate(categoryId: number) {
   const [template, setTemplate] = useState<ProductFormTemplate | null>(null)
   const [isReady, setIsReady] = useState(false)
+  const [error, setError] = useState("")
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
+      setError("")
       void productFormTemplateService
         .active(categoryId)
         .then((activeTemplate) => setTemplate(activeTemplate))
-        .catch(() => {
-          const saved = window.localStorage.getItem(storageKey(categoryId))
-          setTemplate(
-            saved ? JSON.parse(saved) : createStarterTemplate(categoryId)
-          )
+        .catch((requestError: unknown) => {
+          if (axios.isAxiosError(requestError) && requestError.response?.status === 404) {
+            setTemplate(createStarterTemplate(categoryId))
+            return
+          }
+
+          setTemplate(null)
+          setError("Unable to load the active template. Please try again.")
         })
         .finally(() => setIsReady(true))
     })
     return () => window.cancelAnimationFrame(frame)
   }, [categoryId])
 
-  const save = async (nextTemplate: ProductFormTemplate) => {
-    const next = { ...nextTemplate, updated_at: new Date().toISOString() }
+  const save = async (
+    nextTemplate: ProductFormTemplate,
+    status: ProductFormTemplate["status"]
+  ) => {
+    const next = {
+      ...nextTemplate,
+      status,
+      updated_at: new Date().toISOString(),
+    }
     const saved =
-      typeof next.id === "number"
-        ? await productFormTemplateService.createVersion(next.id, next)
-        : await productFormTemplateService.create(categoryId, next)
-    window.localStorage.setItem(storageKey(categoryId), JSON.stringify(saved))
+      typeof next.id !== "number"
+        ? await productFormTemplateService.create(categoryId, next)
+        : template?.status === "active"
+          ? await productFormTemplateService.createVersion(next.id, next)
+          : await productFormTemplateService.update(next.id, next)
     setTemplate(saved)
     return saved
   }
 
-  return { isReady, save, template }
+  return { error, isReady, save, template }
 }

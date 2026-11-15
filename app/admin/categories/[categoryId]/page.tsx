@@ -341,11 +341,18 @@ export default function CategoryDetailPage() {
                     </h2>
                   </div>
                   <LinkButton
-                    href={`/admin/categories/${category.id}/template/new`}
+                    href={
+                      selectedTemplate.status === "draft"
+                        ? `/admin/categories/${category.id}/template/${selectedTemplate.id}/edit`
+                        : `/admin/categories/${category.id}/template/new`
+                    }
                     size="sm"
                     variant="outline"
                   >
-                    <PencilSimple size={15} /> Create next version
+                    <PencilSimple size={15} />
+                    {selectedTemplate.status === "draft"
+                      ? "Edit draft"
+                      : "Create next version"}
                   </LinkButton>
                 </CardContent>
               </Card>

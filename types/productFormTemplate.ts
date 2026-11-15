@@ -17,6 +17,9 @@ export type ProductFormField = {
   is_required: boolean
   is_filterable: boolean
   is_searchable: boolean
+  validation_rules?: Record<string, unknown> | null
+  default_value?: unknown
+  sort_order?: number
   options: ProductFormFieldOption[]
 }
 
@@ -34,5 +37,5 @@ export type ProductFormTemplate = {
   version: number
   status: "draft" | "active" | "archived"
   sections: ProductFormSection[]
-  updated_at: string
+  updated_at?: string
 }

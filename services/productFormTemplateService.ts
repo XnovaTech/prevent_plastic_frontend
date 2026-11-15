@@ -17,6 +17,13 @@ export const productFormTemplateService = {
     return response.data.data
   },
 
+  async show(id: number) {
+    const response = await api.get<CategoryApiResponse<ProductFormTemplate>>(
+      `/product-form-templates/${id}`
+    )
+    return response.data.data
+  },
+
   async create(categoryId: number, template: ProductFormTemplate) {
     const response = await api.post<CategoryApiResponse<ProductFormTemplate>>(
       `/categories/${categoryId}/product-form-templates`,
@@ -28,6 +35,14 @@ export const productFormTemplateService = {
   async createVersion(id: number, template: ProductFormTemplate) {
     const response = await api.post<CategoryApiResponse<ProductFormTemplate>>(
       `/product-form-templates/${id}/versions`,
+      templatePayload(template)
+    )
+    return response.data.data
+  },
+
+  async update(id: number, template: ProductFormTemplate) {
+    const response = await api.put<CategoryApiResponse<ProductFormTemplate>>(
+      `/product-form-templates/${id}`,
       templatePayload(template)
     )
     return response.data.data
@@ -48,7 +63,8 @@ function templatePayload(template: ProductFormTemplate) {
         label: field.label,
         help_text: field.help_text || null,
         field_type: field.field_type,
-        placeholder: field.placeholder || null,
+        placeholder:
+          field.field_type === "select" ? null : field.placeholder || null,
         is_required: field.is_required,
         is_filterable: field.is_filterable,
         is_searchable: field.is_searchable,
