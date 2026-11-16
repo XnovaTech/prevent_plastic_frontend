@@ -1,10 +1,9 @@
 import type { Metadata } from "next"
 
-import { CatalogBrowser } from "@/components/list/catalogBrowser"
+import { StorefrontProductsPage } from "@/components/list/storefrontProductsPage"
 import { AosInitializer } from "@/components/shared/aosInitializer"
 import { SiteFooter } from "@/components/shared/siteFooter"
 import { SiteHeader } from "@/components/shared/siteHeader"
-import { catalogPageMock } from "@/mock/catalogPageMock"
 
 export const metadata: Metadata = {
   title: "Products — Prevent Plastic",
@@ -13,8 +12,6 @@ export const metadata: Metadata = {
 }
 
 export default function Page() {
-  const config = catalogPageMock.individual
-
   return (
     <div className="min-h-screen bg-transparent text-brand">
       <AosInitializer />
@@ -24,9 +21,9 @@ export default function Page() {
       >
         Skip to content
       </a>
-      <SiteHeader activeHref={config.href} />
+      <SiteHeader activeHref="/products" />
       <main id="main-content">
-        <CatalogBrowser config={config} />
+        <StorefrontProductsPage />
       </main>
       <SiteFooter />
     </div>

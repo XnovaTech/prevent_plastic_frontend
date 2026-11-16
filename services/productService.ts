@@ -11,7 +11,14 @@ export type Product = {
   template_id: number
   description?: string | null
   stock_quantity?: number
+  attributes?: {
+    field_id: number
+    field_key?: string | null
+    field_label?: string | null
+    value: unknown
+  }[]
   category?: { id: number; name: string }
+  vendor?: { id: number; display_name: string; slug?: string }
   variation_attributes?: {
     id: number
     name: string
@@ -61,6 +68,20 @@ export const productService = {
     return response.data.data
   },
 
+  async catalogList(): Promise<Product[]> {
+    const response = await api.get<CategoryApiResponse<Product[]>>(
+      "/catalog/products"
+    )
+    return response.data.data
+  },
+
+  async catalogShow(id: number): Promise<Product> {
+    const response = await api.get<CategoryApiResponse<Product>>(
+      `/catalog/products/${id}`
+    )
+    return response.data.data
+  },
+
   async show(id: number): Promise<Product> {
     const response = await api.get<CategoryApiResponse<Product>>(
       `/products/${id}`
@@ -87,6 +108,36 @@ export const productService = {
 
   async remove(id: number): Promise<void> {
     await api.delete(`/products/${id}`)
+  },
+
+  async uploadImages(id: number, files: File[]): Promise<Product> {
+    const formData = new FormData()
+    files.forEach((file) => formData.append("images[]", file))
+    const response = await api.post<CategoryApiResponse<Product>>(
+      `/products/${id}/images`,
+      formData,
+      { headers: { "Content-Type": "multipart/form-data" } }
+    )
+    return response.data.data
+  },
+
+  async updateImage(
+    productId: number,
+    imageId: number,
+    input: { alt_text?: string | null; sort_order?: number; is_primary?: boolean }
+  ): Promise<Product> {
+    const response = await api.patch<CategoryApiResponse<Product>>(
+      `/products/${productId}/images/${imageId}`,
+      input
+    )
+    return response.data.data
+  },
+
+  async removeImage(productId: number, imageId: number): Promise<Product> {
+    const response = await api.delete<CategoryApiResponse<Product>>(
+      `/products/${productId}/images/${imageId}`
+    )
+    return response.data.data
   },
 
   async disable(id: number): Promise<Product> {

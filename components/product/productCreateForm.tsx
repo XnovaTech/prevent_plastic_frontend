@@ -17,6 +17,7 @@ import { useVendors } from "@/hooks/useVendors"
 import { ProductImageUploader } from "@/components/product/productImageUploader"
 import { ProductVariantBuilder } from "@/components/product/productVariantBuilder"
 import { RichTextEditor } from "@/components/shared/richTextEditor"
+import { Toast } from "@/components/ui/toast"
 
 type ProductCreateFormProps = { adminMode?: boolean }
 
@@ -25,7 +26,7 @@ export function ProductCreateForm({
 }: ProductCreateFormProps) {
   const { categories, error: categoryError, isLoading } = useCategories()
   const [categoryId, setCategoryId] = useState(0)
-  const [submitted, setSubmitted] = useState(false)
+  const [successMessage, setSuccessMessage] = useState("")
   const { create, error: productError, isCreating } = useProducts()
   const {
     error: vendorError,
@@ -33,30 +34,39 @@ export function ProductCreateForm({
     vendors,
   } = useVendors()
   const [vendorId, setVendorId] = useState(0)
-  const { template } = useProductFormTemplate(categoryId)
+  const {
+    error: templateError,
+    isReady: templateReady,
+    template,
+  } = useProductFormTemplate(categoryId, { fallbackToStarter: false })
   const category = useMemo(
     () => categories.find((item) => item.id === categoryId),
     [categories, categoryId]
   )
 
   return (
-    <form
-      className="mx-auto max-w-5xl"
-      onSubmit={async (event) => {
+    <>
+      <Toast
+        message={successMessage}
+        onClose={() => setSuccessMessage("")}
+      />
+      <form
+        className="mx-auto max-w-5xl"
+        onSubmit={async (event) => {
         event.preventDefault()
         if (!categoryId || (adminMode && !vendorId)) return
         const formData = new FormData(event.currentTarget)
         formData.set("category_id", String(categoryId))
         if (adminMode) formData.set("vendor_id", String(vendorId))
         formData.set("status", "active")
-        try {
-          await create(formData)
-          setSubmitted(true)
-        } catch {
-          setSubmitted(false)
-        }
-      }}
-    >
+          try {
+            await create(formData)
+            setSuccessMessage("Product published successfully.")
+          } catch {
+            // The mutation hook exposes the API error inline above the form.
+          }
+        }}
+      >
       <div className="mb-7">
         <p className="text-[10px] font-bold tracking-[0.16em] text-brand-gray-3 uppercase">
           New listing
@@ -69,11 +79,6 @@ export function ProductCreateForm({
           shoppers understand your item.
         </p>
       </div>
-      {submitted && (
-        <Alert className="mb-5 border-[#cfe2cf] bg-[#f0f7ed] text-brand-3">
-          <AlertDescription>Product published successfully.</AlertDescription>
-        </Alert>
-      )}
       {categoryError && (
         <Alert
           className="mb-5 border-red-200 bg-red-50 text-red-800"
@@ -141,7 +146,6 @@ export function ProductCreateForm({
               name="category_id"
               onChange={(event) => {
                 setCategoryId(Number(event.target.value))
-                setSubmitted(false)
               }}
               value={categoryId || ""}
             >
@@ -188,6 +192,24 @@ export function ProductCreateForm({
             <p className="text-sm text-brand-gray-3">
               The right template will appear here.
             </p>
+          </CardContent>
+        </Card>
+      ) : templateError ? (
+        <Card className="rounded-[26px] border-red-200 bg-red-50 shadow-none">
+          <CardContent className="p-5">
+            <Alert className="border-0 bg-transparent p-0 text-red-800" variant="destructive">
+              <AlertDescription>{templateError}</AlertDescription>
+            </Alert>
+            <p className="mt-2 text-sm text-red-700">
+              Ask an admin to activate a category template before creating this
+              product.
+            </p>
+          </CardContent>
+        </Card>
+      ) : !templateReady ? (
+        <Card className="rounded-[26px] border-[#e3e9df] bg-white shadow-none">
+          <CardContent className="min-h-40 p-6 text-sm text-brand-gray-3">
+            Loading the category form…
           </CardContent>
         </Card>
       ) : (
@@ -269,6 +291,7 @@ export function ProductCreateForm({
                             name={`attributes[${field.id}][value]`}
                             required={field.is_required}
                             type="checkbox"
+                            value="1"
                           />{" "}
                           Yes
                         </label>
@@ -332,6 +355,7 @@ export function ProductCreateForm({
           </div>
         )
       )}
-    </form>
+      </form>
+    </>
   )
 }

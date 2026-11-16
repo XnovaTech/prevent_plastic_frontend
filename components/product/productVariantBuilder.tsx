@@ -79,6 +79,7 @@ export function ProductVariantBuilder() {
         optionsText: "",
       },
     ])
+    setVariantRows([])
     setBuilderError("")
   }
 
@@ -95,18 +96,21 @@ export function ProductVariantBuilder() {
   }
 
   const removeDimension = (id: string) => {
-    setDimensions((current) =>
-      current.filter((dimension) => dimension.id !== id)
+    const next = dimensions.filter((dimension) => dimension.id !== id)
+    setDimensions(next)
+    setVariantRows(
+      next.length === 0
+        ? [
+            {
+              id: "default",
+              combinationKey: "default",
+              optionValues: [],
+              price: "",
+              stockQuantity: "",
+            },
+          ]
+        : []
     )
-    setVariantRows([
-      {
-        id: "default",
-        combinationKey: "default",
-        optionValues: [],
-        price: "",
-        stockQuantity: "",
-      },
-    ])
     setBuilderError("")
   }
 
@@ -126,32 +130,15 @@ export function ProductVariantBuilder() {
       return
     }
 
-    // Let users enter one value per row if that feels more natural.
-    // Duplicate groups such as Size / Medium and Size / Large are merged.
-    const groupedDimensions = new Map<
-      string,
-      { id: string; name: string; options: string[]; code: string }
-    >()
-    rawDimensions.forEach((dimension) => {
-      const existing = groupedDimensions.get(dimension.code)
-      groupedDimensions.set(dimension.code, {
-        id: existing?.id ?? dimension.id,
-        name: existing?.name ?? dimension.name,
-        code: dimension.code,
-        options: Array.from(
-          new Set([...(existing?.options ?? []), ...dimension.options])
-        ),
-      })
-    })
+    const codes = rawDimensions.map((dimension) => dimension.code)
+    if (new Set(codes).size !== codes.length) {
+      setBuilderError(
+        "Each option group name must be unique. Add all Size values in one group."
+      )
+      return
+    }
 
-    const prepared = Array.from(groupedDimensions.values())
-    setDimensions(
-      prepared.map((dimension) => ({
-        id: dimension.id,
-        name: dimension.name,
-        optionsText: dimension.options.join(", "),
-      }))
-    )
+    const prepared = rawDimensions
 
     const combinations = cartesian(
       prepared.map((dimension) =>
@@ -208,8 +195,8 @@ export function ProductVariantBuilder() {
           <div>
             <Label>What makes this product different?</Label>
             <p className="mt-1 max-w-2xl text-xs leading-5 text-brand-gray-3">
-              Add options such as Size, Type, or Color. Each generated
-              combination gets its own price and stock quantity.
+              Add one group for each dimension, then enter all of its values
+              together. For example: Size → Small, Medium, Large.
             </p>
           </div>
           <Button onPress={addDimension} size="sm" variant="outline">
@@ -224,9 +211,7 @@ export function ProductVariantBuilder() {
                 key={dimension.id}
               >
                 <div className="space-y-2">
-                  <Label htmlFor={`${dimension.id}-name`}>
-                    Option {index + 1}
-                  </Label>
+                  <Label htmlFor={`${dimension.id}-name`}>Option group</Label>
                   <Input
                     id={`${dimension.id}-name`}
                     name={`variation_attributes[${index}][name]`}
@@ -243,7 +228,9 @@ export function ProductVariantBuilder() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor={`${dimension.id}-values`}>Values</Label>
+                  <Label htmlFor={`${dimension.id}-values`}>
+                    Values <span className="font-normal text-brand-gray-3">(comma separated)</span>
+                  </Label>
                   <Input
                     id={`${dimension.id}-values`}
                     onChange={(event) =>
@@ -256,6 +243,16 @@ export function ProductVariantBuilder() {
                     placeholder="e.g. Small, Medium, Large"
                     value={dimension.optionsText}
                   />
+                  <div className="flex flex-wrap gap-1.5">
+                    {parseOptions(dimension.optionsText).map((option) => (
+                      <span
+                        className="rounded-full bg-[#edf4e8] px-2.5 py-1 text-[11px] font-semibold text-brand-3"
+                        key={`${dimension.id}-${option}`}
+                      >
+                        {option}
+                      </span>
+                    ))}
+                  </div>
                   {parseOptions(dimension.optionsText).map(
                     (option, optionIndex) => (
                       <input
@@ -280,7 +277,7 @@ export function ProductVariantBuilder() {
               </div>
             ))}
             <Button onPress={generateVariants} variant="secondary">
-              <Sparkle size={16} /> Generate combinations
+              <Sparkle size={16} /> Generate price rows
             </Button>
           </div>
         )}
@@ -303,7 +300,15 @@ export function ProductVariantBuilder() {
           </p>
         </div>
         <div className="space-y-3">
-          {variantRows.map((row, index) => (
+          {variantRows.length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-[#cfdccf] bg-[#fafbf7] p-6 text-center">
+              <p className="font-semibold text-brand">Generate combinations first</p>
+              <p className="mt-1 text-xs text-brand-gray-3">
+                Add your option values above, then generate a price row for
+                each combination.
+              </p>
+            </div>
+          ) : variantRows.map((row, index) => (
             <div
               className="grid gap-3 rounded-2xl border border-[#edf0ea] bg-[#fafbf7] p-4 sm:grid-cols-[1.5fr_1fr_1fr]"
               key={row.id}

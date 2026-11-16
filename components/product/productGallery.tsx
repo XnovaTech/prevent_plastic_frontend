@@ -1,8 +1,8 @@
 "use client"
 
-import Image from "next/image"
 import { useState } from "react"
 
+import { resolveMediaUrl } from "@/lib/media"
 import type { ProductGalleryImage } from "@/mock/productDetailMock"
 
 type ProductGalleryProps = {
@@ -20,13 +20,10 @@ export function ProductGallery({ images }: ProductGalleryProps) {
   return (
     <div>
       <div className="relative aspect-[4/4.45] overflow-hidden rounded-[28px] border border-white/75 bg-white/55 backdrop-blur-xl sm:rounded-[32px]">
-        <Image
+        <img
           alt={activeImage.alt}
           className="object-cover"
-          fill
-          priority
-          sizes="(max-width: 1024px) 100vw, 56vw"
-          src={activeImage.src}
+          src={resolveMediaUrl(activeImage.src)}
         />
         <span className="absolute top-4 left-4 rounded-full border border-white/70 bg-white/70 px-3 py-1.5 text-[9px] font-bold tracking-[0.12em] text-[#38684f] uppercase backdrop-blur-md">
           {activeIndex + 1} / {images.length} photos
@@ -46,18 +43,16 @@ export function ProductGallery({ images }: ProductGalleryProps) {
             onClick={() => setActiveIndex(index)}
             type="button"
           >
-            <Image
+            <img
               alt=""
               className="object-cover transition-transform duration-300 group-hover:scale-105"
-              fill
-              sizes="(max-width: 640px) 18vw, 120px"
-              src={image.src}
+              src={resolveMediaUrl(image.src)}
             />
           </button>
         ))}
       </div>
       <p className="mt-2 px-1 text-[9px] leading-4 text-brand-gray-3">
-        Gallery images are mock alternatives for this design preview.
+        Product photos from the seller.
       </p>
     </div>
   )

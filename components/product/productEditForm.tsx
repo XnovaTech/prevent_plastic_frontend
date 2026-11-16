@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { ArrowLeft, Check, Plus, Trash } from "@phosphor-icons/react"
+import { ArrowLeft, Check } from "@phosphor-icons/react"
 
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Button, LinkButton } from "@/components/ui/button"
@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { productService, type Product } from "@/services/productService"
 import { RichTextEditor } from "@/components/shared/richTextEditor"
+import { ProductImageManager } from "@/components/product/productImageManager"
 
 type ProductEditFormProps = { product: Product }
 
@@ -18,6 +19,7 @@ export function ProductEditForm({ product }: ProductEditFormProps) {
   const router = useRouter()
   const [name, setName] = useState(product.name)
   const [description, setDescription] = useState(product.description ?? "")
+  const [images, setImages] = useState(product.images ?? [])
   const isModerated =
     product.status === "disabled" || product.status === "banned"
   const [status, setStatus] = useState<"draft" | "active">(
@@ -32,6 +34,7 @@ export function ProductEditForm({ product }: ProductEditFormProps) {
   )
   const [error, setError] = useState("")
   const [isSaving, setIsSaving] = useState(false)
+  const hasVariantOptions = (product.variation_attributes?.length ?? 0) > 0
 
   const save = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -194,34 +197,30 @@ export function ProductEditForm({ product }: ProductEditFormProps) {
                   value={variant.stock_quantity}
                 />
               </div>
-              <div className="flex items-end">
-                <Button
-                  aria-label={`Remove variant ${index + 1}`}
-                  isDisabled={variants.length === 1}
-                  onPress={() =>
-                    setVariants((current) =>
-                      current.filter((_, itemIndex) => itemIndex !== index)
-                    )
-                  }
-                  size="icon"
-                  variant="ghost"
-                >
-                  <Trash size={16} />
-                </Button>
-              </div>
             </div>
           ))}
-          <Button
-            onPress={() =>
-              setVariants((current) => [
-                ...current,
-                { sku: "", price: 0, stock_quantity: 0, is_active: true },
-              ])
-            }
-            variant="outline"
-          >
-            <Plus size={15} /> Add variant
-          </Button>
+          {hasVariantOptions && (
+            <p className="text-xs text-brand-gray-3">
+              Variant options are fixed after creation. Edit the price and
+              stock for each combination here.
+            </p>
+          )}
+        </CardContent>
+      </Card>
+      <Card className="mt-5 rounded-[26px] border-[#e3e9df] bg-white shadow-none">
+        <CardHeader>
+          <CardTitle className="text-base text-brand">Product images</CardTitle>
+          <p className="text-sm text-brand-light">
+            The first primary image is shown first to shoppers. You can keep up
+            to 8 images.
+          </p>
+        </CardHeader>
+        <CardContent>
+          <ProductImageManager
+            images={images}
+            onChange={setImages}
+            productId={product.id}
+          />
         </CardContent>
       </Card>
       <div className="mt-5 flex justify-end">

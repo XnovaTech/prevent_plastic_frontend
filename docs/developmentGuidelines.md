@@ -30,6 +30,7 @@ Page
 - Modal တစ်ခုဖွင့်/ပိတ်ခြင်းလို local UI state ကို component ထဲတွင် ထားနိုင်သည်။ အမှန်တကယ်လိုအပ်ခြင်းမရှိဘဲ Zustand store ထဲမထည့်ပါနှင့်။
 - API data ကို React Query cache နှင့် Zustand store နှစ်ခုလုံးတွင် ထပ်မသိမ်းပါနှင့်။
 - Loading၊ empty၊ error နှင့် success state များကို UI မှာ ရှင်းလင်းစွာ ကိုင်တွယ်ပါ။ Error ကို အောင်မြင်သကဲ့သို့ ဖုံးကွယ်မထားပါနှင့်။
+- Create/update/delete ပြီးဆုံးသည့် short-lived confirmation အတွက် [`components/ui/toast.tsx`](../components/ui/toast.tsx) ကို အသုံးပြုပါ။ Page အပေါ်ဆုံး alert ကိုသာ အားကိုးပြီး user ကို အပေါ်သို့ scroll လုပ်ခိုင်းခြင်း မပြုရ။
 
 ## Form တည်ဆောက်ပုံ
 
@@ -49,8 +50,17 @@ Page
 ## Upload နှင့် Configuration
 
 - Image/document upload လိုအပ်လာပါက upload request နှင့် shared behavior ကို service/helper တစ်နေရာတည်းတွင် စုစည်းပြီး feature တိုင်းတွင် ထပ်မရေးပါနှင့်။
+- Single image field လိုအပ်ပါက [imageUploader.tsx](../components/shared/imageUploader.tsx) ကို ပြန်သုံးပါ။ Preview၊ replace၊ remove နှင့် file input behavior ကို feature component အသစ်တိုင်းတွင် မတီထွင်ပါနှင့်။
+- API မှလာသော product/category image URL များကို `frontend/lib/media.ts` ရှိ `resolveMediaUrl()` ဖြင့် normalize လုပ်ပြီး browser direct rendering သုံးပါ။ Dynamic Laravel storage images များကို Next image optimizer host restriction မပျက်စေရန် ဤ helper ကို ပြန်သုံးရမည်။
+- Multiple product images လိုအပ်ပါက shared uploader behavior ကို အခြေခံပြီး feature-specific layout ကိုသာ compose လုပ်ပါ။ Backend upload/delete/path cleanup အတွက် [FileService.php](../../backend/app/Services/FileService.php) ကို Service layer မှတစ်ဆင့် အသုံးပြုရမည်။
 - Environment variable များကို source code ထဲ hard-code မလုပ်ပါနှင့်။ Browser ထဲသို့ မပေါက်ကြားသင့်သော secret များကို `NEXT_PUBLIC_` prefix မပေးပါနှင့်။
 - Backend response ပုံစံကို မခန့်မှန်းပါနှင့်။ API contract သို့မဟုတ် အတည်ပြုထားသော response type ကို အခြေခံ၍ service နှင့် UI ကို ချိတ်ဆက်ပါ။
+
+## Rich text နှင့် nullable content
+
+- Product description၊ blog body သို့မဟုတ် အခြား rich text content လိုအပ်ပါက [richTextEditor.tsx](../components/shared/richTextEditor.tsx) ကို အသုံးပြုပါ။ Editor ကို feature တိုင်းတွင် ပြန်မတည်ဆောက်ပါနှင့်။
+- Optional description များအတွက် `nullable` prop သုံးပြီး empty editor ကို `null` အဖြစ် ပို့ပါ။ Required content ဖြစ်ပါက feature validation မှာ သီးခြားစစ်ပါ။
+- Rich text ကို backend တွင် sanitize လုပ်ပြီးမှ သိမ်းဆည်းရမည်။ Frontend မှာ ပြန်ပြသသည့်အခါ trusted/sanitized response ကိုသာ အသုံးပြုပါ။
 
 ## Feature တစ်ခုတည်ဆောက်ရာတွင်
 

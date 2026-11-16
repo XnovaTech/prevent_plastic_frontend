@@ -1,11 +1,11 @@
 "use client"
 
-import Image from "next/image"
 import Link from "next/link"
 import { useState } from "react"
 import { Storefront } from "@phosphor-icons/react"
 
 import { SeedlingIcon } from "@/components/ui/seedlingIcon"
+import { resolveMediaUrl } from "@/lib/media"
 import type { HomeProduct } from "@/mock/homePageMock"
 
 type ProductCardProps = {
@@ -33,6 +33,7 @@ export function ProductCard({
   sellerType,
 }: ProductCardProps) {
   const [saved, setSaved] = useState(false)
+  const [imageSrc, setImageSrc] = useState(() => resolveMediaUrl(product.image))
   const discount =
     product.originalPrice && product.price < product.originalPrice
       ? Math.round(
@@ -59,16 +60,12 @@ export function ProductCard({
               : "aspect-[4/4.35]"
           }`}
         >
-          <Image
+          <img
             alt={`${product.name}, ${product.condition.toLowerCase()} condition`}
             className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-            fill
-            sizes={
-              layout === "row"
-                ? "(max-width: 640px) 120px, 150px"
-                : "(max-width: 639px) 45vw, (max-width: 1024px) 42vw, 25vw"
-            }
-            src={product.image}
+            loading="lazy"
+            onError={() => setImageSrc("/products/ceramicPlates.jpg")}
+            src={imageSrc}
           />
 
           {product.badge && (

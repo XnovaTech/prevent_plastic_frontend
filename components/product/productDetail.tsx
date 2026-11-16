@@ -20,6 +20,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { Button, LinkButton } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { resolveMediaUrl } from "@/lib/media"
 import { productService, type Product } from "@/services/productService"
 
 type ProductDetailProps = {
@@ -73,6 +74,15 @@ function sanitizeDescription(value?: string | null) {
   })
 
   return document.body.innerHTML
+}
+
+function formatAttributeValue(value: unknown) {
+  if (value === null || value === undefined || value === "") return "—"
+  if (typeof value === "boolean") return value ? "Yes" : "No"
+  if (Array.isArray(value)) return value.join(", ") || "—"
+  if (typeof value === "object") return JSON.stringify(value)
+
+  return String(value)
 }
 
 export function ProductDetail({
@@ -315,7 +325,7 @@ export function ProductDetail({
                   <img
                     alt={images[0].alt_text ?? currentProduct.name}
                     className="h-full w-full object-contain"
-                    src={images[0].url}
+                    src={resolveMediaUrl(images[0].url)}
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-1">
@@ -327,7 +337,7 @@ export function ProductDetail({
                       <img
                         alt={image.alt_text ?? currentProduct.name}
                         className="h-full w-full object-contain"
-                        src={image.url}
+                        src={resolveMediaUrl(image.url)}
                       />
                     </div>
                   ))}
@@ -480,6 +490,34 @@ export function ProductDetail({
           </CardContent>
         </Card>
       </div>
+
+      {(currentProduct.attributes?.length ?? 0) > 0 && (
+        <Card className="mt-5 rounded-[26px] border-[#e3e9df] bg-white shadow-none">
+          <CardHeader>
+            <CardTitle className="text-base text-brand">
+              Product details
+            </CardTitle>
+            <p className="text-sm text-brand-light">
+              Details provided for the {currentProduct.category?.name ?? "selected"} category.
+            </p>
+          </CardHeader>
+          <CardContent className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {currentProduct.attributes?.map((attribute) => (
+              <div
+                className="rounded-2xl bg-[#f7faf4] p-4"
+                key={attribute.field_id}
+              >
+                <p className="text-xs text-brand-gray-3">
+                  {attribute.field_label ?? attribute.field_key ?? "Detail"}
+                </p>
+                <p className="mt-1 font-semibold text-brand">
+                  {formatAttributeValue(attribute.value)}
+                </p>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      )}
     </div>
   )
 }

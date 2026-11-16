@@ -1,5 +1,16 @@
 # Implementation Plan
 
+## လက်ရှိ Product Catalog အခြေအနေ (2026-11-15)
+
+- Customer product list သည် `GET /api/v1/catalog/products` မှ active product နှင့် active vendor data များကို ဖတ်သည်။
+- Customer product detail သည် `GET /api/v1/catalog/products/{product}` ကို အသုံးပြုသည်။
+- Vendor/admin management routes (`/products`) နှင့် public storefront catalog routes (`/catalog/products`) ကို သီးခြားထားသည်။
+- Category template မရှိသည့်အခါ vendor product create form သည် mock template မပြဘဲ active template မရှိကြောင်းရှင်းလင်းစွာ ပြသည်။
+- Product detail တွင် category attributes၊ variants၊ price၊ stock၊ vendor နှင့် seller images များကို ပြသည်။
+- Variant creation UI တွင် option group name ကို တစ်ခါသာထည့်ပြီး values များကို comma-separated list အဖြစ် ထည့်ရမည်။ ဥပမာ `Size → Small, Medium, Large` ဖြစ်ပြီး `Size` ကို row တစ်ကြောင်းစီ ထပ်မရေးရ။
+- Shared media rules အရ single image upload တွင် [`imageUploader.tsx`](../components/shared/imageUploader.tsx)၊ rich description တွင် [`richTextEditor.tsx`](../components/shared/richTextEditor.tsx) ကို ပြန်သုံးရမည်။ Backend file lifecycle ကို [`FileService.php`](../../backend/app/Services/FileService.php) မှတစ်ဆင့် ကိုင်တွယ်ရမည်။
+- Homepage နှင့် reviews များတွင် mock content ကျန်ရှိနေသေးသည်။ Product catalog list/detail သည် real API သုံးနေပြီဖြစ်သည်။
+
 ## ရည်ရွယ်ချက်
 
 ဤအစီအစဉ်သည် [businessLogic.md](./businessLogic.md) တွင် ဖတ်ရှုနိုင်သော requirement များကို အတည်ပြုနိုင်သော၊ ထိန်းသိမ်းရလွယ်ကူသော frontend implementation အဖြစ် ပြောင်းလဲရန်ဖြစ်သည်။ Homepage အတွက် static design ကို `app/page.tsx` နှင့် `components/sections/` တွင် တည်ဆောက်ထားပြီး demo content ကို `mock/homePageMock.ts` မှ ယူသည်။ ၎င်းသည် backend/API ချိတ်ဆက်မှုမဟုတ်ပါ။ ကျန် feature များကို API contract ရလာသည့်အခါ service boundary မှတစ်ဆင့် ချိတ်ဆက်ပါ။
@@ -61,7 +72,7 @@
 - Product data တွင် active discount အတည်ပြုချက်မရှိပါက discount section ကို မပြသပါနှင့်။ Featured merchant များကို approved/public ဖြစ်သူများမှသာယူပါ။
 - SME, Individual နှင့် Repair page များကို route/UI အဖြစ်စီစဉ်ပါ။ ၎င်းတို့၏ domain အဓိပ္ပာယ်နှင့် Repair booking လိုအပ်ချက်ကို အတည်မပြုမချင်း မသတ်မှတ်ထားသော workflow ကို မတည်ဆောက်ပါနှင့်။
 - Public route မှ guest နှင့် customer နှစ်ဦးလုံး ထုတ်ကုန် browse လုပ်နိုင်အောင် တည်ဆောက်ပါ။
-- Product list/detail data ကို React Query ဖြင့်ယူပြီး `components/list/` နှင့် shared UI များတွင်သာ ပြသပါ။
+- Product list/detail data ကို domain hooks (`useCatalogProducts`, `useCatalogProduct`) နှင့် `productService` မှယူပြီး `components/list/` နှင့် `components/product/` တွင်သာ ပြသပါ။
 - တစ်ပတ်ရစ် product ၏ condition၊ သိရှိထားသော ချို့ယွင်းချက်နှင့် ပစ္စည်းအခြေအနေကို နားလည်စေမည့်ပုံ/ဖော်ပြချက်ကို အတည်ပြုထားသော policy အတိုင်း ပြပါ။
 - Search၊ filter၊ sort၊ pagination နှင့် category behavior ကို business/API requirement အတည်ပြုပြီးမှ ထည့်ပါ။
 - Product merchant identity/approval status ၏ public visibility ကို privacy နှင့် product requirement အတိုင်း သတ်မှတ်ပါ။
