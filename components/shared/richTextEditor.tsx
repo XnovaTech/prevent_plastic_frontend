@@ -16,6 +16,8 @@ type RichTextEditorProps = {
   disabled?: boolean
   nullable?: boolean
   className?: string
+  height?: number
+  minHeight?: number
   onChange?: (value: string | null) => void
 }
 
@@ -72,6 +74,8 @@ export function RichTextEditor({
   disabled = false,
   nullable = false,
   className,
+  height = 280,
+  minHeight = 220,
   onChange,
 }: RichTextEditorProps) {
   const [internalContent, setInternalContent] = useState(
@@ -83,8 +87,8 @@ export function RichTextEditor({
     () => ({
       readonly: disabled,
       placeholder,
-      height: 280,
-      minHeight: 220,
+      height,
+      minHeight,
       toolbarAdaptive: false,
       toolbarButtonSize: "middle" as const,
       buttons: toolbarButtons,
@@ -98,7 +102,7 @@ export function RichTextEditor({
         insertImageAsBase64URI: false,
       },
     }),
-    [disabled, placeholder]
+    [disabled, height, minHeight, placeholder]
   )
 
   const handleChange = (nextValue: string) => {

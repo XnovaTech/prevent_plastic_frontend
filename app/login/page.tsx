@@ -3,7 +3,9 @@
 import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+import { Leaf, LockKey } from "@phosphor-icons/react"
 import { AuthLayout } from "@/components/auth/authLayout"
+import { AosInitializer } from "@/components/shared/aosInitializer"
 import { getDashboardPath, getAppRole } from "@/lib/auth"
 
 import { Alert, AlertDescription } from "@/components/ui/alert"
@@ -13,7 +15,7 @@ import { Label } from "@/components/ui/label"
 import { useAuth } from "@/hooks/useAuth"
 
 const fieldClassName =
-  "h-12 rounded-[14px] border-[#dfe6dc] bg-white px-3.5 text-[13px] text-brand-6 shadow-sm shadow-[#274b3e]/[0.02] placeholder:text-[#98a49a] transition-[border-color,box-shadow] focus-visible:border-[#7fa88c] focus-visible:ring-3 focus-visible:ring-[#7fa88c]/20"
+  "h-11 rounded-[14px] border-[#dfe6dc] bg-white px-3.5 text-[13px] text-brand-6 shadow-sm shadow-[#274b3e]/[0.02] placeholder:text-[#98a49a] transition-[border-color,box-shadow] focus-visible:border-[#7fa88c] focus-visible:ring-3 focus-visible:ring-[#7fa88c]/20"
 
 const labelClassName =
   "text-[12px] font-semibold tracking-[0.01em] text-[#344d42]"
@@ -37,29 +39,39 @@ export default function LoginPage() {
   }
 
   return (
-    <AuthLayout>
+    <AuthLayout compact>
+      <AosInitializer />
       <a
         className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-full focus:bg-white focus:px-4 focus:py-2"
         href="#main-content"
       >
         Skip to content
       </a>
-      <main id="main-content" className="w-full">
-        <section className="rounded-[28px] border border-border bg-card p-6 shadow-[0_24px_70px_-42px_rgba(27,65,56,0.45)] sm:p-8">
-          <div className="mb-7">
-            <p className="text-xs font-bold tracking-[0.16em] text-brand-4 uppercase">
-              Welcome back
-            </p>
-            <h1 className="mt-2 font-serif text-3xl leading-tight tracking-[-0.04em] text-brand sm:text-[2.15rem]">
+      <main id="main-content" className="w-full max-w-[540px]" data-aos="fade-left" data-aos-duration="650">
+        <section className="relative overflow-hidden rounded-[30px] border border-[#e0e7dd] bg-card p-5 shadow-[0_28px_80px_-48px_rgba(27,65,56,0.52)] sm:p-7">
+          <span aria-hidden="true" className="pointer-events-none absolute -top-16 -right-16 size-28 rounded-full bg-brand-yellow-bg/60" />
+          <span aria-hidden="true" className="pointer-events-none absolute top-16 -right-2 size-2 rounded-full bg-brand-orange/70" />
+          <div className="relative z-10 mb-5">
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex size-10 items-center justify-center rounded-2xl bg-brand-yellow-bg text-brand-2 shadow-sm" data-aos="zoom-in" data-aos-delay="100">
+                <Leaf aria-hidden="true" size={20} weight="fill" />
+              </div>
+              <span className="rounded-full border border-[#dce8d8] bg-[#f3f8ef] px-3 py-1 text-[10px] font-semibold text-brand-3">One account · Every role</span>
+            </div>
+            <p className="mt-3 text-xs font-bold tracking-[0.16em] text-brand-4 uppercase">Welcome back</p>
+            <h1 className="mt-1.5 font-serif text-[1.8rem] leading-tight tracking-[-0.04em] text-brand sm:text-[2rem]">
               Sign in and pick up where you left off.
             </h1>
-            <p className="mt-3 text-sm leading-6 text-muted-foreground">
-              Access your account, saved finds, and seller tools.
+            <p className="mt-2 text-sm leading-5 text-muted-foreground">
+              Access your account, saved finds, Journal stories, and seller tools.
             </p>
+            <div className="mt-3 flex flex-wrap gap-1.5 text-[10px] font-semibold text-brand-4">
+              {['Community member', 'Vendor', 'Admin'].map((role) => <span className="rounded-full bg-[#f6f8f3] px-3 py-1.5" key={role}>{role}</span>)}
+            </div>
           </div>
 
           <form
-            className="flex flex-col gap-5"
+            className="relative z-10 flex flex-col gap-4"
             onSubmit={handleSubmit}
             noValidate
           >
@@ -109,15 +121,16 @@ export default function LoginPage() {
             ) : null}
 
             <Button
-              className="h-12 w-full rounded-full bg-primary px-5 text-sm font-bold text-primary-foreground hover:bg-primary/90"
+              className="h-11 w-full rounded-full bg-primary px-5 text-sm font-bold text-primary-foreground hover:bg-primary/90"
               isDisabled={loading}
               type="submit"
             >
-              {loading ? "Signing in..." : "Sign in"}
+              <LockKey aria-hidden="true" size={17} weight="bold" />
+              {loading ? "Signing in..." : "Sign in securely"}
             </Button>
           </form>
 
-          <p className="mt-7 text-center text-sm text-muted-foreground">
+          <p className="relative z-10 mt-5 text-center text-sm text-muted-foreground">
             Don&apos;t have an account?{" "}
             <Link
               className="font-semibold text-brand-3 hover:text-brand-orange"

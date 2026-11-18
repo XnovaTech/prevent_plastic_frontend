@@ -4,13 +4,14 @@ import { ArrowRight, Leaf } from "@phosphor-icons/react/dist/ssr"
 
 type AuthLayoutProps = {
   children: React.ReactNode
+  compact?: boolean
 }
 
-export function AuthLayout({ children }: AuthLayoutProps) {
+export function AuthLayout({ children, compact = false }: AuthLayoutProps) {
   return (
-    <div className="min-h-screen bg-[#fbfcf8] text-brand">
+    <div className={`${compact ? "h-dvh overflow-hidden" : "min-h-screen"} bg-[#fbfcf8] text-brand`}>
       <header className="border-b border-white/80 bg-white/70 backdrop-blur-xl">
-        <div className="mx-auto flex h-[76px] max-w-[1440px] items-center justify-between gap-4 px-4 sm:px-8 lg:px-12">
+        <div className={`mx-auto flex max-w-[1440px] items-center justify-between gap-4 px-4 sm:px-8 lg:px-12 ${compact ? "h-16" : "h-[76px]"}`}>
           <Link
             aria-label="Prevent Plastic home"
             className="group flex items-center gap-2.5"
@@ -38,8 +39,8 @@ export function AuthLayout({ children }: AuthLayoutProps) {
         </div>
       </header>
 
-      <main className="mx-auto grid max-w-[1440px] items-center gap-6 px-4 py-5 sm:px-8 sm:py-8 lg:grid-cols-[0.9fr_1.1fr] lg:gap-8 lg:px-12 lg:py-10">
-        <section className="relative hidden min-h-[620px] overflow-hidden rounded-[32px] bg-[#f0eef8] px-7 py-8 md:block md:px-10 md:py-10 lg:min-h-[680px]">
+      <main className={`mx-auto grid max-w-[1440px] items-center gap-6 px-4 py-5 sm:px-8 sm:py-8 lg:grid-cols-[0.9fr_1.1fr] lg:gap-8 lg:px-12 ${compact ? "h-[calc(100dvh-64px)] overflow-hidden lg:py-3" : "lg:py-10"}`}>
+        <section className={`relative hidden overflow-hidden rounded-[32px] bg-[#f0eef8] px-7 py-8 md:block md:px-10 md:py-10 ${compact ? "min-h-0 py-6 lg:h-full lg:px-8 lg:py-7" : "min-h-[620px] lg:min-h-[680px]"}`}>
           <div className="absolute -top-20 -right-24 size-64 rounded-full bg-[#e5e0f3]" />
           <div className="absolute -bottom-28 -left-20 size-72 rounded-full bg-[#e8f1e3]" />
           <Image
@@ -65,12 +66,12 @@ export function AuthLayout({ children }: AuthLayoutProps) {
                 and everyday repair.
               </p>
             </div>
-            <div className="relative mt-10 flex min-h-[270px] items-end justify-center">
-              <div className="absolute bottom-0 h-52 w-52 rounded-full bg-white/75 shadow-[0_20px_45px_-30px_rgba(38,74,55,0.4)]" />
+            <div className={`relative flex items-end justify-center ${compact ? "mt-5 min-h-[190px]" : "mt-10 min-h-[270px]"}`}>
+              <div className={`absolute bottom-0 rounded-full bg-white/75 shadow-[0_20px_45px_-30px_rgba(38,74,55,0.4)] ${compact ? "h-40 w-40" : "h-52 w-52"}`} />
               <Image
                 alt=""
                 aria-hidden="true"
-                className="relative z-10 h-64 w-64 object-contain"
+                className={`relative z-10 object-contain ${compact ? "h-48 w-48" : "h-64 w-64"}`}
                 height={320}
                 src="/gif/mini.gif"
                 width={320}
@@ -88,7 +89,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
             </div>
           </div>
         </section>
-        <div className="flex items-center justify-center">{children}</div>
+        <div className="flex w-full items-center justify-center">{children}</div>
       </main>
     </div>
   )

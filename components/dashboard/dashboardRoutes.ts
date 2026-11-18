@@ -5,7 +5,18 @@ export const adminRoutes: DashboardNavItem[] = [
   { href: "/admin/vendors", label: "Vendors", icon: "storefront" },
   { href: "/admin/categories", label: "Categories", icon: "tag" },
   { href: "/admin/products", label: "Products", icon: "package" },
-    { href: "/admin/blog", label: "Blog", icon: "tag" },
+  {
+    href: "/admin/blog",
+    label: "Blog",
+    icon: "tag",
+    children: [
+      {
+        href: "/admin/blog/categories",
+        label: "Blog categories",
+        icon: "tag",
+      },
+    ],
+  },
   { href: "/admin/users", label: "Users", icon: "users" },
 ]
 

@@ -10,6 +10,8 @@ type ImageUploaderProps = {
   existingImage?: string | null
   onChange: (file: File | null) => void
   disabled?: boolean
+  label?: string
+  previewAlt?: string
 }
 
 export function ImageUploader({
@@ -17,6 +19,8 @@ export function ImageUploader({
   existingImage,
   onChange,
   disabled = false,
+  label = "Add a category image",
+  previewAlt = "Category preview",
 }: ImageUploaderProps) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [preview, setPreview] = useState<string | null>(existingImage ?? null)
@@ -47,12 +51,12 @@ export function ImageUploader({
         {preview ? (
           <>
             <img
-              alt="Category preview"
+              alt={previewAlt}
               className="h-52 w-full object-cover"
               src={preview}
             />
             <Button
-              aria-label="Remove category image"
+              aria-label={`Remove ${label.toLowerCase()}`}
               className="absolute top-3 right-3 bg-white/90 text-red-700 hover:bg-white"
               onPress={() => {
                 onChange(null)
@@ -76,7 +80,7 @@ export function ImageUploader({
               <ImageSquare size={24} />
             </span>
             <span className="text-sm font-semibold text-brand">
-              Add a category image
+              {label}
             </span>
             <span className="text-xs text-brand-gray-3">
               PNG, JPG or WEBP · up to 5 MB

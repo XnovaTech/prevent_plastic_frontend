@@ -5,6 +5,8 @@ import { useState, type FormEvent } from "react"
 
 import { ArrowRight, UploadSimple } from "@phosphor-icons/react"
 
+import { ImageUploader } from "@/components/shared/imageUploader"
+import { RichTextEditor } from "@/components/shared/richTextEditor"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -31,6 +33,7 @@ export function BlogSubmitForm() {
   const user = useAuthStore((state) => state.user)
   const { submit, isSubmitting, error } = useBlogSubmission()
   const [success, setSuccess] = useState("")
+  const [image, setImage] = useState<File | null>(null)
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -40,8 +43,14 @@ export function BlogSubmitForm() {
       return
     }
     try {
-      await submit({ title: String(form.get("title") ?? ""), excerpt: String(form.get("excerpt") ?? ""), body: String(form.get("body") ?? "") })
+      await submit({
+        title: String(form.get("title") ?? ""),
+        excerpt: String(form.get("excerpt") ?? ""),
+        body: String(form.get("body") ?? ""),
+        images: image ? [image] : [],
+      })
       event.currentTarget.reset()
+      setImage(null)
       setSuccess("Thank you — your story was submitted for review.")
     } catch {
       // The hook exposes a user-safe API error message.

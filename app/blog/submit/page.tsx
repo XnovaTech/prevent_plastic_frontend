@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 
-import { BlogSubmitForm } from "@/components/blog/blogSubmitForm"
+import { BlogSubmissionGate } from "@/components/blog/blogSubmissionGate"
+import { BlogStorySubmitForm } from "@/components/blog/blogStorySubmitForm"
 import { AosInitializer } from "@/components/shared/aosInitializer"
 import { SiteFooter } from "@/components/shared/siteFooter"
 import { SiteHeader } from "@/components/shared/siteHeader"
@@ -23,7 +24,9 @@ export default function Page() {
       </a>
       <SiteHeader activeHref="/blog" />
       <main id="main-content">
-        <BlogSubmitForm />
+        <BlogSubmissionGate>
+          <BlogStorySubmitForm />
+        </BlogSubmissionGate>
       </main>
       <SiteFooter />
     </div>

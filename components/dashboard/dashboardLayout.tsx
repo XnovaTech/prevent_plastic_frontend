@@ -5,6 +5,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import {
   Bell,
+  CaretDown,
   ChartLineUp,
   GearSix,
   Heart,
@@ -12,6 +13,7 @@ import {
   List,
   MapPin,
   Package,
+  SignOut,
   Storefront,
   Tag,
   UsersThree,
@@ -20,11 +22,13 @@ import {
 import type { ElementType } from "react"
 
 import { Button } from "@/components/ui/button"
+import { useDashboardLogout } from "@/hooks/useDashboardLogout"
 
 export type DashboardNavItem = {
   href: string
   label: string
   icon: DashboardIconName
+  children?: DashboardNavItem[]
 }
 
 export type DashboardIconName =
@@ -57,6 +61,10 @@ export function DashboardLayout({
 }: DashboardLayoutProps) {
   const pathname = usePathname()
   const [menuOpen, setMenuOpen] = useState(false)
+  const [expandedNavigation, setExpandedNavigation] = useState<
+    Record<string, boolean>
+  >({})
+  const { isLoggingOut, logout } = useDashboardLogout()
 
   return (
     <div className="min-h-screen bg-[#f7f9f4] text-brand">
@@ -101,23 +109,70 @@ export function DashboardLayout({
             <p className="mb-2 px-3 text-[10px] font-bold tracking-[0.15em] text-brand-gray-3 uppercase">
               Manage
             </p>
-            {navigation.map(({ href, label, icon }) => {
+            {navigation.map(({ children: nestedItems, href, label, icon }) => {
               const active = pathname === href
+              const hasActiveChild = nestedItems?.some(
+                (item) => pathname === item.href
+              )
+              const isExpanded =
+                expandedNavigation[href] ?? Boolean(hasActiveChild)
               const Icon = iconMap[icon]
               return (
-                <Link
-                  className={`flex items-center gap-3 rounded-2xl px-3 py-3 text-sm font-semibold transition-colors ${active ? "bg-brand-2 text-white shadow-sm" : "text-brand-light hover:bg-brand-yellow-bg hover:text-brand-3"}`}
-                  href={href}
-                  key={href}
-                  onClick={() => setMenuOpen(false)}
-                >
-                  <Icon
-                    aria-hidden="true"
-                    size={18}
-                    weight={active ? "fill" : "regular"}
-                  />
-                  {label}
-                </Link>
+                <div key={href}>
+                  <div
+                    className={`flex items-center rounded-2xl text-sm font-semibold transition-colors ${active ? "bg-brand-2 text-white shadow-sm" : hasActiveChild ? "bg-brand-yellow-bg text-brand-3" : "text-brand-light hover:bg-brand-yellow-bg hover:text-brand-3"}`}
+                  >
+                    <Link
+                      className="flex min-w-0 flex-1 items-center gap-3 px-3 py-3"
+                      href={href}
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      <Icon aria-hidden="true" size={18} weight={active ? "fill" : "regular"} />
+                      {label}
+                    </Link>
+                    {nestedItems && (
+                      <button
+                        aria-expanded={isExpanded}
+                        aria-label={`Toggle ${label} navigation`}
+                        className="mr-2 flex size-8 items-center justify-center rounded-xl hover:bg-white/50"
+                        onClick={() =>
+                          setExpandedNavigation((current) => ({
+                            ...current,
+                            [href]: !isExpanded,
+                          }))
+                        }
+                        type="button"
+                      >
+                        <CaretDown
+                          aria-hidden="true"
+                          className={`transition-transform ${isExpanded ? "rotate-180" : ""}`}
+                          size={15}
+                          weight="bold"
+                        />
+                      </button>
+                    )}
+                  </div>
+                  {nestedItems && isExpanded && (
+                    <div className="mt-1 ml-5 border-l border-[#dce4da] pl-3">
+                      {nestedItems.map((item) => {
+                        const ChildIcon = iconMap[item.icon]
+                        const childActive = pathname === item.href
+
+                        return (
+                          <Link
+                            className={`flex items-center gap-2 rounded-xl px-3 py-2.5 text-xs font-semibold transition-colors ${childActive ? "bg-brand-2 text-white shadow-sm" : "text-brand-light hover:bg-brand-yellow-bg hover:text-brand-3"}`}
+                            href={item.href}
+                            key={item.href}
+                            onClick={() => setMenuOpen(false)}
+                          >
+                            <ChildIcon aria-hidden="true" size={15} weight={childActive ? "fill" : "regular"} />
+                            {item.label}
+                          </Link>
+                        )
+                      })}
+                    </div>
+                  )}
+                </div>
               )
             })}
             <p className="mt-7 mb-2 px-3 text-[10px] font-bold tracking-[0.15em] text-brand-gray-3 uppercase">
@@ -131,12 +186,23 @@ export function DashboardLayout({
               Settings
             </Link>
           </nav>
-          <Link
-            className="mt-5 rounded-2xl border border-[#dce4da] px-4 py-3 text-center text-xs font-bold text-brand-3 transition-colors hover:bg-brand-yellow-bg"
-            href="/"
-          >
-            Back to storefront
-          </Link>
+          <div className="mt-5 space-y-2">
+            <Button
+              className="w-full justify-center rounded-2xl border-[#f0d4d0] text-brand-orange-3 hover:bg-brand-peach-bg"
+              isDisabled={isLoggingOut}
+              onPress={() => void logout()}
+              variant="outline"
+            >
+              <SignOut aria-hidden="true" size={16} />
+              {isLoggingOut ? "Logging out…" : "Log out"}
+            </Button>
+            <Link
+              className="block rounded-2xl border border-[#dce4da] px-4 py-3 text-center text-xs font-bold text-brand-3 transition-colors hover:bg-brand-yellow-bg"
+              href="/"
+            >
+              Back to storefront
+            </Link>
+          </div>
         </aside>
         {menuOpen && (
           <button
