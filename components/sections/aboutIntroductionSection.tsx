@@ -94,6 +94,7 @@ export function AboutIntroductionSection({
                 fill
                 sizes="(max-width: 1023px) 100vw, 72vw"
                 src={content.featureImage}
+                unoptimized
               />
               <figcaption className="absolute bottom-4 left-4 rounded-full border border-white/60 bg-white/90 px-3 py-1.5 text-[9px] font-bold tracking-[0.13em] text-brand-3 uppercase backdrop-blur-sm sm:bottom-5 sm:left-5">
                 {content.featureEyebrow}

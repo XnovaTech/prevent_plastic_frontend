@@ -1,16 +1,9 @@
 import type { Metadata } from "next"
 
-import { AboutCampaignSection } from "@/components/sections/aboutCampaignSection"
-import { AboutCultureSection } from "@/components/sections/aboutCultureSection"
-import { AboutFaqSection } from "@/components/sections/aboutFaqSection"
-import { AboutHeroSection } from "@/components/sections/aboutHeroSection"
-import { AboutIntroductionSection } from "@/components/sections/aboutIntroductionSection"
-import { AboutImpactSection } from "@/components/sections/aboutImpactSection"
-import { AboutValuesSection } from "@/components/sections/aboutValuesSection"
+import { AboutLiveLayoutPage } from "@/components/about/aboutMockLayoutPage"
 import { AosInitializer } from "@/components/shared/aosInitializer"
 import { SiteFooter } from "@/components/shared/siteFooter"
 import { SiteHeader } from "@/components/shared/siteHeader"
-import { aboutPageMock } from "@/mock/aboutPageMock"
 
 export const metadata: Metadata = {
   title: "About us — Prevent Plastic",
@@ -30,18 +23,7 @@ export default function Page() {
       </a>
       <SiteHeader activeHref="/about" />
       <main id="main-content">
-        <AboutHeroSection content={aboutPageMock.hero} />
-        
-        <AboutIntroductionSection content={aboutPageMock.introduction} />
-        {/* <AboutCampaignSection content={aboutPageMock.campaign} /> */}
-        <AboutValuesSection content={aboutPageMock.values} />
-        <AboutCultureSection content={aboutPageMock.culture} />
-        
-        {/* <AboutImpactSection content={aboutPageMock.impact} /> */}
-        <AboutFaqSection
-          faqs={aboutPageMock.faqs}
-          intro={aboutPageMock.faqIntro}
-        />
+        <AboutLiveLayoutPage />
       </main>
       <SiteFooter />
     </div>

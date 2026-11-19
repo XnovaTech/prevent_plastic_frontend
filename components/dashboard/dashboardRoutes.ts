@@ -2,14 +2,19 @@ import type { DashboardNavItem } from "@/components/dashboard/dashboardLayout"
 
 export const adminRoutes: DashboardNavItem[] = [
   { href: "/admin", label: "Overview", icon: "chart" },
-  { href: "/admin/vendors", label: "Vendors", icon: "storefront" },
+  { href: "/admin/about", label: "About Us", icon: "heart" },
   { href: "/admin/categories", label: "Categories", icon: "tag" },
   { href: "/admin/products", label: "Products", icon: "package" },
   {
     href: "/admin/blog",
-    label: "Blog",
+    label: "Blog Management",
     icon: "tag",
     children: [
+      {
+        href: "/admin/blog",
+        label: "Blog page",
+        icon: "tag",
+      },
       {
         href: "/admin/blog/categories",
         label: "Blog categories",
@@ -17,14 +22,23 @@ export const adminRoutes: DashboardNavItem[] = [
       },
     ],
   },
-  { href: "/admin/users", label: "Users", icon: "users" },
+  {
+    href: "/admin/settings",
+    label: "Settings",
+    icon: "gear",
+    section: "account",
+  },
 ]
 
 export const vendorRoutes: DashboardNavItem[] = [
   { href: "/vendor", label: "Overview", icon: "chart" },
-  { href: "/vendor/shop", label: "My shop", icon: "storefront" },
   { href: "/vendor/products", label: "Products", icon: "package" },
-  { href: "/vendor/orders", label: "Orders", icon: "tag" },
+  {
+    href: "/vendor/settings",
+    label: "Settings",
+    icon: "gear",
+    section: "account",
+  },
 ]
 
 export const customerRoutes: DashboardNavItem[] = [

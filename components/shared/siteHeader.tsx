@@ -120,7 +120,7 @@ export function SiteHeader({ activeHref = "/" }: SiteHeaderProps) {
             {homePageMock.navigation.map((item) => (
               <Link
                 key={item.label}
-                className={`relative px-3 py-2 text-[15px] font-medium transition-all duration-300 ${
+                className={`relative px-3 py-2 text-[15px] font-medium whitespace-nowrap transition-all duration-300 ${
                   item.href === activeHref ? "text-brand-2" : "text-[#56645e]"
                 } } hover:text-brand-2`}
                 href={item.href}

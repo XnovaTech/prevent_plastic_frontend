@@ -22,6 +22,7 @@ export function AboutValuesSection({ content }: AboutValuesSectionProps) {
             fill
             sizes="(max-width: 1024px) 100vw, 52vw"
             src={content.image}
+            unoptimized
           />
           <span className="absolute bottom-4 left-4 rounded-full border border-white/40 bg-white/90 px-4 py-2 text-[9px] font-bold tracking-[0.14em] text-brand-2 uppercase shadow-sm backdrop-blur-md sm:bottom-6 sm:left-6">
             PRE-LOVED, READY AGAIN

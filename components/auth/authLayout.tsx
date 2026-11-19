@@ -39,10 +39,12 @@ export function AuthLayout({ children, compact = false }: AuthLayoutProps) {
         </div>
       </header>
 
-      <main className={`mx-auto grid max-w-[1440px] items-center gap-6 px-4 py-5 sm:px-8 sm:py-8 lg:grid-cols-[0.9fr_1.1fr] lg:gap-8 lg:px-12 ${compact ? "h-[calc(100dvh-64px)] overflow-hidden lg:py-3" : "lg:py-10"}`}>
-        <section className={`relative hidden overflow-hidden rounded-[32px] bg-[#f0eef8] px-7 py-8 md:block md:px-10 md:py-10 ${compact ? "min-h-0 py-6 lg:h-full lg:px-8 lg:py-7" : "min-h-[620px] lg:min-h-[680px]"}`}>
-          <div className="absolute -top-20 -right-24 size-64 rounded-full bg-[#e5e0f3]" />
-          <div className="absolute -bottom-28 -left-20 size-72 rounded-full bg-[#e8f1e3]" />
+      <main className={`mx-auto grid max-w-[1440px] items-center gap-6 px-4 py-5 sm:px-8 sm:py-8 lg:grid-cols-[0.9fr_1.1fr] lg:gap-8 lg:px-12 ${compact ? "h-[calc(100dvh-64px)] overflow-hidden lg:gap-0 lg:bg-white lg:px-0 lg:py-0" : "lg:py-10"}`}>
+        <section className={`relative hidden overflow-hidden rounded-[32px] border border-white/70 bg-[#eef4e9] px-7 py-8 shadow-[0_28px_70px_-48px_rgba(38,74,55,0.48)] lg:block lg:px-10 lg:py-10 ${compact ? "min-h-0 py-6 lg:h-full lg:rounded-none lg:border-y-0 lg:border-l-0 lg:border-r lg:border-r-[#dfe7dc] lg:px-8 lg:py-7 lg:shadow-none" : "min-h-[620px] lg:min-h-[680px]"}`}>
+          <div aria-hidden="true" className="absolute -top-24 -right-20 size-72 rounded-full border-[26px] border-[#dfe7d9]" />
+          <div aria-hidden="true" className="absolute top-12 right-12 size-3 rounded-full bg-brand-orange/70" />
+          <div aria-hidden="true" className="absolute top-20 right-20 size-1.5 rounded-full bg-brand-3/70" />
+          <div aria-hidden="true" className="absolute -bottom-28 -left-20 size-80 rounded-full bg-[#dcebd6]" />
           <Image
             alt=""
             aria-hidden="true"
@@ -53,34 +55,38 @@ export function AuthLayout({ children, compact = false }: AuthLayoutProps) {
           />
           <div className="relative z-10 flex h-full flex-col justify-between">
             <div>
-              <p className="text-[10px] font-bold tracking-[0.16em] text-brand-4 uppercase">
-                Good things, again
+              <p className="flex items-center gap-2 text-[10px] font-bold tracking-[0.18em] text-brand-4 uppercase">
+                <span className="size-2 rounded-full bg-brand-orange" /> Good things, again
               </p>
-              <h1 className="mt-4 max-w-md font-serif text-[44px] leading-[1.02] tracking-[-0.055em] text-brand sm:text-[52px]">
-                Find things
+              <h1 className="mt-4 max-w-md font-serif text-[44px] leading-[0.98] tracking-[-0.06em] text-brand sm:text-[52px]">
+                A lighter way
                 <br />
-                <span className="text-brand-3 italic">less waste.</span>
+                <span className="text-brand-3 italic">to live.</span>
               </h1>
-              <p className="mt-5 max-w-sm text-sm leading-6 text-brand-light">
-                Join a friendly marketplace for pre-loved finds, local makers,
-                and everyday repair.
+              <p className="mt-5 max-w-[22rem] text-sm leading-6 text-brand-light">
+                Give good things another chapter. Find pre-loved treasures,
+                support local makers, and repair what matters.
+              </p>
+              <p className="mt-5 text-[11px] font-semibold tracking-[0.08em] text-brand-3 uppercase">
+                Little choices, lasting change
               </p>
             </div>
-            <div className={`relative flex items-end justify-center ${compact ? "mt-5 min-h-[190px]" : "mt-10 min-h-[270px]"}`}>
-              <div className={`absolute bottom-0 rounded-full bg-white/75 shadow-[0_20px_45px_-30px_rgba(38,74,55,0.4)] ${compact ? "h-40 w-40" : "h-52 w-52"}`} />
+            <div className={`relative flex items-end justify-center ${compact ? "mt-3 min-h-[180px]" : "mt-8 min-h-[270px]"}`}>
+              <div aria-hidden="true" className={`absolute bottom-3 rounded-full border border-white/80 bg-[#f8fbf4]/75 shadow-[0_20px_45px_-30px_rgba(38,74,55,0.4)] ${compact ? "h-32 w-52" : "h-52 w-64"}`} />
+              <span aria-hidden="true" className="absolute bottom-8 left-1/2 h-3 w-36 -translate-x-1/2 rounded-[100%] bg-brand/12 blur-sm" />
               <Image
-                alt=""
+                alt="A community member carrying a reusable bag"
                 aria-hidden="true"
-                className={`relative z-10 object-contain ${compact ? "h-48 w-48" : "h-64 w-64"}`}
-                height={320}
-                src="/gif/mini.gif"
-                width={320}
+                className={`relative z-10 object-contain drop-shadow-[0_16px_18px_rgba(38,74,55,0.14)] ${compact ? "h-48 w-48" : "h-72 w-72"}`}
+                height={1024}
+                src="/illustrations/community-girl-cutout.png"
+                width={1024}
               />
             </div>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap justify-center gap-2 border-t border-white/75 pt-4">
               {["Buy better", "Sell locally", "Repair more"].map((label) => (
                 <span
-                  className="rounded-full border border-white/80 bg-white/70 px-3.5 py-2 text-[11px] font-semibold text-brand-4"
+                  className="min-w-[112px] rounded-full border border-white/80 bg-white/80 px-3.5 py-2 text-center text-[11px] font-semibold text-brand-4 shadow-sm"
                   key={label}
                 >
                   {label}
@@ -89,7 +95,7 @@ export function AuthLayout({ children, compact = false }: AuthLayoutProps) {
             </div>
           </div>
         </section>
-        <div className="flex w-full items-center justify-center">{children}</div>
+        <div className={`flex w-full items-center justify-center ${compact ? "lg:h-full lg:bg-white/80 lg:px-8" : ""}`}>{children}</div>
       </main>
     </div>
   )

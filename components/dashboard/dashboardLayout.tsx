@@ -28,20 +28,37 @@ export type DashboardNavItem = {
   href: string
   label: string
   icon: DashboardIconName
+  section?: "manage" | "account"
   children?: DashboardNavItem[]
 }
 
 export type DashboardIconName =
-  "chart" | "heart" | "map-pin" | "package" | "storefront" | "tag" | "users"
+  | "chart"
+  | "gear"
+  | "heart"
+  | "map-pin"
+  | "package"
+  | "storefront"
+  | "tag"
+  | "users"
 
 const iconMap: Record<DashboardIconName, ElementType> = {
   chart: ChartLineUp,
+  gear: GearSix,
   heart: Heart,
   "map-pin": MapPin,
   package: Package,
   storefront: Storefront,
   tag: Tag,
   users: UsersThree,
+}
+
+function isNavigationActive(pathname: string, href: string) {
+  const isDashboardHome = href.split("/").filter(Boolean).length === 1
+
+  return (
+    pathname === href || (!isDashboardHome && pathname.startsWith(`${href}/`))
+  )
 }
 
 type DashboardLayoutProps = {
@@ -70,7 +87,7 @@ export function DashboardLayout({
     <div className="min-h-screen bg-[#f7f9f4] text-brand">
       <div className="flex min-h-screen">
         <aside
-          className={`fixed inset-y-0 left-0 z-50 flex w-[270px] flex-col border-r border-[#e3e9df] bg-white px-5 py-6 shadow-xl shadow-brand/5 transition-transform lg:static lg:translate-x-0 lg:shadow-none ${menuOpen ? "translate-x-0" : "-translate-x-full"}`}
+          className={`fixed inset-y-0 left-0 z-50 flex h-dvh w-[270px] flex-col border-r border-[#e3e9df] bg-white px-5 py-6 shadow-xl shadow-brand/5 transition-transform lg:fixed lg:translate-x-0 lg:shadow-none ${menuOpen ? "translate-x-0" : "-translate-x-full"}`}
         >
           <div className="flex items-center justify-between">
             <Link className="flex items-center gap-2.5" href="/">
@@ -104,89 +121,113 @@ export function DashboardLayout({
           </div>
           <nav
             aria-label={`${roleLabel} navigation`}
-            className="mt-8 flex flex-1 flex-col gap-1"
+            className="mt-8 flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto pr-1"
           >
             <p className="mb-2 px-3 text-[10px] font-bold tracking-[0.15em] text-brand-gray-3 uppercase">
               Manage
             </p>
-            {navigation.map(({ children: nestedItems, href, label, icon }) => {
-              const active = pathname === href
-              const hasActiveChild = nestedItems?.some(
-                (item) => pathname === item.href
-              )
-              const isExpanded =
-                expandedNavigation[href] ?? Boolean(hasActiveChild)
-              const Icon = iconMap[icon]
-              return (
-                <div key={href}>
-                  <div
-                    className={`flex items-center rounded-2xl text-sm font-semibold transition-colors ${active ? "bg-brand-2 text-white shadow-sm" : hasActiveChild ? "bg-brand-yellow-bg text-brand-3" : "text-brand-light hover:bg-brand-yellow-bg hover:text-brand-3"}`}
-                  >
-                    <Link
-                      className="flex min-w-0 flex-1 items-center gap-3 px-3 py-3"
-                      href={href}
-                      onClick={() => setMenuOpen(false)}
+            {navigation.map(
+              (
+                { children: nestedItems, href, label, icon, section },
+                index
+              ) => {
+                const isFirstAccountItem =
+                  section === "account" &&
+                  navigation[index - 1]?.section !== "account"
+                const active = isNavigationActive(pathname, href)
+                const hasActiveChild = nestedItems?.some((item) =>
+                  isNavigationActive(pathname, item.href)
+                )
+                const isExpanded =
+                  expandedNavigation[href] ?? Boolean(hasActiveChild)
+                const Icon = iconMap[icon]
+                return (
+                  <div key={href}>
+                    {isFirstAccountItem && (
+                      <p className="mt-5 mb-2 px-3 text-[10px] font-bold tracking-[0.15em] text-brand-gray-3 uppercase">
+                        Account
+                      </p>
+                    )}
+                    <div
+                      className={`flex items-center text-sm transition-colors ${nestedItems ? "text-brand-light" : active ? "rounded-2xl bg-brand-2 font-semibold text-white shadow-sm" : "rounded-2xl font-semibold text-brand-light hover:bg-brand-yellow-bg hover:text-brand-3"}`}
                     >
-                      <Icon aria-hidden="true" size={18} weight={active ? "fill" : "regular"} />
-                      {label}
-                    </Link>
-                    {nestedItems && (
-                      <button
-                        aria-expanded={isExpanded}
-                        aria-label={`Toggle ${label} navigation`}
-                        className="mr-2 flex size-8 items-center justify-center rounded-xl hover:bg-white/50"
-                        onClick={() =>
-                          setExpandedNavigation((current) => ({
-                            ...current,
-                            [href]: !isExpanded,
-                          }))
-                        }
-                        type="button"
-                      >
-                        <CaretDown
-                          aria-hidden="true"
-                          className={`transition-transform ${isExpanded ? "rotate-180" : ""}`}
-                          size={15}
-                          weight="bold"
-                        />
-                      </button>
+                      {nestedItems ? (
+                        <button
+                          aria-expanded={isExpanded}
+                          aria-label={`Toggle ${label} navigation`}
+                          className="flex w-full items-center justify-between gap-3 px-3 py-3 text-left font-medium"
+                          onClick={() =>
+                            setExpandedNavigation((current) => ({
+                              ...current,
+                              [href]: !isExpanded,
+                            }))
+                          }
+                          type="button"
+                        >
+                          <span className="flex min-w-0 items-center gap-3">
+                            <Icon
+                              aria-hidden="true"
+                              size={18}
+                              weight="regular"
+                            />
+                            {label}
+                          </span>
+                          <CaretDown
+                            aria-hidden="true"
+                            className={`transition-transform ${isExpanded ? "rotate-180" : ""}`}
+                            size={15}
+                            weight="bold"
+                          />
+                        </button>
+                      ) : (
+                        <Link
+                          className="flex min-w-0 flex-1 items-center gap-3 px-3 py-3"
+                          href={href}
+                          onClick={() => setMenuOpen(false)}
+                        >
+                          <Icon
+                            aria-hidden="true"
+                            size={18}
+                            weight={active ? "fill" : "regular"}
+                          />
+                          {label}
+                        </Link>
+                      )}
+                    </div>
+                    {nestedItems && isExpanded && (
+                      <div className="mt-1 ml-5 border-l border-[#dce4da] pl-3">
+                        {nestedItems.map((item) => {
+                          const ChildIcon = iconMap[item.icon]
+                          const childActive =
+                            pathname === item.href ||
+                            (item.href === "/admin/blog" &&
+                              pathname.startsWith("/admin/blog/") &&
+                              !pathname.startsWith("/admin/blog/categories"))
+
+                          return (
+                            <Link
+                              className={`flex items-center gap-2 rounded-xl px-3 py-2.5 text-xs font-semibold transition-colors ${childActive ? "bg-brand-2 text-white shadow-sm" : "text-brand-light hover:bg-brand-yellow-bg hover:text-brand-3"}`}
+                              href={item.href}
+                              key={item.href}
+                              onClick={() => setMenuOpen(false)}
+                            >
+                              <ChildIcon
+                                aria-hidden="true"
+                                size={15}
+                                weight={childActive ? "fill" : "regular"}
+                              />
+                              {item.label}
+                            </Link>
+                          )
+                        })}
+                      </div>
                     )}
                   </div>
-                  {nestedItems && isExpanded && (
-                    <div className="mt-1 ml-5 border-l border-[#dce4da] pl-3">
-                      {nestedItems.map((item) => {
-                        const ChildIcon = iconMap[item.icon]
-                        const childActive = pathname === item.href
-
-                        return (
-                          <Link
-                            className={`flex items-center gap-2 rounded-xl px-3 py-2.5 text-xs font-semibold transition-colors ${childActive ? "bg-brand-2 text-white shadow-sm" : "text-brand-light hover:bg-brand-yellow-bg hover:text-brand-3"}`}
-                            href={item.href}
-                            key={item.href}
-                            onClick={() => setMenuOpen(false)}
-                          >
-                            <ChildIcon aria-hidden="true" size={15} weight={childActive ? "fill" : "regular"} />
-                            {item.label}
-                          </Link>
-                        )
-                      })}
-                    </div>
-                  )}
-                </div>
-              )
-            })}
-            <p className="mt-7 mb-2 px-3 text-[10px] font-bold tracking-[0.15em] text-brand-gray-3 uppercase">
-              Account
-            </p>
-            <Link
-              className="flex items-center gap-3 rounded-2xl px-3 py-3 text-sm font-semibold text-brand-light transition-colors hover:bg-brand-yellow-bg hover:text-brand-3"
-              href="#settings"
-            >
-              <GearSix aria-hidden="true" size={18} />
-              Settings
-            </Link>
+                )
+              }
+            )}
           </nav>
-          <div className="mt-5 space-y-2">
+          <div className="mt-5 shrink-0 space-y-2 border-t border-[#edf1eb] pt-5">
             <Button
               className="w-full justify-center rounded-2xl border-[#f0d4d0] text-brand-orange-3 hover:bg-brand-peach-bg"
               isDisabled={isLoggingOut}
@@ -212,7 +253,7 @@ export function DashboardLayout({
             type="button"
           />
         )}
-        <div className="min-w-0 flex-1">
+        <div className="min-w-0 flex-1 lg:ml-[270px]">
           <header className="sticky top-0 z-30 border-b border-white/80 bg-[#f7f9f4]/85 px-4 py-4 backdrop-blur-xl sm:px-8 lg:px-10">
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-center gap-3">

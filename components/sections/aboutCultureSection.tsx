@@ -42,6 +42,7 @@ export function AboutCultureSection({ content }: AboutCultureSectionProps) {
                   fill
                   sizes="(max-width: 768px) 100vw, 33vw"
                   src={card.image}
+                  unoptimized
                 />
               </div>
               {/* <h3 className="text-sm font-semibold text-brand-6">

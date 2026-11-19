@@ -22,6 +22,7 @@ import { Button, LinkButton } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { resolveMediaUrl } from "@/lib/media"
 import { productService, type Product } from "@/services/productService"
+import { VendorProductEngagement } from "@/components/product/vendorProductEngagement"
 
 type ProductDetailProps = {
   product: Product
@@ -498,7 +499,8 @@ export function ProductDetail({
               Product details
             </CardTitle>
             <p className="text-sm text-brand-light">
-              Details provided for the {currentProduct.category?.name ?? "selected"} category.
+              Details provided for the{" "}
+              {currentProduct.category?.name ?? "selected"} category.
             </p>
           </CardHeader>
           <CardContent className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -517,6 +519,9 @@ export function ProductDetail({
             ))}
           </CardContent>
         </Card>
+      )}
+      {(mode === "vendor" || mode === "admin") && (
+        <VendorProductEngagement productId={currentProduct.id} scope={mode} />
       )}
     </div>
   )

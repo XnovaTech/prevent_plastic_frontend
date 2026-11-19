@@ -325,6 +325,39 @@
   animation: mobile-nav-item-in 420ms cubic-bezier(0.32, 0.72, 0, 1) both;
 }
 
+/* Keep long pages and dashboard panels calm rather than using the browser's heavy default scrollbar. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(91 120 108 / 48%) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: rgb(91 120 108 / 45%);
+  background-clip: padding-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: rgb(40 88 73 / 62%);
+  background-clip: padding-box;
+}
+
+*::-webkit-scrollbar-button {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .mobile-nav-item {
     animation: none;

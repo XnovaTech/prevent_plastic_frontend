@@ -48,7 +48,7 @@ export default function LoginPage() {
         Skip to content
       </a>
       <main id="main-content" className="w-full max-w-[540px]" data-aos="fade-left" data-aos-duration="650">
-        <section className="relative overflow-hidden rounded-[30px] border border-[#e0e7dd] bg-card p-5 shadow-[0_28px_80px_-48px_rgba(27,65,56,0.52)] sm:p-7">
+        <section className="relative overflow-hidden bg-transparent p-5 sm:p-7">
           <span aria-hidden="true" className="pointer-events-none absolute -top-16 -right-16 size-28 rounded-full bg-brand-yellow-bg/60" />
           <span aria-hidden="true" className="pointer-events-none absolute top-16 -right-2 size-2 rounded-full bg-brand-orange/70" />
           <div className="relative z-10 mb-5">

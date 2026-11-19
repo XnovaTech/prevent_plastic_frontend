@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 
-import { PublicBlogDetail } from "@/components/blog/publicBlogDetail"
+import { PublicBlogDetailContent } from "@/components/blog/publicBlogDetailContent"
 import { AosInitializer } from "@/components/shared/aosInitializer"
 import { SiteFooter } from "@/components/shared/siteFooter"
 import { SiteHeader } from "@/components/shared/siteHeader"
@@ -16,7 +16,7 @@ export default async function Page({ params }: BlogDetailPageProps) {
     <div className="min-h-screen bg-transparent text-brand">
       <AosInitializer />
       <SiteHeader activeHref="/blog" />
-      <main id="main-content"><PublicBlogDetail slug={slug} /></main>
+      <main id="main-content"><PublicBlogDetailContent slug={slug} /></main>
       <SiteFooter />
     </div>
   )

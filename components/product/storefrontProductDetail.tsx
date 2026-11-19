@@ -6,6 +6,7 @@ import { ArrowLeft, Storefront } from "@phosphor-icons/react"
 import { ChatWithVendor } from "@/components/product/chatWithVendor"
 import { ProductActions } from "@/components/product/productActions"
 import { ProductGallery } from "@/components/product/productGallery"
+import { PublicProductFeedback } from "@/components/product/publicProductFeedback"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -198,6 +199,7 @@ export function StorefrontProductDetail({
           </CardContent>
         </Card>
       </div>
+      <PublicProductFeedback productId={product.id} />
     </div>
   )
 }

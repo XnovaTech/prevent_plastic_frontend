@@ -58,6 +58,7 @@ export function AboutHeroSection({ content }: AboutHeroSectionProps) {
               loading="eager"
               sizes="(max-width: 1023px) 100vw, 45vw"
               src={content.image}
+              unoptimized
             />
             <div className="absolute inset-0 bg-gradient-to-t from-brand/35 via-transparent to-transparent" />
             <figcaption className="absolute right-5 bottom-5 rounded-full border border-white/60 bg-white/90 px-4 py-2 text-[9px] font-bold tracking-[0.14em] text-brand-3 uppercase backdrop-blur-sm sm:right-7 sm:bottom-7">
