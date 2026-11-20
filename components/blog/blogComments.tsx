@@ -6,12 +6,11 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import type { NewBlogComment } from "@/hooks/useBlogEngagement"
-import type { BlogComment } from "@/mock/blogPageMock"
+import type { BlogComment } from "@/types/blog"
 
 type BlogCommentsProps = {
   comments: readonly BlogComment[]
-  onAddComment: (comment: NewBlogComment) => void
+  onAddComment: (comment: { author: string; body: string }) => Promise<boolean>
 }
 
 const fieldClassName =
@@ -28,12 +27,16 @@ function initialsOf(name: string) {
     .toUpperCase()
 }
 
+function commentDate(value: string) {
+  return new Date(value).toLocaleDateString()
+}
+
 export function BlogComments({ comments, onAddComment }: BlogCommentsProps) {
   const [name, setName] = useState("")
   const [body, setBody] = useState("")
   const [status, setStatus] = useState("")
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
     if (!body.trim()) {
@@ -41,10 +44,15 @@ export function BlogComments({ comments, onAddComment }: BlogCommentsProps) {
       return
     }
 
-    onAddComment({
+    const posted = await onAddComment({
       author: name.trim() || "You",
       body: body.trim(),
     })
+
+    if (!posted) {
+      setStatus("Unable to post your comment. Please try again.")
+      return
+    }
 
     setStatus("Thanks — your comment is now at the top of the list.")
     setName("")
@@ -96,15 +104,15 @@ export function BlogComments({ comments, onAddComment }: BlogCommentsProps) {
                     aria-hidden="true"
                     className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[#e8eee5] font-serif text-[11px] font-semibold text-brand-3"
                   >
-                    {initialsOf(comment.author)}
+                    {initialsOf(comment.commenter.name ?? "Anonymous")}
                   </span>
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
                       <span className="text-[12px] font-semibold text-brand-6">
-                        {comment.author}
+                        {comment.commenter.name ?? "Anonymous"}
                       </span>
                       <span className="text-[10px] text-brand-gray-3">
-                        {comment.date}
+                        {commentDate(comment.created_at)}
                       </span>
                     </div>
                     <p className="mt-1.5 text-[13px] leading-6 text-brand-light">

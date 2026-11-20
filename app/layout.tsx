@@ -2,6 +2,7 @@ import { Geist_Mono, IBM_Plex_Sans } from "next/font/google"
 
 import "./globals.css"
 import { SiteBackdrop } from "@/components/shared/siteBackdrop"
+import { QueryProvider } from "@/components/shared/queryProvider"
 import { AuthProvider } from "@/components/auth/authProvider"
 import { cn } from "@/lib/utils"
 
@@ -32,11 +33,13 @@ export default function RootLayout({
       )}
     >
       <body suppressHydrationWarning>
-                  <SiteBackdrop />
-          <div className="relative z-10">
+        <SiteBackdrop />
+        <div className="relative z-10">
+          <QueryProvider>
             <AuthProvider>{children}</AuthProvider>
-          </div>
-              </body>
+          </QueryProvider>
+        </div>
+      </body>
     </html>
   )
 }

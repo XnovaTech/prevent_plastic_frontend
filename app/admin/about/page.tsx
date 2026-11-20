@@ -1,3 +1,3 @@
-import { AboutManager } from "@/components/about/aboutManager"
+import { AboutCms } from "@/components/about/aboutCms"
 
-export default function AdminAboutPage() { return <AboutManager /> }
+export default function AdminAboutPage() { return <AboutCms /> }

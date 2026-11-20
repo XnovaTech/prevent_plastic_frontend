@@ -7,7 +7,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
-import type { AboutPageContent } from "@/mock/aboutPageMock"
+import type { AboutPageContent } from "@/types/aboutPage"
 
 type AboutFaqSectionProps = {
   intro: AboutPageContent["faqIntro"]

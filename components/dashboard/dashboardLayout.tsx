@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import {
@@ -78,10 +78,49 @@ export function DashboardLayout({
 }: DashboardLayoutProps) {
   const pathname = usePathname()
   const [menuOpen, setMenuOpen] = useState(false)
+  const navigationRef = useRef<HTMLElement>(null)
+  const [navigationThumb, setNavigationThumb] = useState({
+    height: 0,
+    isVisible: false,
+    top: 0,
+  })
   const [expandedNavigation, setExpandedNavigation] = useState<
     Record<string, boolean>
   >({})
   const { isLoggingOut, logout } = useDashboardLogout()
+  const updateNavigationThumb = useCallback(() => {
+    const navigationElement = navigationRef.current
+    if (!navigationElement) {
+      return
+    }
+
+    const { clientHeight, scrollHeight, scrollTop } = navigationElement
+    const isVisible = scrollHeight > clientHeight + 1
+    const height = isVisible
+      ? Math.max(28, (clientHeight * clientHeight) / scrollHeight)
+      : 0
+    const top = isVisible
+      ? (scrollTop / (scrollHeight - clientHeight)) * (clientHeight - height)
+      : 0
+
+    setNavigationThumb({ height, isVisible, top })
+  }, [])
+
+  useEffect(() => {
+    const navigationElement = navigationRef.current
+    if (!navigationElement) {
+      return
+    }
+
+    const animationFrame = window.requestAnimationFrame(updateNavigationThumb)
+    const resizeObserver = new ResizeObserver(updateNavigationThumb)
+    resizeObserver.observe(navigationElement)
+
+    return () => {
+      window.cancelAnimationFrame(animationFrame)
+      resizeObserver.disconnect()
+    }
+  }, [expandedNavigation, pathname, updateNavigationThumb])
 
   return (
     <div className="min-h-screen bg-[#f7f9f4] text-brand">
@@ -119,10 +158,13 @@ export function DashboardLayout({
             </p>
             <p className="mt-1 text-sm font-semibold text-brand">{title}</p>
           </div>
-          <nav
-            aria-label={`${roleLabel} navigation`}
-            className="mt-8 flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto pr-1"
-          >
+          <div className="relative mt-8 min-h-0 flex-1">
+            <nav
+              aria-label={`${roleLabel} navigation`}
+              className="dashboard-sidebar-scroll flex h-full min-h-0 flex-col gap-1 overflow-y-auto pr-2"
+              onScroll={updateNavigationThumb}
+              ref={navigationRef}
+            >
             <p className="mb-2 px-3 text-[10px] font-bold tracking-[0.15em] text-brand-gray-3 uppercase">
               Manage
             </p>
@@ -226,7 +268,22 @@ export function DashboardLayout({
                 )
               }
             )}
-          </nav>
+            </nav>
+            {navigationThumb.isVisible ? (
+              <span
+                aria-hidden="true"
+                className="pointer-events-none absolute top-0 right-0 h-full w-1 rounded-full bg-[#edf1eb]"
+              >
+                <span
+                  className="absolute inset-x-0 rounded-full bg-[#8fa298]/55 transition-[height,transform] duration-150"
+                  style={{
+                    height: `${navigationThumb.height}px`,
+                    transform: `translateY(${navigationThumb.top}px)`,
+                  }}
+                />
+              </span>
+            ) : null}
+          </div>
           <div className="mt-5 shrink-0 space-y-2 border-t border-[#edf1eb] pt-5">
             <Button
               className="w-full justify-center rounded-2xl border-[#f0d4d0] text-brand-orange-3 hover:bg-brand-peach-bg"

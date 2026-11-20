@@ -4,6 +4,14 @@ import type { ComponentType, ReactNode } from "react"
 import type { AboutUs } from "@/types/aboutUs"
 
 export function PublicContactStrip({ about }: { about: AboutUs }) {
+  const phoneNumbers = about.phone?.filter(Boolean) ?? []
+  const emailAddresses = about.email?.filter(Boolean) ?? []
+  const addresses = about.address?.filter(Boolean) ?? []
+
+  if (!phoneNumbers.length && !emailAddresses.length && !addresses.length) {
+    return null
+  }
+
   return (
     <section className="bg-brand py-16 text-white sm:py-20">
       <div className="mx-auto max-w-6xl px-4 sm:px-8">
@@ -18,7 +26,7 @@ export function PublicContactStrip({ about }: { about: AboutUs }) {
           </div>
           <div className="lg:ml-auto lg:w-full">
             <ContactGroup icon={Phone} label="Phone">
-              {about.phone?.map((phone) => (
+              {phoneNumbers.map((phone) => (
                 <a
                   className="block text-base leading-6 font-semibold !text-white transition-opacity hover:opacity-70"
                   href={`tel:${phone.replace(/\s+/g, "")}`}
@@ -29,7 +37,7 @@ export function PublicContactStrip({ about }: { about: AboutUs }) {
               ))}
             </ContactGroup>
             <ContactGroup icon={EnvelopeSimple} label="Email">
-              {about.email?.map((email) => (
+              {emailAddresses.map((email) => (
                 <a
                   className="block text-base leading-6 font-semibold break-words !text-white transition-opacity hover:opacity-70"
                   href={`mailto:${email}`}
@@ -40,7 +48,7 @@ export function PublicContactStrip({ about }: { about: AboutUs }) {
               ))}
             </ContactGroup>
             <ContactGroup icon={MapPin} label="Address">
-              {about.address?.map((address) => (
+              {addresses.map((address) => (
                 <p
                   className="text-base leading-6 font-semibold text-white"
                   key={address}

@@ -3,7 +3,10 @@
 import { useState } from "react"
 import Image from "next/image"
 
-import type { BlogImage } from "@/mock/blogPageMock"
+type BlogImage = {
+  src: string
+  alt: string
+}
 
 type BlogGalleryProps = {
   images: readonly BlogImage[]
@@ -29,6 +32,7 @@ export function BlogGallery({ images }: BlogGalleryProps) {
           loading={activeIndex === 0 ? "eager" : "lazy"}
           sizes="(max-width: 767px) 80vw, 720px"
           src={activeImage.src}
+          unoptimized
         />
 
         <span className="absolute bottom-4 left-4 rounded-full border border-white/60 bg-white/90 px-3 py-1.5 text-[9px] font-semibold text-brand-3 backdrop-blur-sm sm:bottom-6 sm:left-6">
@@ -67,6 +71,7 @@ export function BlogGallery({ images }: BlogGalleryProps) {
                     fill
                     sizes="64px"
                     src={image.src}
+                    unoptimized
                   />
                 </button>
               </li>

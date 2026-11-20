@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 
-import { AboutLiveLayoutPage } from "@/components/about/aboutMockLayoutPage"
+import { AboutUsLayoutPage } from "@/components/about/aboutUs"
 import { AosInitializer } from "@/components/shared/aosInitializer"
 import { SiteFooter } from "@/components/shared/siteFooter"
 import { SiteHeader } from "@/components/shared/siteHeader"
@@ -23,7 +23,7 @@ export default function Page() {
       </a>
       <SiteHeader activeHref="/about" />
       <main id="main-content">
-        <AboutLiveLayoutPage />
+        <AboutUsLayoutPage />
       </main>
       <SiteFooter />
     </div>

@@ -41,6 +41,87 @@ export function usePublicBlog(slug: string) {
   return { post, isLoading, error, refresh }
 }
 
+export function usePublicBlogEngagement(
+  slug: string,
+  initialLikes: number,
+  initialCommentsCount: number,
+) {
+  const [likes, setLikes] = useState(initialLikes)
+  const [liked, setLiked] = useState(false)
+  const [comments, setComments] = useState<import("@/types/blog").BlogComment[]>([])
+  const [commentsLoaded, setCommentsLoaded] = useState(false)
+  const [isLoadingComments, setIsLoadingComments] = useState(false)
+  const [message, setMessage] = useState("")
+
+  useEffect(() => {
+    setLikes(initialLikes)
+    setLiked(false)
+  }, [initialLikes, slug])
+
+  const loadComments = useCallback(async () => {
+    if (commentsLoaded || isLoadingComments) return
+
+    setIsLoadingComments(true)
+    setMessage("")
+    try {
+      const response = await blogService.publicComments(slug)
+      setComments(response.items)
+      setCommentsLoaded(true)
+    } catch (requestError) {
+      setMessage(errorMessage(requestError, "Unable to load comments."))
+    } finally {
+      setIsLoadingComments(false)
+    }
+  }, [commentsLoaded, isLoadingComments, slug])
+
+  const toggleLike = useCallback(async () => {
+    setMessage("")
+    try {
+      const response = await blogService.toggleLike(slug)
+      setLikes(response.likes_count)
+      setLiked(response.liked)
+    } catch (requestError) {
+      setMessage(errorMessage(requestError, "Unable to update the like right now."))
+    }
+  }, [slug])
+
+  const addComment = useCallback(
+    async (body: string, guestName?: string) => {
+      if (!body.trim()) return false
+
+      setMessage("")
+      try {
+        const comment = await blogService.addComment(
+          slug,
+          body.trim(),
+          guestName?.trim() || undefined,
+        )
+        setComments((current) => [comment, ...current])
+        setCommentsLoaded(true)
+        setMessage("Your comment has been posted.")
+        return true
+      } catch (requestError) {
+        setMessage(errorMessage(requestError, "Unable to post your comment."))
+        return false
+      }
+    },
+    [slug],
+  )
+
+  return {
+    addComment,
+    commentCount: commentsLoaded ? comments.length : initialCommentsCount,
+    comments,
+    commentsLoaded,
+    isLoadingComments,
+    liked,
+    likes,
+    loadComments,
+    message,
+    toggleLike,
+  }
+}
+
 export function useAdminBlogs() {
   const [posts, setPosts] = useState<BlogPost[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -113,7 +194,10 @@ export function useAdminBlogDetail(id: number) {
     setPost(updated)
     return updated
   }
+  const remove = async () => {
+    await blogService.removeAdmin(id)
+  }
   const approveComment = async (commentId: number) => { const updated = await blogService.approveComment(id, commentId); setComments((current) => current.map((comment) => comment.id === commentId ? updated : comment)) }
   const removeComment = async (commentId: number) => { await blogService.removeComment(id, commentId); setComments((current) => current.filter((comment) => comment.id !== commentId)) }
-  return { post, comments, isLoading, error, transition, update, approveComment, removeComment }
+  return { post, comments, isLoading, error, transition, update, remove, approveComment, removeComment }
 }

@@ -6,7 +6,8 @@ import { AboutHeroSection } from "@/components/sections/aboutHeroSection"
 import { AboutIntroductionSection } from "@/components/sections/aboutIntroductionSection"
 import { AboutValuesSection } from "@/components/sections/aboutValuesSection"
 import { useAboutUs } from "@/hooks/useAboutUs"
-import type { AboutPageContent } from "@/mock/aboutPageMock"
+import { resolveMediaUrl } from "@/lib/media"
+import type { AboutPageContent } from "@/types/aboutPage"
 import type { AboutSection, AboutUs } from "@/types/aboutUs"
 
 function plainText(value?: string | null) {
@@ -28,25 +29,47 @@ function sectionByType(about: AboutUs, type: string) {
   )
 }
 
-function imageFor(section: AboutSection | undefined) {
-  return section?.media[0]?.url ?? section?.gallery_images[0]?.url
+type AboutImage = {
+  id: string
+  src: string
+  alt: string
+  caption: string
 }
 
-function imageAltFor(section: AboutSection | undefined) {
+function resolveAboutImage(
+  image?: {
+    id?: number
+    url?: string | null
+    alt_text?: string | null
+    caption?: string | null
+  } | null
+): AboutImage | null {
+  const source = image?.url?.trim()
+  if (!source || !/^(?:\/|https?:\/\/|blob:|data:)/i.test(source)) {
+    return null
+  }
+
+  return {
+    id: String(image?.id ?? source),
+    src: resolveMediaUrl(source),
+    alt: image?.alt_text ?? "",
+    caption: image?.caption ?? "",
+  }
+}
+
+function imageFor(section: AboutSection | undefined): AboutImage | null {
   return (
-    section?.media[0]?.alt_text ?? section?.gallery_images[0]?.alt_text ?? ""
+    section?.media.map(resolveAboutImage).find(Boolean) ??
+    section?.gallery_images.map(resolveAboutImage).find(Boolean) ??
+    null
   )
-}
-
-function imageCaptionFor(section: AboutSection | undefined) {
-  return section?.media[0]?.caption ?? ""
 }
 
 /**
  * Renders the reference About layout entirely from the public About API.
  * Section names match the presets in the admin dashboard.
  */
-export function AboutLiveLayoutPage() {
+export function AboutUsLayoutPage() {
   const { about, error, isLoading } = useAboutUs("public")
   if (isLoading)
     return (
@@ -77,6 +100,8 @@ export function AboutLiveLayoutPage() {
   const valuesImage = imageFor(values)
   const cultureImages = culture
     ? [...culture.gallery_images, ...culture.media]
+        .map(resolveAboutImage)
+        .filter((image): image is AboutImage => image !== null)
     : []
   const heroContent: AboutPageContent["hero"] | null =
     hero && heroImage
@@ -85,11 +110,11 @@ export function AboutLiveLayoutPage() {
           title: about.title,
           highlight: hero.title || "",
           description: plainText(hero.description || about.description),
-          primaryAction: { label: "Explore the market", href: "/products" },
-          secondaryAction: { label: "Meet local shops", href: "/shops" },
-          image: heroImage,
-          imageAlt: imageAltFor(hero),
-          imageLabel: imageCaptionFor(hero) || hero.eyebrow || "",
+          primaryAction: hero.actions?.[0] ?? { label: "Explore the market", href: "/products" },
+          secondaryAction: hero.actions?.[1] ?? { label: "Meet local shops", href: "/shops" },
+          image: heroImage.src,
+          imageAlt: heroImage.alt,
+          imageLabel: heroImage.caption || hero.eyebrow || "",
         }
       : null
   const introductionContent: AboutPageContent["introduction"] | null =
@@ -114,11 +139,11 @@ export function AboutLiveLayoutPage() {
           featureEyebrow: localFeature.eyebrow || "",
           featureTitle: localFeature.title || "",
           featureDescription: plainText(localFeature.description),
-          featureImage: localFeatureImage,
-          featureImageAlt: imageAltFor(localFeature),
+          featureImage: localFeatureImage.src,
+          featureImageAlt: localFeatureImage.alt,
           featureCardTitle: localFeature.items[0]?.title || "",
           featureCardDescription: localFeature.items[0]?.description || "",
-          featureAction: { label: "Meet local shops", href: "/shops" },
+          featureAction: localFeature.actions?.[0] ?? { label: "Meet local shops", href: "/shops" },
         }
       : null
   const valuesContent: AboutPageContent["values"] | null =
@@ -131,8 +156,8 @@ export function AboutLiveLayoutPage() {
           eyebrow: values.eyebrow || "",
           title: values.title || "",
           description: plainText(values.description),
-          image: valuesImage,
-          imageAlt: imageAltFor(values),
+          image: valuesImage.src,
+          imageAlt: valuesImage.alt,
           points: values.items.map((item) => ({
             id: String(item.id),
             title: item.title,
@@ -153,8 +178,8 @@ export function AboutLiveLayoutPage() {
             id: String(image.id),
             title: culture.items[index]?.title || "",
             description: culture.items[index]?.description || "",
-            image: image.url,
-            imageAlt: image.alt_text || "",
+            image: image.src,
+            imageAlt: image.alt,
           })
         ),
       }
@@ -187,5 +212,3 @@ export function AboutLiveLayoutPage() {
   )
 }
 
-/** @deprecated Use AboutLiveLayoutPage for new callers. */
-export const AboutMockLayoutPage = AboutLiveLayoutPage

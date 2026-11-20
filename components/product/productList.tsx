@@ -1,11 +1,10 @@
 "use client"
 
-import Link from "next/link"
-import { ArrowUpRight, Package, Plus, Trash } from "@phosphor-icons/react"
+import { Package, Plus } from "@phosphor-icons/react"
 
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
-import { Button, LinkButton } from "@/components/ui/button"
+import { LinkButton } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import {
   Empty,
@@ -38,12 +37,7 @@ export function ProductList({
   description = "Manage your drafts and keep your shop fresh.",
   canCreate = true,
 }: ProductListProps) {
-  const { error, isLoading, products, remove } = useProducts()
-
-  const deleteProduct = async (id: number, name: string) => {
-    if (!window.confirm(`Delete “${name}”?`)) return
-    await remove(id)
-  }
+  const { error, isLoading, products } = useProducts()
 
   return (
     <div className="mx-auto max-w-6xl">
@@ -135,23 +129,14 @@ export function ProductList({
                     <Badge variant="outline">{product.status}</Badge>
                   </TableCell>
                   <TableCell>
-                    <div className="flex justify-end gap-1">
-                      <Link
-                        aria-label={`View ${product.name}`}
-                        className="flex size-8 items-center justify-center rounded-full text-brand-3 hover:bg-brand-yellow-bg"
+                    <div className="flex justify-end">
+                      <LinkButton
                         href={`${basePath}/${product.id}`}
+                        size="sm"
+                        variant="outline"
                       >
-                        <ArrowUpRight size={16} />
-                      </Link>
-                      <Button
-                        aria-label={`Delete ${product.name}`}
-                        className="text-red-700 hover:bg-red-50"
-                        onPress={() => deleteProduct(product.id, product.name)}
-                        size="icon-xs"
-                        variant="ghost"
-                      >
-                        <Trash size={15} />
-                      </Button>
+                        Detail
+                      </LinkButton>
                     </div>
                   </TableCell>
                 </TableRow>

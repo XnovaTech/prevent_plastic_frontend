@@ -1,10 +1,22 @@
 import Link from "next/link"
 import { Leaf } from "@phosphor-icons/react/dist/ssr"
 
-export function SiteFooter() {
+import { FooterContactDetails } from "@/components/shared/footerContactDetails"
+
+export function SiteFooter({
+  showContactDetails = true,
+}: {
+  showContactDetails?: boolean
+}) {
   return (
     <footer className="border-t border-[#e5e7df] bg-[#fbfaf6]/65 backdrop-blur-xl">
-      <div className="mx-auto grid max-w-[1440px] gap-10 px-4 py-12 sm:px-8 md:grid-cols-[1.3fr_0.7fr] lg:px-12">
+      <div
+        className={`mx-auto grid max-w-[1440px] gap-10 px-4 py-12 sm:px-8 lg:px-12 ${
+          showContactDetails
+            ? "md:grid-cols-[minmax(0,1.15fr)_minmax(270px,0.85fr)_auto]"
+            : "md:grid-cols-[1.3fr_0.7fr]"
+        }`}
+      >
         <div>
           <Link
             aria-label="Prevent Plastic home"
@@ -23,6 +35,11 @@ export function SiteFooter() {
             thoughtful everyday living.
           </p>
         </div>
+        {showContactDetails ? (
+          <div className="md:self-center">
+            <FooterContactDetails />
+          </div>
+        ) : null}
         <div className="flex flex-col justify-between gap-5 md:items-end">
           <nav
             aria-label="Footer navigation"
@@ -35,9 +52,11 @@ export function SiteFooter() {
             <Link href="/contact">Contact</Link>
             <Link href="/privacy">Privacy &amp; Policy</Link>
           </nav>
-          <p className="text-[10px] text-brand-gray-3">
-            Contact details are placeholders until confirmed.
-          </p>
+          {!showContactDetails ? (
+            <p className="text-[10px] text-brand-gray-3">
+              Contact details are placeholders until confirmed.
+            </p>
+          ) : null}
           <p className="text-[10px] text-brand-gray-3">
             Prevent Plastic · Mock storefront for design review
           </p>

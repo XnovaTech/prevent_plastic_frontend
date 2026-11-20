@@ -1,17 +1,9 @@
 "use client"
 
-import Link from "next/link"
-import { useRouter } from "next/navigation"
 import { useState } from "react"
-import { DotsThree, PencilSimple, Plus, Trash } from "@phosphor-icons/react"
+import { Plus } from "@phosphor-icons/react"
 
 import { Button, LinkButton } from "@/components/ui/button"
-import {
-  DropdownMenu,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import { useAdminBlogs } from "@/hooks/useBlogs"
 import type { BlogStatus } from "@/types/blog"
 
@@ -26,17 +18,8 @@ const statuses: (BlogStatus | "all")[] = [
 ]
 
 export function BlogAdminList() {
-  const router = useRouter()
-  const { posts, isLoading, error, refresh, transition, remove } =
-    useAdminBlogs()
+  const { posts, isLoading, error, refresh } = useAdminBlogs()
   const [status, setStatus] = useState<BlogStatus | "all">("all")
-
-  async function act(id: number, action: "approve" | "publish" | "reject") {
-    const reason =
-      action === "reject" ? window.prompt("Rejection reason") : undefined
-    if (action === "reject" && !reason) return
-    await transition(id, action, reason ?? undefined)
-  }
 
   return (
     <div className="mx-auto max-w-7xl">
@@ -104,12 +87,7 @@ export function BlogAdminList() {
                   key={post.id}
                 >
                   <td className="p-4">
-                    <Link
-                      className="font-semibold text-brand hover:text-brand-3"
-                      href={`/admin/blog/${post.id}`}
-                    >
-                      {post.title}
-                    </Link>
+                    <p className="font-semibold text-brand">{post.title}</p>
                     <p className="mt-1 text-xs text-brand-gray-3">
                       {new Date(post.created_at).toLocaleDateString()}
                     </p>
@@ -122,55 +100,9 @@ export function BlogAdminList() {
                     <td className="text-center font-semibold text-brand">{post.comments_count}</td>
                     <td className="text-center font-semibold text-brand">{post.likes_count}</td>
                     <td className="p-4 text-center">
-                      <div className="flex flex-wrap justify-center gap-2">
-                      {post.status === "pending_review" && (
-                        <Button
-                          size="sm"
-                          onPress={() => void act(post.id, "approve")}
-                        >
-                          Approve
-                        </Button>
-                      )}
-                      {post.status === "pending_review" && (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onPress={() => void act(post.id, "reject")}
-                        >
-                          Reject
-                        </Button>
-                      )}
-                      {post.status === "approved" && (
-                        <Button
-                          size="sm"
-                          onPress={() => void act(post.id, "publish")}
-                        >
-                          Publish
-                        </Button>
-                      )}
-                        <DropdownMenuTrigger>
-                          <Button aria-label="Blog actions" size="sm" variant="outline">
-                            <DotsThree size={18} weight="bold" />
-                          </Button>
-                          <DropdownMenu>
-                            <DropdownMenuItem onAction={() => router.push(`/admin/blog/${post.id}`)}>
-                              View details
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onAction={() => router.push(`/admin/blog/${post.id}/edit`)}>
-                              <PencilSimple size={15} /> Edit blog
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                              variant="destructive"
-                              onAction={() => {
-                                if (window.confirm("Delete this blog?")) void remove(post.id)
-                              }}
-                            >
-                              <Trash size={15} /> Delete blog
-                            </DropdownMenuItem>
-                          </DropdownMenu>
-                        </DropdownMenuTrigger>
-                    </div>
+                      <LinkButton href={`/admin/blog/${post.id}`} size="sm" variant="outline">
+                        Detail
+                      </LinkButton>
                   </td>
                 </tr>
               ))}

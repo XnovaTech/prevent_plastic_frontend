@@ -1,15 +1,39 @@
 "use client"
 
-import { useCallback, useEffect, useState } from "react"
-import axios from "axios"
+import { useCallback } from "react"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { aboutUsService } from "@/services/aboutUsService"
 import type { AboutUs } from "@/types/aboutUs"
 
 export function useAboutUs(scope: "public" | "admin") {
-  const [about, setAbout] = useState<AboutUs | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState("")
-  const refresh = useCallback(async () => { setIsLoading(true); setError(""); try { setAbout(scope === "admin" ? await aboutUsService.adminShow() : await aboutUsService.publicShow()) } catch (requestError) { setError(axios.isAxiosError(requestError) ? (requestError.response?.data?.message ?? "Unable to load About Us.") : "Unable to load About Us.") } finally { setIsLoading(false) } }, [scope])
-  useEffect(() => { const frame = window.requestAnimationFrame(() => void refresh()); return () => window.cancelAnimationFrame(frame) }, [refresh])
-  return { about, error, isLoading, refresh }
+  const queryClient = useQueryClient()
+  const queryKey = ["about-us", scope] as const
+  const query = useQuery({
+    queryKey,
+    queryFn: () =>
+      scope === "admin"
+        ? aboutUsService.adminShow()
+        : aboutUsService.publicShow(),
+  })
+
+  const updateCachedAbout = useCallback(
+    (updater: (current: AboutUs | null) => AboutUs | null) => {
+      queryClient.setQueryData<AboutUs | null>(queryKey, (current) =>
+        updater(current ?? null)
+      )
+    },
+    [queryClient, queryKey]
+  )
+
+  const refresh = useCallback(async () => {
+    await query.refetch()
+  }, [query])
+
+  return {
+    about: query.data ?? null,
+    error: query.error instanceof Error ? query.error.message : "",
+    isLoading: query.isLoading,
+    refresh,
+    updateCachedAbout,
+  }
 }

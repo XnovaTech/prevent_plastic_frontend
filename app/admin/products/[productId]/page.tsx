@@ -31,7 +31,7 @@ export default function AdminProductDetailPage() {
   return (
     <ProductDetail
       basePath="/admin/products"
-      canEdit={false}
+      canEdit
       mode="admin"
       product={product}
     />

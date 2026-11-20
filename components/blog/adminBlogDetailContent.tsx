@@ -2,25 +2,31 @@
 
 import Link from "next/link"
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import {
   ChatCircle,
   Heart,
   ImageSquare,
   Newspaper,
+  PencilSimple,
+  Trash,
 } from "@phosphor-icons/react"
 
-import { Button } from "@/components/ui/button"
+import { Button, LinkButton } from "@/components/ui/button"
 import { useAdminBlogDetail } from "@/hooks/useBlogs"
+import { resolveMediaUrl } from "@/lib/media"
 
 type DetailTab = "story" | "gallery" | "comments"
 
 export function AdminBlogDetailContent({ id }: { id: number }) {
+  const router = useRouter()
   const {
     post,
     comments,
     isLoading,
     error,
     transition,
+    remove,
     approveComment,
     removeComment,
   } = useAdminBlogDetail(id)
@@ -37,14 +43,29 @@ export function AdminBlogDetailContent({ id }: { id: number }) {
     await transition(action, reason ?? undefined)
   }
 
+  async function deletePost() {
+    if (!window.confirm("Delete this blog?")) return
+    await remove()
+    router.push("/admin/blog")
+  }
+
   return (
     <div className="mx-auto max-w-6xl">
-      <Link className="text-xs font-semibold text-brand-3" href="/admin/blog">
-        ← Back to blogs
-      </Link>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <Link className="text-xs font-semibold text-brand-3" href="/admin/blog">
+          ← Back to blogs
+        </Link>
+        <div className="flex flex-wrap justify-end gap-2">
+          <LinkButton href={`/admin/blog/${post.id}/edit`} size="sm" variant="outline">
+            <PencilSimple size={15} /> Edit
+          </LinkButton>
+          <Button onPress={() => void deletePost()} size="sm" variant="destructive">
+            <Trash size={15} /> Delete
+          </Button>
+        </div>
+      </div>
       <header className="mt-6 overflow-hidden border border-[#e3e9df] bg-white">
-        <div className="grid lg:grid-cols-[1.05fr_.95fr]">
-          <div className="flex min-h-[270px] flex-col justify-center p-7 sm:p-9">
+        <div className="flex min-h-[270px] max-w-4xl flex-col justify-center p-7 sm:p-9">
             <p className="text-[10px] font-bold tracking-[.16em] text-brand-gray-3 uppercase">
               {post.status.replace("_", " ")}
             </p>
@@ -92,20 +113,6 @@ export function AdminBlogDetailContent({ id }: { id: number }) {
               )}
             </div>
           </div>
-          <div className="min-h-[270px] bg-[#eef3eb]">
-            {post.images[0] ? (
-              <img
-                alt={post.title}
-                className="h-full min-h-[270px] w-full object-cover"
-                src={post.images[0].url}
-              />
-            ) : (
-              <div className="flex h-full min-h-[270px] items-center justify-center text-sm text-brand-gray-3">
-                No cover image
-              </div>
-            )}
-          </div>
-        </div>
       </header>
       {post.rejection_reason && (
         <p className="mt-4 border border-red-200 bg-red-50 p-3 text-sm text-red-700">
@@ -168,7 +175,7 @@ export function AdminBlogDetailContent({ id }: { id: number }) {
                 alt={`${post.title} gallery image`}
                 className="aspect-[4/3] w-full object-cover"
                 key={image.id}
-                src={image.url}
+                src={resolveMediaUrl(image.url)}
               />
             ))
           ) : (

@@ -6,6 +6,7 @@ import { Star, Trash } from "@phosphor-icons/react"
 import { useProductEngagement } from "@/hooks/useProductEngagement"
 import { productEngagementService } from "@/services/productEngagementService"
 import { Button } from "@/components/ui/button"
+import { ProductFeedbackSection } from "@/components/product/productFeedbackSection"
 
 function Stars({ value }: { value: number }) {
   return (
@@ -25,7 +26,7 @@ function dateLabel(value: string) {
   }).format(new Date(value))
 }
 
-export function VendorProductEngagement({
+function LegacyVendorProductEngagement({
   productId,
   scope = "vendor",
 }: {
@@ -167,3 +168,5 @@ export function VendorProductEngagement({
     </section>
   )
 }
+
+export const VendorProductEngagement = ProductFeedbackSection

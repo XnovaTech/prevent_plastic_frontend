@@ -1,7 +1,7 @@
 import Image from "next/image"
 import { ArrowUpRight } from "@phosphor-icons/react/dist/ssr"
 
-import type { AboutPageContent } from "@/mock/aboutPageMock"
+import type { AboutPageContent } from "@/types/aboutPage"
 
 type AboutImpactSectionProps = {
   content: AboutPageContent["impact"]

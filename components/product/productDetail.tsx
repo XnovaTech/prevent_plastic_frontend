@@ -5,9 +5,11 @@ import axios from "axios"
 import { useRouter } from "next/navigation"
 import {
   ArrowLeft,
+  ChatCircle,
   Check,
   Clock,
   ImageSquare,
+  ListBullets,
   PencilSimple,
   Storefront,
   Tag,
@@ -23,6 +25,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { resolveMediaUrl } from "@/lib/media"
 import { productService, type Product } from "@/services/productService"
 import { VendorProductEngagement } from "@/components/product/vendorProductEngagement"
+import { ProductDetailLayout } from "@/components/product/productDetailLayout"
 
 type ProductDetailProps = {
   product: Product
@@ -32,6 +35,7 @@ type ProductDetailProps = {
 }
 
 type ProductAction = "disable" | "ban" | "enable" | ""
+type DetailTab = "details" | "gallery" | "feedback"
 
 const statusLabels: Record<Product["status"], string> = {
   draft: "Draft",
@@ -86,7 +90,7 @@ function formatAttributeValue(value: unknown) {
   return String(value)
 }
 
-export function ProductDetail({
+function LegacyProductDetail({
   product,
   basePath = "/vendor/products",
   canEdit = true,
@@ -95,6 +99,7 @@ export function ProductDetail({
   const router = useRouter()
   const [currentProduct, setCurrentProduct] = useState(product)
   const [action, setAction] = useState<ProductAction>("")
+  const [tab, setTab] = useState<DetailTab>("details")
   const [isDeleting, setIsDeleting] = useState(false)
   const [error, setError] = useState("")
 
@@ -521,8 +526,10 @@ export function ProductDetail({
         </Card>
       )}
       {(mode === "vendor" || mode === "admin") && (
-        <VendorProductEngagement productId={currentProduct.id} scope={mode} />
+        <VendorProductEngagement productId={currentProduct.id} scope={mode} section="reviews" />
       )}
     </div>
   )
 }
+
+export const ProductDetail = ProductDetailLayout

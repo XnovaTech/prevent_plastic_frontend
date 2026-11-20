@@ -13,9 +13,9 @@ import { productService, type Product } from "@/services/productService"
 import { RichTextEditor } from "@/components/shared/richTextEditor"
 import { ProductImageManager } from "@/components/product/productImageManager"
 
-type ProductEditFormProps = { product: Product }
+type ProductEditFormProps = { product: Product; basePath?: string }
 
-export function ProductEditForm({ product }: ProductEditFormProps) {
+export function ProductEditForm({ product, basePath = "/vendor/products" }: ProductEditFormProps) {
   const router = useRouter()
   const [name, setName] = useState(product.name)
   const [description, setDescription] = useState(product.description ?? "")
@@ -47,7 +47,7 @@ export function ProductEditForm({ product }: ProductEditFormProps) {
         status,
         variants,
       })
-      router.push(`/vendor/products/${product.id}`)
+      router.push(`${basePath}/${product.id}`)
       router.refresh()
     } catch {
       setError(
@@ -63,7 +63,7 @@ export function ProductEditForm({ product }: ProductEditFormProps) {
       <div className="mb-7">
         <LinkButton
           className="text-xs font-semibold text-brand-light"
-          href={`/vendor/products/${product.id}`}
+          href={`${basePath}/${product.id}`}
           variant="ghost"
         >
           <ArrowLeft size={14} /> Back to product

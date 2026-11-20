@@ -1,6 +1,6 @@
 import Image from "next/image"
 
-import type { AboutPageContent } from "@/mock/aboutPageMock"
+import type { AboutPageContent } from "@/types/aboutPage"
 
 type AboutCultureSectionProps = {
   content: AboutPageContent["culture"]

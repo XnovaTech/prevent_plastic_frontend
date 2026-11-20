@@ -25,7 +25,7 @@ export default function Page() {
       <main id="main-content">
         <PublicBlogList />
       </main>
-      <SiteFooter />
+      <SiteFooter showContactDetails={false} />
     </div>
   )
 }
