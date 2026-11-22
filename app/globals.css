@@ -336,6 +336,39 @@
   height: 0;
 }
 
+/* Keep horizontal data tables usable without the heavy browser scrollbar chrome. */
+.order-table-scroll {
+  scrollbar-color: #b9c5bd transparent;
+  scrollbar-width: thin;
+}
+
+.order-table-scroll::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+}
+
+.order-table-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.order-table-scroll::-webkit-scrollbar-thumb {
+  background: #b9c5bd;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background-clip: padding-box;
+}
+
+.order-table-scroll::-webkit-scrollbar-thumb:hover {
+  background: #8fa298;
+  background-clip: padding-box;
+}
+
+.order-table-scroll::-webkit-scrollbar-button {
+  display: none;
+  height: 0;
+  width: 0;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .mobile-nav-item {
     animation: none;

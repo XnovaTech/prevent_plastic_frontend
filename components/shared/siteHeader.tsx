@@ -27,7 +27,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet"
 import { homePageMock } from "@/mock/homePageMock"
-import { useCartStore } from "@/stores/cartStore"
+import { useCart } from "@/hooks/useCart"
 import { useWishlistStore } from "@/stores/wishlistStore"
 import { authService } from "@/services/authService"
 import { useAuthStore } from "@/stores/authStore"
@@ -54,9 +54,9 @@ export function SiteHeader({ activeHref = "/" }: SiteHeaderProps) {
   const [leafFilled, setLeafFilled] = useState(false)
   const user = useAuthStore((state) => state.user)
   const clearUser = useAuthStore((state) => state.clearUser)
-  const bagCount = useCartStore((state) =>
-    state.items.reduce((total, item) => total + item.quantity, 0)
-  )
+  const { cart } = useCart()
+  const bagCount =
+    cart?.items.reduce((total, item) => total + item.quantity, 0) ?? 0
   const wishCount = useWishlistStore((state) => state.items.length)
 
   const closeMenu = () => setMenuOpen(false)

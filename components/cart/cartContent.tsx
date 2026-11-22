@@ -1,7 +1,8 @@
 "use client"
 
-import Image from "next/image"
 import Link from "next/link"
+import { useState } from "react"
+import { useRouter } from "next/navigation"
 import {
   ArrowRight,
   Minus,
@@ -11,17 +12,64 @@ import {
 } from "@phosphor-icons/react"
 
 import { Button } from "@/components/ui/button"
+import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select"
+import { useCart } from "@/hooks/useCart"
+import { useCheckout } from "@/hooks/useCheckout"
+import { resolveMediaUrl } from "@/lib/media"
 import { cartPageMock } from "@/mock/cartPageMock"
-import { useCartStore } from "@/stores/cartStore"
 
 function formatPrice(value: number) {
   return `Ks ${value.toLocaleString("en-US")}`
 }
 
 export function CartContent() {
-  const items = useCartStore((state) => state.items)
-  const removeItem = useCartStore((state) => state.removeItem)
-  const updateQuantity = useCartStore((state) => state.updateQuantity)
+  const { cart, isUpdating, removeItem, setItem } = useCart()
+  const { checkout, error: checkoutError, isCheckingOut } = useCheckout()
+  const router = useRouter()
+  const [paymentMethod, setPaymentMethod] = useState<
+    "cash_on_delivery" | "bank_transfer" | "online"
+  >("cash_on_delivery")
+  const items = (cart?.items ?? []).map((item) => ({
+    id: item.id,
+    productId: item.product_id,
+    variantId: item.variant_id,
+    name: item.product.name,
+    category: item.product.category?.name ?? "Pre-loved find",
+    price: Number(item.unit_price),
+    merchant: item.product.vendor?.display_name ?? "Local seller",
+    condition: item.variant?.sku ?? item.product.sku ?? "Available",
+    image:
+      resolveMediaUrl(
+        item.product.images.find((image) => image.is_primary)?.image_path ??
+          item.product.images[0]?.image_path
+      ) || "/products/ceramicPlates.jpg",
+    quantity: item.quantity,
+  }))
+
+  async function updateQuantity(
+    item: (typeof items)[number],
+    quantity: number
+  ) {
+    await setItem({
+      product_id: item.productId,
+      variant_id: item.variantId,
+      quantity,
+    })
+  }
+
+  async function placeOrder() {
+    try {
+      const order = await checkout(paymentMethod)
+      router.push(`/customer/orders/${order.id}`)
+    } catch (error) {
+      if (
+        error instanceof Error &&
+        error.message.includes("delivery address")
+      ) {
+        router.push("/customer/addresses")
+      }
+    }
+  }
 
   const itemCount = items.reduce((total, item) => total + item.quantity, 0)
   const subtotal = items.reduce(
@@ -92,11 +140,9 @@ export function CartContent() {
                 >
                   <div className="flex gap-3.5 sm:gap-5">
                     <div className="relative size-[92px] shrink-0 overflow-hidden rounded-[16px] bg-[#f0eee6] sm:size-[116px]">
-                      <Image
+                      <img
                         alt={`${item.name}, ${item.condition.toLowerCase()} condition`}
-                        className="object-cover"
-                        fill
-                        sizes="116px"
+                        className="absolute inset-0 size-full object-cover"
                         src={item.image}
                       />
                     </div>
@@ -109,7 +155,7 @@ export function CartContent() {
                           <h3 className="mt-0.5 truncate text-[14px] font-semibold text-brand-6">
                             <Link
                               className="transition-colors hover:text-brand-2"
-                              href={`/products/${item.id}`}
+                              href={`/products/${item.productId}`}
                             >
                               {item.name}
                             </Link>
@@ -128,11 +174,6 @@ export function CartContent() {
                               {formatPrice(item.price)} each
                             </p>
                           )}
-                          {item.originalPrice && item.quantity === 1 && (
-                            <p className="mt-0.5 text-[10px] text-brand-gray-4 line-through">
-                              {formatPrice(item.originalPrice)}
-                            </p>
-                          )}
                         </div>
                       </div>
 
@@ -143,7 +184,7 @@ export function CartContent() {
                             className="flex size-8 items-center justify-center rounded-full text-brand-3 transition-colors hover:bg-[#f1f5ed] disabled:cursor-not-allowed disabled:opacity-35"
                             disabled={item.quantity <= 1}
                             onClick={() =>
-                              updateQuantity(item.id, item.quantity - 1)
+                              void updateQuantity(item, item.quantity - 1)
                             }
                             type="button"
                           >
@@ -159,7 +200,7 @@ export function CartContent() {
                             aria-label={`Increase quantity of ${item.name}`}
                             className="flex size-8 items-center justify-center rounded-full text-brand-3 transition-colors hover:bg-[#f1f5ed]"
                             onClick={() =>
-                              updateQuantity(item.id, item.quantity + 1)
+                              void updateQuantity(item, item.quantity + 1)
                             }
                             type="button"
                           >
@@ -168,7 +209,8 @@ export function CartContent() {
                         </div>
                         <button
                           className="inline-flex items-center gap-1.5 text-[10px] font-medium text-brand-gray-3 transition-colors hover:text-brand-orange-3"
-                          onClick={() => removeItem(item.id)}
+                          disabled={isUpdating}
+                          onClick={() => void removeItem(item.id)}
                           type="button"
                         >
                           <Trash aria-hidden="true" size={13} />
@@ -213,19 +255,54 @@ export function CartContent() {
                 <span>{formatPrice(subtotal)}</span>
               </div>
 
+              <div className="mt-5">
+                <label
+                  className="mb-2 block text-[10px] font-bold tracking-[0.14em] text-brand-gray-5 uppercase"
+                  htmlFor="payment-method"
+                >
+                  Payment method
+                </label>
+                <NativeSelect
+                  aria-label="Payment method"
+                  className="w-full [&_[data-slot=native-select]]:h-11 [&_[data-slot=native-select]]:rounded-full [&_[data-slot=native-select]]:border-[#dce4da] [&_[data-slot=native-select]]:bg-white [&_[data-slot=native-select]]:px-4 [&_[data-slot=native-select]]:text-xs [&_[data-slot=native-select]]:font-semibold [&_[data-slot=native-select]]:text-brand [&_[data-slot=native-select]]:hover:bg-[#f4f8f1] [&_[data-slot=native-select]]:focus-visible:border-brand-3 [&_[data-slot=native-select]]:focus-visible:ring-brand-3/20"
+                  id="payment-method"
+                  onChange={(event) =>
+                    setPaymentMethod(
+                      event.target.value as
+                        | "cash_on_delivery"
+                        | "bank_transfer"
+                        | "online"
+                    )
+                  }
+                  value={paymentMethod}
+                >
+                  <NativeSelectOption value="cash_on_delivery">
+                    Cash on delivery (COD)
+                  </NativeSelectOption>
+                  <NativeSelectOption value="bank_transfer">
+                    Bank transfer
+                  </NativeSelectOption>
+                  <NativeSelectOption value="online">
+                    Online payment
+                  </NativeSelectOption>
+                </NativeSelect>
+              </div>
+
               <Button
                 aria-describedby="cart-checkout-pending"
-                className="mt-5 h-11 w-full rounded-full bg-brand-2 px-5 text-xs font-bold text-white"
-                isDisabled
+                className="mt-4 h-11 w-full rounded-full bg-brand-2 px-5 text-xs font-bold text-white"
+                isDisabled={isCheckingOut || items.length === 0}
+                onPress={() => void placeOrder()}
                 type="button"
               >
-                {summary.checkoutLabel}
+                {isCheckingOut ? "Placing order…" : "Checkout"}
               </Button>
               <p
                 className="mt-3 rounded-[14px] border border-brand-yellow-border bg-[#faf5e8] px-3.5 py-3 text-[10px] leading-5 text-brand-yellow-text"
                 id="cart-checkout-pending"
               >
-                {summary.pendingNote}
+                {checkoutError ||
+                  "Your order will use your default saved delivery address and selected payment method."}
               </p>
               <p className="mt-3 rounded-[14px] bg-[#edf2e9] px-3.5 py-3 text-[10px] leading-5 text-[#557360]">
                 {summary.guestNote}

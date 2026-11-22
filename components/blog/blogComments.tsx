@@ -118,6 +118,20 @@ export function BlogComments({ comments, onAddComment }: BlogCommentsProps) {
                     <p className="mt-1.5 text-[13px] leading-6 text-brand-light">
                       {comment.body}
                     </p>
+                    {comment.replies.map((reply) => (
+                      <div
+                        className="mt-3 border-l-2 border-brand-2/30 pl-3"
+                        key={reply.id}
+                      >
+                        <p className="text-[11px] font-semibold text-brand">
+                          {reply.author.name} · {reply.author.role} ·{" "}
+                          {commentDate(reply.created_at)}
+                        </p>
+                        <p className="mt-1 text-[13px] leading-6 text-brand-light">
+                          {reply.body}
+                        </p>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </li>

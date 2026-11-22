@@ -125,9 +125,8 @@ export function PublicProductFeedback({ productId }: { productId: number }) {
         </div>
       </div>
       {error ? <p className="mt-4 text-sm text-red-700">{error}</p> : null}
-      <div className="mt-6 grid gap-5 lg:grid-cols-2">
-        <div className="space-y-4">
-          <div className="rounded-[24px] border border-[#e3e9df] bg-white p-5">
+      <div className="mt-6 space-y-5">
+        <div className="rounded-[24px] border border-[#e3e9df] bg-white p-5">
             <p className="text-xs font-bold tracking-[0.12em] text-brand-gray-3 uppercase">
               Reviews
             </p>
@@ -217,82 +216,8 @@ export function PublicProductFeedback({ productId }: { productId: number }) {
                 ))}
               </div>
             )}
-          </div>
-          <form className="hidden" onSubmit={submitReview}>
-            <p className="font-semibold text-brand">Share your experience</p>
-            <div className="mt-3 grid gap-3 sm:grid-cols-[190px_1fr] sm:items-center">
-              <RatingPicker
-                rating={review.rating}
-                onChange={(rating) => setReview({ ...review, rating })}
-              />
-              <Input
-                placeholder="Review headline"
-                value={review.title}
-                onChange={(event) =>
-                  setReview({ ...review, title: event.target.value })
-                }
-              />
-            </div>
-            <Textarea
-              className="mt-2"
-              placeholder="Write your review"
-              value={review.body}
-              onChange={(event) =>
-                setReview({ ...review, body: event.target.value })
-              }
-            />
-            {user ? (
-              <Button className="mt-3 bg-brand-2 text-white" type="submit">
-                Post review
-              </Button>
-            ) : (
-              <Link
-                className="mt-3 inline-block text-sm font-semibold text-brand-3 underline"
-                href="/login"
-              >
-                Sign in to review
-              </Link>
-            )}
-          </form>
-          <form className="hidden" onSubmit={submitReview}>
-            <p className="font-semibold text-brand">Share your experience</p>
-            <div className="mt-3 grid gap-3 sm:grid-cols-[270px_minmax(0,1fr)] sm:items-center">
-              <RatingPicker
-                rating={review.rating}
-                onChange={(rating) => setReview({ ...review, rating })}
-              />
-              <Input
-                placeholder="Review headline"
-                value={review.title}
-                onChange={(event) =>
-                  setReview({ ...review, title: event.target.value })
-                }
-              />
-            </div>
-            <Textarea
-              className="mt-3"
-              placeholder="Write your review"
-              value={review.body}
-              onChange={(event) =>
-                setReview({ ...review, body: event.target.value })
-              }
-            />
-            {user ? (
-              <Button className="mt-3 bg-brand-2 text-white" type="submit">
-                Post review
-              </Button>
-            ) : (
-              <Link
-                className="mt-3 inline-block text-sm font-semibold text-brand-3 underline"
-                href="/login"
-              >
-                Sign in to review
-              </Link>
-            )}
-          </form>
         </div>
-        <div className="space-y-4">
-          <div className="rounded-[24px] border border-[#e3e9df] bg-white p-5">
+        <div className="rounded-[24px] border border-[#e3e9df] bg-white p-5">
             <p className="text-xs font-bold tracking-[0.12em] text-brand-gray-3 uppercase">
               Comments
             </p>
@@ -349,6 +274,19 @@ export function PublicProductFeedback({ productId }: { productId: number }) {
                         <p className="mt-1 text-sm leading-6 text-brand-light">
                           {item.body}
                         </p>
+                        {item.replies.map((reply) => (
+                          <div
+                            className="mt-3 border-l-2 border-brand-2/30 pl-3"
+                            key={reply.id}
+                          >
+                            <p className="text-xs font-semibold text-brand">
+                              {reply.author.name} · {reply.author.role}
+                            </p>
+                            <p className="mt-1 text-sm leading-6 text-brand-light">
+                              {reply.body}
+                            </p>
+                          </div>
+                        ))}
                       </>
                     )}
                   </article>
@@ -357,11 +295,11 @@ export function PublicProductFeedback({ productId }: { productId: number }) {
                 <p className="text-sm text-brand-gray-3">No comments yet.</p>
               )}
             </div>
-          </div>
-          <form
-            className="rounded-[24px] border border-[#e3e9df] bg-[#f7faf4] p-5"
-            onSubmit={submitComment}
-          >
+        </div>
+        <form
+          className="rounded-[24px] border border-[#e3e9df] bg-[#f7faf4] p-5"
+          onSubmit={submitComment}
+        >
             <p className="font-semibold text-brand">Join the conversation</p>
             <Textarea
               className="mt-3"
@@ -381,11 +319,11 @@ export function PublicProductFeedback({ productId }: { productId: number }) {
                 Sign in to comment
               </Link>
             )}
-          </form>
-          <form
-            className="rounded-[24px] border border-[#e3e9df] bg-[#f7faf4] p-5"
-            onSubmit={submitReview}
-          >
+        </form>
+        <form
+          className="rounded-[24px] border border-[#e3e9df] bg-[#f7faf4] p-5"
+          onSubmit={submitReview}
+        >
             <p className="font-semibold text-brand">Share your experience</p>
             <div className="mt-3 grid gap-3 sm:grid-cols-[270px_minmax(0,1fr)] sm:items-center">
               <RatingPicker
@@ -420,8 +358,7 @@ export function PublicProductFeedback({ productId }: { productId: number }) {
                 Sign in to review
               </Link>
             )}
-          </form>
-        </div>
+        </form>
       </div>
       {notice ? (
         <p className="mt-4 rounded-2xl bg-[#f3f8ef] px-4 py-3 text-sm text-brand-4">

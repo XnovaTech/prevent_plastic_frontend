@@ -19,6 +19,14 @@ export type ProductComment = {
   is_approved: boolean
   commenter: { id: number | null; name: string }
   created_at: string
+  replies: CommentReply[]
+}
+
+export type CommentReply = {
+  id: number
+  body: string
+  author: { name: string; role: "Admin" | "Vendor" }
+  created_at: string
 }
 
 export type ProductEngagement = {

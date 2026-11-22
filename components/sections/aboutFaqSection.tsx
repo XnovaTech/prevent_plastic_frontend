@@ -12,9 +12,14 @@ import type { AboutPageContent } from "@/types/aboutPage"
 type AboutFaqSectionProps = {
   intro: AboutPageContent["faqIntro"]
   faqs: AboutPageContent["faqs"]
+  animate?: boolean
 }
 
-export function AboutFaqSection({ intro, faqs }: AboutFaqSectionProps) {
+export function AboutFaqSection({
+  intro,
+  faqs,
+  animate = true,
+}: AboutFaqSectionProps) {
   return (
     <section
       aria-labelledby="faq-title"
@@ -23,7 +28,7 @@ export function AboutFaqSection({ intro, faqs }: AboutFaqSectionProps) {
     >
       <div className="mx-auto max-w-[1440px]">
         <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-start lg:gap-12">
-          <div data-aos="fade-up">
+          <div {...(animate ? { "data-aos": "fade-up" } : {})}>
             <p className="text-[10px] font-bold tracking-[0.18em] text-brand-gray-5 uppercase">
               {intro.eyebrow}
             </p>
@@ -36,20 +41,23 @@ export function AboutFaqSection({ intro, faqs }: AboutFaqSectionProps) {
             <p className="mt-3 max-w-sm text-[12px] leading-6 text-brand-light sm:text-[13px]">
               {intro.description}
             </p>
-            <Link
+            {intro.action ? (
+              <Link
               className="mt-5 inline-flex items-center gap-2 text-[11px] font-semibold text-brand-3 transition-colors hover:text-brand-orange focus-visible:underline focus-visible:outline-none"
-              href="/contact"
+              href={intro.action.href}
             >
-              Ask us something else
+              {intro.action.label}
               <ArrowRight aria-hidden="true" size={14} />
             </Link>
+            ) : null}
           </div>
 
           <Accordion
             allowsMultipleExpanded
             className="gap-0 rounded-[22px] border-[#e7eae2] bg-white/70"
-            data-aos="fade-up"
-            data-aos-delay="100"
+            {...(animate
+              ? { "data-aos": "fade-up", "data-aos-delay": "100" }
+              : {})}
           >
             {faqs.map((faq) => (
               <AccordionItem id={faq.id} key={faq.id}>

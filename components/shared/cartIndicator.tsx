@@ -3,12 +3,12 @@
 import Link from "next/link"
 import { ShoppingBagOpen } from "@phosphor-icons/react"
 
-import { useCartStore } from "@/stores/cartStore"
+import { useCart } from "@/hooks/useCart"
 
 export function CartIndicator() {
-  const itemCount = useCartStore((state) =>
-    state.items.reduce((total, item) => total + item.quantity, 0)
-  )
+  const { cart } = useCart()
+  const itemCount =
+    cart?.items.reduce((total, item) => total + item.quantity, 0) ?? 0
 
   return (
     <Link

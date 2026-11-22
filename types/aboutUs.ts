@@ -1,11 +1,71 @@
-export type AboutItem = { id: number; title: string; description?: string | null; icon?: string | null; sort_order: number; is_active: boolean }
-export type AboutMedia = { id: number; url: string; alt_text?: string | null; caption?: string | null; media_type: string; sort_order: number; is_active: boolean }
-export type AboutGalleryImage = { id: number; url: string; alt_text?: string | null; caption?: string | null; sort_order: number; is_active: boolean }
+export type AboutItem = {
+  id: number
+  title: string
+  description?: string | null
+  icon?: string | null
+  link_url?: string | null
+  sort_order: number
+  is_active: boolean
+}
+export type AboutMedia = {
+  id: number
+  url: string
+  alt_text?: string | null
+  caption?: string | null
+  media_type: string
+  sort_order: number
+  is_active: boolean
+}
+export type AboutGalleryImage = {
+  id: number
+  url: string
+  alt_text?: string | null
+  caption?: string | null
+  sort_order: number
+  is_active: boolean
+}
 export type AboutAction = { label: string; href: string }
-export type AboutSection = { id: number; section_type: string; eyebrow?: string | null; title?: string | null; description?: string | null; layout_type?: string | null; actions?: AboutAction[] | null; sort_order: number; is_active: boolean; items: AboutItem[]; media: AboutMedia[]; gallery_images: AboutGalleryImage[] }
-export type AboutFaq = { id: number; question: string; answer: string; sort_order: number; is_active: boolean }
-export type AboutUs = { id: number; title: string; description?: string | null; phone?: string[] | null; email?: string[] | null; address?: string[] | null; sections: AboutSection[]; faqs: AboutFaq[] }
-export type AboutUsInput = Pick<AboutUs, "title" | "description" | "phone" | "email" | "address">
-export type AboutSectionInput = Omit<AboutSection, "id" | "items" | "media" | "gallery_images"> 
+export type AboutSection = {
+  id: number
+  section_type: string
+  cms_title?: string | null
+  eyebrow?: string | null
+  title?: string | null
+  description?: string | null
+  layout_type?: string | null
+  actions?: AboutAction[] | null
+  sort_order: number
+  is_active: boolean
+  items: AboutItem[]
+  media: AboutMedia[]
+  gallery_images: AboutGalleryImage[]
+}
+export type AboutFaq = {
+  id: number
+  question: string
+  answer: string
+  sort_order: number
+  is_active: boolean
+}
+export type AboutUs = {
+  id: number
+  title: string
+  description?: string | null
+  phone?: string[] | null
+  email?: string[] | null
+  address?: string[] | null
+  published_at?: string | null
+  is_published?: boolean
+  sections: AboutSection[]
+  faqs: AboutFaq[]
+}
+export type AboutUsInput = Pick<
+  AboutUs,
+  "title" | "description" | "phone" | "email" | "address"
+>
+export type AboutSectionInput = Omit<
+  AboutSection,
+  "id" | "items" | "media" | "gallery_images"
+>
 export type AboutItemInput = Omit<AboutItem, "id">
 export type AboutFaqInput = Omit<AboutFaq, "id">

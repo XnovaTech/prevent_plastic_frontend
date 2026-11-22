@@ -4,9 +4,9 @@ export type AboutPageContent = {
     title: string
     highlight: string
     description: string
-    primaryAction: { label: string; href: string }
-    secondaryAction: { label: string; href: string }
-    image: string
+    primaryAction?: { label: string; href: string }
+    secondaryAction?: { label: string; href: string }
+    image: string | null
     imageAlt: string
     imageLabel: string
   }
@@ -20,6 +20,7 @@ export type AboutPageContent = {
       description: string
       image: string
       imageAlt: string
+      caption?: string
     }[]
   }
   introduction: {
@@ -30,15 +31,17 @@ export type AboutPageContent = {
       id: string
       title: string
       description: string
+      href?: string
     }[]
     featureEyebrow: string
     featureTitle: string
     featureDescription: string
-    featureImage: string
+    featureImage: string | null
     featureImageAlt: string
+    featureImageLabel: string
     featureCardTitle: string
     featureCardDescription: string
-    featureAction: { label: string; href: string }
+    featureAction?: { label: string; href: string }
   }
   campaign: {
     eyebrow: string
@@ -62,12 +65,14 @@ export type AboutPageContent = {
     eyebrow: string
     title: string
     description: string
-    image: string
+    image: string | null
     imageAlt: string
+    imageLabel: string
     points: readonly {
       id: string
       title: string
       description: string
+      icon?: string
     }[]
   }
   impact: {
@@ -86,6 +91,7 @@ export type AboutPageContent = {
     eyebrow: string
     title: string
     description: string
+    action?: { label: string; href: string }
   }
   faqs: readonly {
     id: string

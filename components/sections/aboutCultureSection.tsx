@@ -45,12 +45,11 @@ export function AboutCultureSection({ content }: AboutCultureSectionProps) {
                   unoptimized
                 />
               </div>
-              {/* <h3 className="text-sm font-semibold text-brand-6">
-                {card.title}
-              </h3>
-              <p className="mt-1 text-xs leading-6 text-brand-light">
-                {card.description}
-              </p> */}
+              {card.caption ? (
+                <p className="px-2 pb-2 text-xs leading-5 text-brand-light">
+                  {card.caption}
+                </p>
+              ) : null}
             </article>
           ))}
         </div>

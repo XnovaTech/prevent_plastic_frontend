@@ -33,17 +33,26 @@ export function AboutIntroductionSection({
           </p>
         </header>
 
-        <div className="mt-8 grid border-t border-[#e4e8e1] sm:mt-10 sm:grid-cols-2">
+        <div className="mt-8 grid border-t border-[#e4e8e1] sm:mt-10 sm:grid-cols-2 lg:grid-cols-3">
           {content.benefits.map((benefit, index) => (
             <article
               className={`flex min-h-[156px] flex-col items-center justify-center border-b border-[#e4e8e1] px-5 py-6 text-center sm:px-8 sm:py-7 ${
-                index % 2 === 0 ? "sm:border-r" : ""
-              }`}
+                index % 2 === 0 ? "sm:border-r lg:border-r-0" : ""
+              } ${index % 3 !== 2 ? "lg:border-r" : ""}`}
               key={benefit.id}
             >
-              <h3 className="text-[15px] font-semibold tracking-[-0.02em] text-brand-6 sm:text-base">
-                {benefit.title}
-              </h3>
+              {benefit.href ? (
+                <Link
+                  className="text-[15px] font-semibold tracking-[-0.02em] text-brand-6 transition-colors hover:text-brand-3 focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-brand-2 sm:text-base"
+                  href={benefit.href}
+                >
+                  {benefit.title}
+                </Link>
+              ) : (
+                <h3 className="text-[15px] font-semibold tracking-[-0.02em] text-brand-6 sm:text-base">
+                  {benefit.title}
+                </h3>
+              )}
               <span
                 aria-hidden="true"
                 className="mt-3 h-0.5 w-7 rounded-full bg-brand-3"
@@ -76,29 +85,35 @@ export function AboutIntroductionSection({
               <p className="mt-3 text-[12px] leading-6 text-brand-light sm:text-[13px] sm:leading-7">
                 {content.featureCardDescription}
               </p>
-              <Link
+              {content.featureAction ? (
+                <Link
                 className="mt-5 inline-flex min-h-10 items-center gap-2 text-xs font-semibold text-brand-3 transition-colors hover:text-brand-orange focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-2"
                 href={content.featureAction.href}
               >
                 {content.featureAction.label}
                 <ArrowRight aria-hidden="true" size={15} />
               </Link>
+              ) : null}
             </aside>
 
             <figure
               className="group relative min-h-[300px] overflow-hidden rounded-[24px] bg-[#e8eee5] sm:min-h-[420px] sm:rounded-[30px] lg:min-h-[500px] lg:w-[60%] lg:absolute lg:top-0 lg:right-0 lg:h-full"
             >
-              <Image
-                alt={content.featureImageAlt}
-                className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02]"
-                fill
-                sizes="(max-width: 1023px) 100vw, 72vw"
-                src={content.featureImage}
-                unoptimized
-              />
-              <figcaption className="absolute bottom-4 left-4 rounded-full border border-white/60 bg-white/90 px-3 py-1.5 text-[9px] font-bold tracking-[0.13em] text-brand-3 uppercase backdrop-blur-sm sm:bottom-5 sm:left-5">
-                {content.featureEyebrow}
-              </figcaption>
+              {content.featureImage ? (
+                <Image
+                  alt={content.featureImageAlt}
+                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02]"
+                  fill
+                  sizes="(max-width: 1023px) 100vw, 72vw"
+                  src={content.featureImage}
+                  unoptimized
+                />
+              ) : null}
+              {content.featureImageLabel ? (
+                <figcaption className="absolute bottom-4 left-4 rounded-full border border-white/60 bg-white/90 px-3 py-1.5 text-[9px] font-bold tracking-[0.13em] text-brand-3 uppercase backdrop-blur-sm sm:bottom-5 sm:left-5">
+                  {content.featureImageLabel}
+                </figcaption>
+              ) : null}
             </figure>
           </div>
         </div>

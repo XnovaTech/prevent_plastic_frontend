@@ -1,5 +1,7 @@
 "use client"
 
+import { useState, type ReactNode } from "react"
+
 import { AboutCultureSection } from "@/components/sections/aboutCultureSection"
 import { AboutFaqSection } from "@/components/sections/aboutFaqSection"
 import { AboutHeroSection } from "@/components/sections/aboutHeroSection"
@@ -27,6 +29,24 @@ function sectionByType(about: AboutUs, type: string) {
       section.section_type.replace(/[\s-]/g, "_").toLowerCase() ===
       normalizedType
   )
+}
+
+function emptySection(type: string): AboutSection {
+  return {
+    id: 0,
+    section_type: type,
+    cms_title: null,
+    eyebrow: null,
+    title: null,
+    description: null,
+    layout_type: null,
+    actions: [],
+    sort_order: 0,
+    is_active: true,
+    items: [],
+    media: [],
+    gallery_images: [],
+  }
 }
 
 type AboutImage = {
@@ -70,7 +90,14 @@ function imageFor(section: AboutSection | undefined): AboutImage | null {
  * Section names match the presets in the admin dashboard.
  */
 export function AboutUsLayoutPage() {
-  const { about, error, isLoading } = useAboutUs("public")
+  const [isPreview] = useState(
+    () =>
+      typeof window !== "undefined" &&
+      new URLSearchParams(window.location.search).get("preview") === "1"
+  )
+  const { about, error, isLoading } = useAboutUs(
+    isPreview ? "admin" : "public"
+  )
   if (isLoading)
     return (
       <div className="px-4 py-28 text-center text-sm text-brand-gray-3">
@@ -89,12 +116,59 @@ export function AboutUsLayoutPage() {
         Our story is being prepared.
       </div>
     )
-  const hero = sectionByType(about, "hero")
-  const introduction = sectionByType(about, "introduction")
-  const localFeature = sectionByType(about, "local_feature")
-  const values = sectionByType(about, "values")
-  const culture = sectionByType(about, "culture")
-  const faq = sectionByType(about, "faq")
+  return <AboutUsContent about={about} />
+}
+
+/**
+ * The approved public canvas without data fetching. The admin visual editor
+ * reuses this exact component so draft content is always previewed in the
+ * same structure as the public page.
+ */
+type AboutUsContentProps = {
+  about: AboutUs
+  onEditSection?: (sectionType: string) => void
+}
+
+function EditableSection({
+  sectionType,
+  onEdit,
+  children,
+}: {
+  sectionType: string
+  onEdit?: (sectionType: string) => void
+  children: ReactNode
+}) {
+  if (!onEdit) return <>{children}</>
+
+  return (
+    <div
+      className="group relative cursor-pointer"
+      onClick={(event) => {
+        if (event.target instanceof HTMLElement && event.target.closest("a")) {
+          event.preventDefault()
+        }
+        onEdit(sectionType)
+      }}
+    >
+      <span className="pointer-events-none absolute top-3 right-3 z-10 rounded-full border border-brand-3/30 bg-white/95 px-3 py-1 text-[10px] font-bold tracking-[0.12em] text-brand-3 opacity-0 shadow-sm transition-opacity group-hover:opacity-100">
+        Edit section
+      </span>
+      <div className="transition-shadow group-hover:ring-2 group-hover:ring-brand-3/35 group-hover:ring-inset">
+        {children}
+      </div>
+    </div>
+  )
+}
+
+export function AboutUsContent({ about, onEditSection }: AboutUsContentProps) {
+  const hero = sectionByType(about, "hero") ?? emptySection("hero")
+  const introduction =
+    sectionByType(about, "introduction") ?? emptySection("introduction")
+  const localFeature =
+    sectionByType(about, "local_feature") ?? emptySection("local_feature")
+  const values = sectionByType(about, "values") ?? emptySection("values")
+  const culture = sectionByType(about, "culture") ?? emptySection("culture")
+  const faq = sectionByType(about, "faq") ?? emptySection("faq")
   const heroImage = imageFor(hero)
   const localFeatureImage = imageFor(localFeature)
   const valuesImage = imageFor(values)
@@ -103,95 +177,70 @@ export function AboutUsLayoutPage() {
         .map(resolveAboutImage)
         .filter((image): image is AboutImage => image !== null)
     : []
-  const heroContent: AboutPageContent["hero"] | null =
-    hero && heroImage
-      ? {
-          eyebrow: hero.eyebrow || "",
-          title: about.title,
-          highlight: hero.title || "",
-          description: plainText(hero.description || about.description),
-          primaryAction: hero.actions?.[0] ?? { label: "Explore the market", href: "/products" },
-          secondaryAction: hero.actions?.[1] ?? { label: "Meet local shops", href: "/shops" },
-          image: heroImage.src,
-          imageAlt: heroImage.alt,
-          imageLabel: heroImage.caption || hero.eyebrow || "",
-        }
-      : null
-  const introductionContent: AboutPageContent["introduction"] | null =
-    introduction &&
-    localFeature &&
-    localFeatureImage &&
-    Boolean(introduction.title?.trim()) &&
-    Boolean(introduction.description?.trim()) &&
-    introduction.items.length > 0 &&
-    Boolean(localFeature.title?.trim()) &&
-    Boolean(localFeature.description?.trim()) &&
-    localFeature.items.length > 0
-      ? {
-          eyebrow: introduction.eyebrow || "",
-          title: introduction.title || "",
-          description: plainText(introduction.description),
-          benefits: introduction.items.map((item) => ({
-            id: String(item.id),
-            title: item.title,
-            description: item.description || "",
-          })),
-          featureEyebrow: localFeature.eyebrow || "",
-          featureTitle: localFeature.title || "",
-          featureDescription: plainText(localFeature.description),
-          featureImage: localFeatureImage.src,
-          featureImageAlt: localFeatureImage.alt,
-          featureCardTitle: localFeature.items[0]?.title || "",
-          featureCardDescription: localFeature.items[0]?.description || "",
-          featureAction: localFeature.actions?.[0] ?? { label: "Meet local shops", href: "/shops" },
-        }
-      : null
-  const valuesContent: AboutPageContent["values"] | null =
-    values &&
-    valuesImage &&
-    Boolean(values.title?.trim()) &&
-    Boolean(values.description?.trim()) &&
-    values.items.length > 0
-      ? {
-          eyebrow: values.eyebrow || "",
-          title: values.title || "",
-          description: plainText(values.description),
-          image: valuesImage.src,
-          imageAlt: valuesImage.alt,
-          points: values.items.map((item) => ({
-            id: String(item.id),
-            title: item.title,
-            description: item.description || "",
-          })),
-        }
-      : null
-  const cultureContent: AboutPageContent["culture"] | null =
-    culture &&
-    cultureImages.length > 0 &&
-    Boolean(culture.title?.trim()) &&
-    Boolean(culture.description?.trim())
-    ? {
-        eyebrow: culture.eyebrow || "",
-        title: culture.title || "",
-        description: plainText(culture.description),
-        cards: cultureImages.map((image, index) => ({
-            id: String(image.id),
-            title: culture.items[index]?.title || "",
-            description: culture.items[index]?.description || "",
-            image: image.src,
-            imageAlt: image.alt,
-          })
-        ),
-      }
-    : null
-  const faqIntro: AboutPageContent["faqIntro"] | null =
-    faq && Boolean(faq.title?.trim()) && Boolean(faq.description?.trim())
-      ? {
-          eyebrow: faq.eyebrow || "",
-          title: faq.title || "",
-          description: plainText(faq.description),
-        }
-      : null
+  const heroContent: AboutPageContent["hero"] = {
+    eyebrow: hero.eyebrow || "",
+    title: about.title,
+    highlight: hero.title || "",
+    description: plainText(hero.description || about.description),
+    primaryAction: hero.actions?.[0],
+    secondaryAction: hero.actions?.[1],
+    image: heroImage?.src ?? null,
+    imageAlt: heroImage?.alt ?? "",
+    imageLabel: heroImage?.caption ?? "",
+  }
+  const introductionContent: AboutPageContent["introduction"] = {
+    eyebrow: introduction.eyebrow || "",
+    title: introduction.title || "",
+    description: plainText(introduction.description),
+    benefits: introduction.items.map((item) => ({
+      id: String(item.id),
+      title: item.title,
+      description: item.description || "",
+      href: item.link_url || undefined,
+    })),
+    featureEyebrow: localFeature.eyebrow || "",
+    featureTitle: localFeature.title || "",
+    featureDescription: plainText(localFeature.description),
+    featureImage: localFeatureImage?.src ?? null,
+    featureImageAlt: localFeatureImage?.alt ?? "",
+    featureImageLabel: localFeatureImage?.caption ?? "",
+    featureCardTitle: localFeature.items[0]?.title || "",
+    featureCardDescription: localFeature.items[0]?.description || "",
+    featureAction: localFeature.actions?.[0],
+  }
+  const valuesContent: AboutPageContent["values"] = {
+    eyebrow: values.eyebrow || "",
+    title: values.title || "",
+    description: plainText(values.description),
+    image: valuesImage?.src ?? null,
+    imageAlt: valuesImage?.alt ?? "",
+    imageLabel: valuesImage?.caption ?? "",
+    points: values.items.map((item) => ({
+      id: String(item.id),
+      title: item.title,
+      description: item.description || "",
+      icon: item.icon || undefined,
+    })),
+  }
+  const cultureContent: AboutPageContent["culture"] = {
+    eyebrow: culture.eyebrow || "",
+    title: culture.title || "",
+    description: plainText(culture.description),
+    cards: cultureImages.map((image, index) => ({
+      id: String(image.id),
+      title: culture.items[index]?.title || "",
+      description: culture.items[index]?.description || "",
+      image: image.src,
+      imageAlt: image.alt,
+      caption: image.caption || image.alt,
+    })),
+  }
+  const faqIntro: AboutPageContent["faqIntro"] = {
+    eyebrow: faq.eyebrow || "",
+    title: faq.title || "",
+    description: plainText(faq.description),
+    action: faq.actions?.[0],
+  }
   const faqs = about.faqs.map((entry) => ({
     id: String(entry.id),
     question: entry.question,
@@ -199,16 +248,25 @@ export function AboutUsLayoutPage() {
   }))
   return (
     <>
-      {heroContent ? <AboutHeroSection content={heroContent} /> : null}
-      {introductionContent ? (
+      <EditableSection onEdit={onEditSection} sectionType="hero">
+        <AboutHeroSection content={heroContent} />
+      </EditableSection>
+      <EditableSection onEdit={onEditSection} sectionType="introduction">
         <AboutIntroductionSection content={introductionContent} />
-      ) : null}
-      {valuesContent ? <AboutValuesSection content={valuesContent} /> : null}
-      {cultureContent ? <AboutCultureSection content={cultureContent} /> : null}
-      {faqs.length && faqIntro ? (
-        <AboutFaqSection faqs={faqs} intro={faqIntro} />
-      ) : null}
+      </EditableSection>
+      <EditableSection onEdit={onEditSection} sectionType="values">
+        <AboutValuesSection content={valuesContent} />
+      </EditableSection>
+      <EditableSection onEdit={onEditSection} sectionType="culture">
+        <AboutCultureSection content={cultureContent} />
+      </EditableSection>
+      <EditableSection onEdit={onEditSection} sectionType="faq">
+        <AboutFaqSection
+          animate={!onEditSection}
+          faqs={faqs}
+          intro={faqIntro}
+        />
+      </EditableSection>
     </>
   )
 }
-

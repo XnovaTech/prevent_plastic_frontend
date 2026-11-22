@@ -34,6 +34,10 @@ export const aboutUsService = {
     const response = await api.put<ApiResponse<AboutUs>>("/admin/about", input)
     return response.data.data
   },
+  async publish(): Promise<AboutUs> {
+    const response = await api.post<ApiResponse<AboutUs>>("/admin/about/publish")
+    return response.data.data
+  },
   async reset(): Promise<void> {
     await api.delete("/admin/about")
   },
@@ -104,26 +108,120 @@ export const aboutUsService = {
   async removeFaq(id: number): Promise<void> {
     await api.delete(`/admin/about/faqs/${id}`)
   },
-  async uploadMedia(sectionId: number, file: File): Promise<AboutMedia> {
+  async uploadMedia(
+    sectionId: number,
+    file: File,
+    details?: Pick<
+      AboutMedia,
+      "alt_text" | "caption" | "media_type" | "sort_order" | "is_active"
+    >
+  ): Promise<AboutMedia> {
     const form = new FormData()
     form.append("file", file)
+    if (details?.alt_text) form.append("alt_text", details.alt_text)
+    if (details?.caption) form.append("caption", details.caption)
+    if (details?.media_type) form.append("media_type", details.media_type)
+    if (details?.sort_order !== undefined)
+      form.append("sort_order", String(details.sort_order))
+    if (details?.is_active !== undefined)
+      form.append("is_active", details.is_active ? "1" : "0")
     const response = await api.post<ApiResponse<AboutMedia>>(
       `/admin/about/sections/${sectionId}/media`,
-      form,
-      { headers: { "Content-Type": "multipart/form-data" } }
+      form
     )
     return response.data.data
   },
   async uploadGalleryImage(
     sectionId: number,
-    file: File
+    file: File,
+    details?: Pick<
+      AboutGalleryImage,
+      "alt_text" | "caption" | "sort_order" | "is_active"
+    >
   ): Promise<AboutGalleryImage> {
     const form = new FormData()
     form.append("image", file)
+    if (details?.alt_text) form.append("alt_text", details.alt_text)
+    if (details?.caption) form.append("caption", details.caption)
+    if (details?.sort_order !== undefined)
+      form.append("sort_order", String(details.sort_order))
+    if (details?.is_active !== undefined)
+      form.append("is_active", details.is_active ? "1" : "0")
     const response = await api.post<ApiResponse<AboutGalleryImage>>(
       `/admin/about/sections/${sectionId}/gallery-images`,
-      form,
-      { headers: { "Content-Type": "multipart/form-data" } }
+      form
+    )
+    return response.data.data
+  },
+  async replaceMedia(
+    sectionId: number,
+    mediaId: number,
+    file: File,
+    details?: Pick<
+      AboutMedia,
+      "alt_text" | "caption" | "media_type" | "sort_order" | "is_active"
+    >
+  ): Promise<AboutMedia> {
+    const form = new FormData()
+    form.append("file", file)
+    if (details?.alt_text) form.append("alt_text", details.alt_text)
+    if (details?.caption) form.append("caption", details.caption)
+    if (details?.media_type) form.append("media_type", details.media_type)
+    if (details?.sort_order !== undefined)
+      form.append("sort_order", String(details.sort_order))
+    if (details?.is_active !== undefined)
+      form.append("is_active", details.is_active ? "1" : "0")
+    const response = await api.post<ApiResponse<AboutMedia>>(
+      `/admin/about/sections/${sectionId}/media/${mediaId}/replace`,
+      form
+    )
+    return response.data.data
+  },
+  async replaceGalleryImage(
+    sectionId: number,
+    imageId: number,
+    file: File,
+    details?: Pick<
+      AboutGalleryImage,
+      "alt_text" | "caption" | "sort_order" | "is_active"
+    >
+  ): Promise<AboutGalleryImage> {
+    const form = new FormData()
+    form.append("image", file)
+    if (details?.alt_text) form.append("alt_text", details.alt_text)
+    if (details?.caption) form.append("caption", details.caption)
+    if (details?.sort_order !== undefined)
+      form.append("sort_order", String(details.sort_order))
+    if (details?.is_active !== undefined)
+      form.append("is_active", details.is_active ? "1" : "0")
+    const response = await api.post<ApiResponse<AboutGalleryImage>>(
+      `/admin/about/sections/${sectionId}/gallery-images/${imageId}/replace`,
+      form
+    )
+    return response.data.data
+  },
+  async updateMedia(
+    sectionId: number,
+    mediaId: number,
+    input: Pick<AboutMedia, "alt_text" | "caption" | "media_type" | "sort_order" | "is_active">
+  ): Promise<AboutMedia> {
+    const response = await api.patch<ApiResponse<AboutMedia>>(
+      `/admin/about/sections/${sectionId}/media/${mediaId}`,
+      input
+    )
+    return response.data.data
+  },
+  async updateGalleryImage(
+    sectionId: number,
+    imageId: number,
+    input: Pick<
+      AboutGalleryImage,
+      "alt_text" | "caption" | "sort_order" | "is_active"
+    >
+  ): Promise<AboutGalleryImage> {
+    const response = await api.patch<ApiResponse<AboutGalleryImage>>(
+      `/admin/about/sections/${sectionId}/gallery-images/${imageId}`,
+      input
     )
     return response.data.data
   },

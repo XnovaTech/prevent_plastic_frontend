@@ -1,6 +1,6 @@
 import { create } from "zustand"
 
-import { cartPageMock, type CartItem } from "@/mock/cartPageMock"
+import type { CartItem } from "@/mock/cartPageMock"
 
 type CartStore = {
   items: CartItem[]
@@ -10,7 +10,7 @@ type CartStore = {
 }
 
 export const useCartStore = create<CartStore>((set) => ({
-  items: cartPageMock.items,
+  items: [],
   addItem: (item) =>
     set((state) => {
       const existingItem = state.items.find(

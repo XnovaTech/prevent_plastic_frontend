@@ -14,6 +14,12 @@ export type BlogComment = {
   is_approved: boolean
   commenter: { id: number | null; name: string | null }
   created_at: string
+  replies: {
+    id: number
+    body: string
+    author: { name: string; role: "Admin" | "Vendor" }
+    created_at: string
+  }[]
 }
 
 export type BlogPost = {

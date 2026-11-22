@@ -33,37 +33,49 @@ export function AboutHeroSection({ content }: AboutHeroSectionProps) {
             <p className="mt-5 max-w-[540px] text-[13px] leading-7 text-brand-light sm:text-[14px] sm:leading-8">
               {content.description}
             </p>
-            <div className="mt-6 flex flex-wrap gap-3">
-              <Link
+            {content.primaryAction || content.secondaryAction ? (
+              <div className="mt-6 flex flex-wrap gap-3">
+                {content.primaryAction ? (
+                  <Link
                 className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-brand-2 px-5 text-xs font-semibold text-white transition-colors hover:bg-brand-3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-2"
                 href={content.primaryAction.href}
               >
                 {content.primaryAction.label}
                 <ArrowRight aria-hidden="true" size={15} />
               </Link>
-              <Link
+                ) : null}
+                {content.secondaryAction ? (
+                  <Link
                 className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[#cfdccb] bg-white/70 px-5 text-xs font-semibold text-brand-3 transition-colors hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-2"
                 href={content.secondaryAction.href}
               >
                 {content.secondaryAction.label}
               </Link>
-            </div>
+                ) : null}
+              </div>
+            ) : null}
           </div>
 
           <figure className="group relative min-h-[240px] overflow-hidden bg-[#e6ece3] sm:min-h-[340px] lg:min-h-full">
-            <Image
-              alt={content.imageAlt}
-              className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02]"
-              fill
-              loading="eager"
-              sizes="(max-width: 1023px) 100vw, 45vw"
-              src={content.image}
-              unoptimized
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-brand/35 via-transparent to-transparent" />
-            <figcaption className="absolute right-5 bottom-5 rounded-full border border-white/60 bg-white/90 px-4 py-2 text-[9px] font-bold tracking-[0.14em] text-brand-3 uppercase backdrop-blur-sm sm:right-7 sm:bottom-7">
-              {content.imageLabel}
-            </figcaption>
+            {content.image ? (
+              <>
+                <Image
+                  alt={content.imageAlt}
+                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02]"
+                  fill
+                  loading="eager"
+                  sizes="(max-width: 1023px) 100vw, 45vw"
+                  src={content.image}
+                  unoptimized
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-brand/35 via-transparent to-transparent" />
+              </>
+            ) : null}
+            {content.imageLabel ? (
+              <figcaption className="absolute right-5 bottom-5 rounded-full border border-white/60 bg-white/90 px-4 py-2 text-[9px] font-bold tracking-[0.14em] text-brand-3 uppercase backdrop-blur-sm sm:right-7 sm:bottom-7">
+                {content.imageLabel}
+              </figcaption>
+            ) : null}
           </figure>
         </div>
       </div>

@@ -2,10 +2,11 @@
 
 import { useEffect, useMemo, useState } from "react"
 import Image from "next/image"
+import axios from "axios"
 import {
-  ArrowDown,
-  ArrowUp,
   Check,
+  CaretDown,
+  CaretUp,
   Eye,
   EyeSlash,
   FloppyDisk,
@@ -15,6 +16,8 @@ import {
 } from "@phosphor-icons/react"
 
 import { ImageUploader } from "@/components/shared/imageUploader"
+import { RichTextEditor } from "@/components/shared/richTextEditor"
+import { AboutUsContent } from "@/components/about/aboutUs"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -23,7 +26,6 @@ import { useAboutUs } from "@/hooks/useAboutUs"
 import { resolveMediaUrl } from "@/lib/media"
 import { aboutUsService } from "@/services/aboutUsService"
 import type {
-  AboutAction,
   AboutFaq,
   AboutItem,
   AboutSection,
@@ -31,31 +33,60 @@ import type {
   AboutUsInput,
 } from "@/types/aboutUs"
 
-const sectionNames: Record<string, string> = {
-  hero: "Our Story",
-  introduction: "Why Pre-Loved",
-  local_feature: "Local Finds, All Together",
-  values: "What Guides Us",
-  culture: "Why Work With Us",
-  faq: "A Few Quick Answers",
+const approvedSectionOrder = [
+  "hero",
+  "introduction",
+  "local_feature",
+  "values",
+  "culture",
+  "faq",
+]
+
+const sectionTemplates = [
+  { section_type: "hero", layout_type: "hero", label: "Hero" },
+  { section_type: "introduction", layout_type: "split", label: "Introduction" },
+  { section_type: "local_feature", layout_type: "feature", label: "Local feature" },
+  { section_type: "values", layout_type: "split", label: "Guiding principles" },
+  { section_type: "culture", layout_type: "gallery", label: "Image gallery" },
+  { section_type: "faq", layout_type: "faq", label: "FAQ" },
+] as const
+
+function orderSections(sections: AboutSection[]) {
+  return [...sections].sort((first, second) => {
+    const firstIndex = approvedSectionOrder.indexOf(first.section_type)
+    const secondIndex = approvedSectionOrder.indexOf(second.section_type)
+
+    return (
+      (firstIndex === -1 ? Number.MAX_SAFE_INTEGER : firstIndex) -
+        (secondIndex === -1 ? Number.MAX_SAFE_INTEGER : secondIndex) ||
+      first.sort_order - second.sort_order
+    )
+  })
 }
 
-const actionDefaults: Record<string, AboutAction[]> = {
-  hero: [
-    { label: "Explore the market", href: "/products" },
-    { label: "Meet local shops", href: "/shops" },
-  ],
-  local_feature: [{ label: "Meet local shops", href: "/shops" }],
+function cmsSectionName(section: AboutSection) {
+  return section.cms_title?.trim() || section.title?.trim() || "Untitled section"
+}
+
+function approvedImageCount(section: AboutSection) {
+  if (section.section_type === "culture") {
+    return section.gallery_images.length
+  }
+
+  return ["hero", "local_feature", "values"].includes(section.section_type)
+    ? section.media.length
+    : 0
 }
 
 function sectionForm(section: AboutSection): AboutSectionInput {
   return {
     section_type: section.section_type,
+    cms_title: section.cms_title ?? "",
     eyebrow: section.eyebrow ?? "",
     title: section.title ?? "",
     description: section.description ?? "",
     layout_type: section.layout_type ?? "",
-    actions: section.actions ?? actionDefaults[section.section_type] ?? [],
+    actions: section.actions ?? [],
     sort_order: section.sort_order,
     is_active: section.is_active,
   }
@@ -65,17 +96,92 @@ function list(values?: string[] | null) {
   return values?.length ? values : [""]
 }
 
+function uploadErrorMessage(error: unknown, fallback: string) {
+  if (!axios.isAxiosError(error)) return fallback
+
+  const response = error.response?.data as
+    | { message?: string; errors?: Record<string, string[]> }
+    | undefined
+  const firstValidationMessage = response?.errors
+    ? Object.values(response.errors).flat()[0]
+    : undefined
+
+  return firstValidationMessage || response?.message || fallback
+}
+
+function CreateAboutPage({
+  onCreate,
+}: {
+  onCreate: (title: string) => Promise<void>
+}) {
+  const [title, setTitle] = useState("")
+  const [isCreating, setIsCreating] = useState(false)
+  const [error, setError] = useState("")
+
+  return (
+    <section className="mx-auto max-w-xl border border-[#e3e9df] bg-white p-6">
+      <p className="text-[10px] font-bold tracking-[0.16em] text-brand-gray-3 uppercase">
+        Website content
+      </p>
+      <h2 className="mt-1 font-serif text-3xl text-brand">Create About Us</h2>
+      <p className="mt-2 text-sm leading-6 text-brand-light">
+        Create the page first. Then add only the public sections and content
+        your website needs.
+      </p>
+      <label className="mt-5 block space-y-2">
+        <span className="text-xs font-semibold text-brand">Main page title</span>
+        <Input
+          onChange={(event) => setTitle(event.target.value)}
+          placeholder="About Us"
+          value={title}
+        />
+      </label>
+      {error ? <p className="mt-3 text-sm text-red-700">{error}</p> : null}
+      <Button
+        className="mt-5"
+        isDisabled={isCreating || !title.trim()}
+        onPress={async () => {
+          setError("")
+          setIsCreating(true)
+          try {
+            await onCreate(title.trim())
+          } catch {
+            setError("Unable to create the About Us page. Please try again.")
+          } finally {
+            setIsCreating(false)
+          }
+        }}
+      >
+        <Plus size={16} /> {isCreating ? "Creating…" : "Create page"}
+      </Button>
+    </section>
+  )
+}
+
 export function AboutCms() {
-  const { about, error, isLoading, updateCachedAbout } = useAboutUs("admin")
+  const { about, error, isLoading, invalidatePublicAbout, updateCachedAbout } =
+    useAboutUs("admin")
   const [selectedId, setSelectedId] = useState<number | null>(null)
   const [drafts, setDrafts] = useState<Record<number, AboutSectionInput>>({})
   const [contactDraft, setContactDraft] = useState<AboutUsInput | null>(null)
   const [isSaving, setIsSaving] = useState(false)
+  const [isPublishing, setIsPublishing] = useState(false)
   const [isUploadingImage, setIsUploadingImage] = useState(false)
+  const [pendingSectionImage, setPendingSectionImage] = useState<File | null>(null)
   const [isUpdatingSection, setIsUpdatingSection] = useState(false)
+  const [isCreatingSection, setIsCreatingSection] = useState(false)
   const [notice, setNotice] = useState("")
-  const [newItem, setNewItem] = useState({ title: "", description: "" })
+  const [newItem, setNewItem] = useState({
+    title: "",
+    description: "",
+    icon: "",
+    link_url: "",
+  })
   const [newFaq, setNewFaq] = useState({ question: "", answer: "" })
+  const orderedSections = useMemo(
+    () => (about ? orderSections(about.sections) : []),
+    [about]
+  )
 
   useEffect(() => {
     if (!about) return
@@ -97,14 +203,14 @@ export function AboutCms() {
             address: list(about.address),
           }
       )
-      setSelectedId((current) => current ?? about.sections[0]?.id ?? null)
+      setSelectedId((current) => current ?? orderSections(about.sections)[0]?.id ?? null)
     })
     return () => window.cancelAnimationFrame(frame)
   }, [about])
 
   const selected = useMemo(
-    () => about?.sections.find((section) => section.id === selectedId) ?? null,
-    [about, selectedId]
+    () => orderedSections.find((section) => section.id === selectedId) ?? null,
+    [orderedSections, selectedId]
   )
   const draft = selected ? (drafts[selected.id] ?? sectionForm(selected)) : null
   const hasUnsavedSectionChanges = Boolean(
@@ -127,6 +233,22 @@ export function AboutCms() {
     }) !== JSON.stringify(contactDraft)
   )
   const hasUnsavedChanges = hasUnsavedSectionChanges || hasUnsavedContactChanges
+  const visualDraft = useMemo(() => {
+    if (!about) return null
+
+    return {
+      ...about,
+      title: contactDraft?.title ?? about.title,
+      description: contactDraft?.description ?? about.description,
+      phone: contactDraft?.phone ?? about.phone,
+      email: contactDraft?.email ?? about.email,
+      address: contactDraft?.address ?? about.address,
+      sections: about.sections.map((section) => ({
+        ...section,
+        ...(drafts[section.id] ?? {}),
+      })),
+    }
+  }, [about, contactDraft, drafts])
 
   const updateDraft = (patch: Partial<AboutSectionInput>) => {
     if (!selected || !draft) return
@@ -147,9 +269,39 @@ export function AboutCms() {
         : current
     )
   }
+  const createSection = async (template: (typeof sectionTemplates)[number]) => {
+    if (!about || orderedSections.some((section) => section.section_type === template.section_type)) return
+    setIsCreatingSection(true)
+    setNotice("")
+    try {
+      const section = await aboutUsService.createSection({
+        section_type: template.section_type,
+        cms_title: "",
+        eyebrow: "",
+        title: "",
+        description: "",
+        layout_type: template.layout_type,
+        actions: [],
+        sort_order: approvedSectionOrder.indexOf(template.section_type),
+        is_active: true,
+      })
+      updateCachedAbout((current) =>
+        current ? { ...current, sections: [...current.sections, section] } : current
+      )
+      setDrafts((current) => ({ ...current, [section.id]: sectionForm(section) }))
+      setSelectedId(section.id)
+      setNotice("Section added. Add its content and save your changes.")
+      void invalidatePublicAbout()
+    } catch {
+      setNotice("Unable to add this section.")
+    } finally {
+      setIsCreatingSection(false)
+    }
+  }
 
   const sectionFields = (section: AboutSection): Partial<AboutSection> => ({
     section_type: section.section_type,
+    cms_title: section.cms_title,
     eyebrow: section.eyebrow,
     title: section.title,
     description: section.description,
@@ -175,8 +327,8 @@ export function AboutCms() {
     })
   }
 
-  const saveChanges = async () => {
-    if (!about) return
+  const saveChanges = async (showNotice = true): Promise<boolean> => {
+    if (!about) return false
     setIsSaving(true)
     setNotice("")
     try {
@@ -202,11 +354,32 @@ export function AboutCms() {
         const updatedAbout = await aboutUsService.save(contactDraft)
         updateCachedAbout(() => updatedAbout)
       }
-      setNotice("Saved. The public About Us page now uses these changes.")
+      if (showNotice) {
+        setNotice("Draft saved. Publish when you are ready for the public website to use these changes.")
+      }
+      return true
     } catch {
       setNotice("Unable to save changes. Please try again.")
+      return false
     } finally {
       setIsSaving(false)
+    }
+  }
+  const publishChanges = async () => {
+    setIsPublishing(true)
+    setNotice("")
+    try {
+      if (hasUnsavedChanges && !(await saveChanges(false))) {
+        return
+      }
+      const publishedAbout = await aboutUsService.publish()
+      updateCachedAbout(() => publishedAbout)
+      await invalidatePublicAbout()
+      setNotice("Published. The public About Us page now uses these changes.")
+    } catch {
+      setNotice("Unable to publish changes. Please try again.")
+    } finally {
+      setIsPublishing(false)
     }
   }
   const cancel = () => {
@@ -224,53 +397,12 @@ export function AboutCms() {
         description: about.description ?? "",
       })
       updateCachedAbout(() => updatedAbout)
+      void invalidatePublicAbout()
       setNotice("Contact information saved.")
     } catch {
       setNotice("Unable to save contact information.")
     } finally {
       setIsSaving(false)
-    }
-  }
-  const moveSection = async (direction: -1 | 1) => {
-    if (!about || !selected) return
-    const index = about.sections.findIndex(
-      (section) => section.id === selected.id
-    )
-    const neighbour = about.sections[index + direction]
-    if (!neighbour) return
-    setIsUpdatingSection(true)
-    try {
-      await Promise.all([
-        aboutUsService.updateSection(selected.id, {
-          ...draft!,
-          sort_order: neighbour.sort_order,
-        }),
-        aboutUsService.updateSection(neighbour.id, {
-          ...sectionForm(neighbour),
-          sort_order: selected.sort_order,
-        }),
-      ])
-      updateCachedAbout((current) =>
-        current
-          ? {
-              ...current,
-              sections: current.sections
-                .map((section) =>
-                  section.id === selected.id
-                    ? { ...section, sort_order: neighbour.sort_order }
-                    : section.id === neighbour.id
-                      ? { ...section, sort_order: selected.sort_order }
-                      : section
-                )
-                .sort((first, second) => first.sort_order - second.sort_order),
-            }
-          : current
-      )
-      setNotice("Section order saved.")
-    } catch {
-      setNotice("Unable to move this section.")
-    } finally {
-      setIsUpdatingSection(false)
     }
   }
   const toggleVisibility = async () => {
@@ -291,6 +423,7 @@ export function AboutCms() {
           ? "Section hidden from the public page."
           : "Section is visible on the public page."
       )
+      void invalidatePublicAbout()
     } catch {
       setNotice("Unable to update section visibility.")
     } finally {
@@ -301,31 +434,122 @@ export function AboutCms() {
     if (!selected || !file) return
     setIsUploadingImage(true)
     try {
-      const replacement = await aboutUsService.uploadMedia(selected.id, file)
-      await Promise.all(
-        selected.media.map((media) =>
-          aboutUsService.removeMedia(selected.id, media.id)
+      const currentMedia = selected.media[0]
+      const currentGalleryImage = selected.gallery_images[0]
+      const currentImage = currentMedia ?? currentGalleryImage
+      const imageDetails = {
+        alt_text: currentImage?.alt_text || selected.title || about?.title || "",
+        caption: currentImage?.caption || "",
+        sort_order: currentImage?.sort_order ?? 0,
+        is_active: true,
+      }
+      if (currentMedia) {
+        const replacement = await aboutUsService.replaceMedia(
+          selected.id,
+          currentMedia.id,
+          file,
+          { ...imageDetails, media_type: currentMedia.media_type || "image" }
+        )
+        patchSection(selected.id, { media: [replacement] })
+      } else if (currentGalleryImage) {
+        const replacement = await aboutUsService.replaceGalleryImage(
+          selected.id,
+          currentGalleryImage.id,
+          file,
+          imageDetails
+        )
+        patchSection(selected.id, { gallery_images: [replacement] })
+      } else {
+        const replacement = await aboutUsService.uploadMedia(selected.id, file, {
+          ...imageDetails,
+          media_type: "image",
+        })
+        patchSection(selected.id, { media: [replacement] })
+      }
+      setPendingSectionImage(null)
+      setNotice(currentImage ? "Image replaced." : "Image added.")
+      void invalidatePublicAbout()
+    } catch (error) {
+      setNotice(
+        uploadErrorMessage(
+          error,
+          "Unable to replace this image. Your existing image was kept."
         )
       )
-      patchSection(selected.id, { media: [replacement] })
-      setNotice("Image replaced.")
-    } catch {
-      setNotice("Unable to upload this image. Your existing image was kept.")
     } finally {
       setIsUploadingImage(false)
     }
   }
-  const addGalleryImage = async (file: File | null) => {
+  const addGalleryImage = async (file: File | null, sortOrder?: number) => {
     if (!selected || !file) return
     setIsUploadingImage(true)
     try {
-      const image = await aboutUsService.uploadGalleryImage(selected.id, file)
+      const image = await aboutUsService.uploadGalleryImage(selected.id, file, {
+        alt_text: selected.title || about?.title || "",
+        sort_order: sortOrder ?? selected.gallery_images.length,
+        is_active: true,
+      })
       patchSection(selected.id, {
         gallery_images: [...selected.gallery_images, image],
       })
       setNotice("Gallery image added.")
+      void invalidatePublicAbout()
+    } catch (error) {
+      setNotice(uploadErrorMessage(error, "Unable to upload this image."))
+    } finally {
+      setIsUploadingImage(false)
+    }
+  }
+  const replaceGalleryImage = async (imageId: number, file: File) => {
+    if (!selected) return
+    const currentImage = selected.gallery_images.find((image) => image.id === imageId)
+    if (!currentImage) return
+
+    setIsUploadingImage(true)
+    try {
+      const replacement = await aboutUsService.replaceGalleryImage(selected.id, currentImage.id, file, {
+        alt_text: currentImage.alt_text ?? "",
+        caption: currentImage.caption ?? "",
+        sort_order: currentImage.sort_order,
+        is_active: true,
+      })
+      patchSection(selected.id, {
+        gallery_images: selected.gallery_images.map((image) =>
+          image.id === currentImage.id ? replacement : image
+        ),
+      })
+      setNotice("Gallery image replaced.")
+    } catch (error) {
+      setNotice(
+        uploadErrorMessage(
+          error,
+          "Unable to replace this gallery image. Your existing image was kept."
+        )
+      )
+    } finally {
+      setIsUploadingImage(false)
+    }
+  }
+  const removePrimaryImage = async () => {
+    if (!selected) return
+    const currentMedia = selected.media[0]
+    const currentGalleryImage = selected.gallery_images[0]
+    if (!currentMedia && !currentGalleryImage) return
+    setIsUploadingImage(true)
+    try {
+      if (currentMedia) {
+        await aboutUsService.removeMedia(selected.id, currentMedia.id)
+        patchSection(selected.id, { media: selected.media.slice(1) })
+      } else if (currentGalleryImage) {
+        await aboutUsService.removeGalleryImage(selected.id, currentGalleryImage.id)
+        patchSection(selected.id, {
+          gallery_images: selected.gallery_images.slice(1),
+        })
+      }
+      setPendingSectionImage(null)
+      setNotice("Section image removed.")
     } catch {
-      setNotice("Unable to upload this image.")
+      setNotice("Unable to remove this image.")
     } finally {
       setIsUploadingImage(false)
     }
@@ -337,6 +561,7 @@ export function AboutCms() {
         title: item.title,
         description: item.description ?? "",
         icon: item.icon ?? null,
+        link_url: item.link_url ?? null,
         sort_order: item.sort_order,
         is_active: item.is_active,
       })
@@ -346,6 +571,7 @@ export function AboutCms() {
         ),
       })
       setNotice("Content item saved.")
+      void invalidatePublicAbout()
     } catch {
       setNotice("Unable to save this item.")
     }
@@ -356,13 +582,15 @@ export function AboutCms() {
       const item = await aboutUsService.createItem(selected.id, {
         title: newItem.title,
         description: newItem.description,
-        icon: null,
+        icon: newItem.icon || null,
+        link_url: newItem.link_url || null,
         sort_order: selected.items.length,
         is_active: true,
       })
       patchSection(selected.id, { items: [...selected.items, item] })
-      setNewItem({ title: "", description: "" })
+      setNewItem({ title: "", description: "", icon: "", link_url: "" })
       setNotice("Content item added.")
+      void invalidatePublicAbout()
     } catch {
       setNotice("Unable to add this item.")
     }
@@ -392,6 +620,7 @@ export function AboutCms() {
           : current
       )
       setNotice("Answer saved.")
+      void invalidatePublicAbout()
     } catch {
       setNotice("Unable to save this answer.")
     }
@@ -410,8 +639,143 @@ export function AboutCms() {
       )
       setNewFaq({ question: "", answer: "" })
       setNotice("Question added.")
+      void invalidatePublicAbout()
     } catch {
       setNotice("Unable to add this question.")
+    }
+  }
+  const moveItem = async (itemId: number, direction: -1 | 1) => {
+    if (!selected) return
+    const items = [...selected.items].sort((a, b) => a.sort_order - b.sort_order)
+    const currentIndex = items.findIndex((item) => item.id === itemId)
+    const nextIndex = currentIndex + direction
+    if (currentIndex < 0 || nextIndex < 0 || nextIndex >= items.length) return
+
+    const current = items[currentIndex]
+    const target = items[nextIndex]
+    try {
+      const [updatedCurrent, updatedTarget] = await Promise.all([
+        aboutUsService.updateItem(selected.id, current.id, {
+          ...current,
+          sort_order: target.sort_order,
+        }),
+        aboutUsService.updateItem(selected.id, target.id, {
+          ...target,
+          sort_order: current.sort_order,
+        }),
+      ])
+      patchSection(selected.id, {
+        items: selected.items.map((item) =>
+          item.id === updatedCurrent.id
+            ? updatedCurrent
+            : item.id === updatedTarget.id
+              ? updatedTarget
+              : item
+        ),
+      })
+      void invalidatePublicAbout()
+    } catch {
+      setNotice("Unable to change item order.")
+    }
+  }
+  const moveGalleryImage = async (imageId: number, direction: -1 | 1) => {
+    if (!selected) return
+    const images = [...selected.gallery_images].sort(
+      (a, b) => a.sort_order - b.sort_order
+    )
+    const currentIndex = images.findIndex((image) => image.id === imageId)
+    const nextIndex = currentIndex + direction
+    if (currentIndex < 0 || nextIndex < 0 || nextIndex >= images.length) return
+
+    const current = images[currentIndex]
+    const target = images[nextIndex]
+    try {
+      const [updatedCurrent, updatedTarget] = await Promise.all([
+        aboutUsService.updateGalleryImage(selected.id, current.id, {
+          ...current,
+          sort_order: target.sort_order,
+        }),
+        aboutUsService.updateGalleryImage(selected.id, target.id, {
+          ...target,
+          sort_order: current.sort_order,
+        }),
+      ])
+      patchSection(selected.id, {
+        gallery_images: selected.gallery_images.map((image) =>
+          image.id === updatedCurrent.id
+            ? updatedCurrent
+            : image.id === updatedTarget.id
+              ? updatedTarget
+              : image
+        ),
+      })
+      void invalidatePublicAbout()
+    } catch {
+      setNotice("Unable to change gallery image order.")
+    }
+  }
+  const saveGalleryImage = async (
+    imageId: number,
+    altText: string,
+    caption: string
+  ) => {
+    if (!selected) return
+    const image = selected.gallery_images.find((entry) => entry.id === imageId)
+    if (!image) return
+    try {
+      const updated = await aboutUsService.updateGalleryImage(selected.id, imageId, {
+        ...image,
+        alt_text: altText,
+        caption,
+      })
+      patchSection(selected.id, {
+        gallery_images: selected.gallery_images.map((entry) =>
+          entry.id === updated.id ? updated : entry
+        ),
+      })
+      setNotice("Gallery image details saved.")
+      void invalidatePublicAbout()
+    } catch {
+      setNotice("Unable to save gallery image details.")
+    }
+  }
+  const moveFaq = async (faqId: number, direction: -1 | 1) => {
+    if (!about) return
+    const faqs = [...about.faqs].sort((a, b) => a.sort_order - b.sort_order)
+    const currentIndex = faqs.findIndex((faq) => faq.id === faqId)
+    const nextIndex = currentIndex + direction
+    if (currentIndex < 0 || nextIndex < 0 || nextIndex >= faqs.length) return
+
+    const current = faqs[currentIndex]
+    const target = faqs[nextIndex]
+    try {
+      const [updatedCurrent, updatedTarget] = await Promise.all([
+        aboutUsService.updateFaq(current.id, {
+          ...current,
+          sort_order: target.sort_order,
+        }),
+        aboutUsService.updateFaq(target.id, {
+          ...target,
+          sort_order: current.sort_order,
+        }),
+      ])
+      updateCachedAbout((cached) =>
+        cached
+          ? {
+              ...cached,
+              faqs: cached.faqs.map((faq) =>
+                faq.id === updatedCurrent.id
+                  ? updatedCurrent
+                  : faq.id === updatedTarget.id
+                    ? updatedTarget
+                    : faq
+              ),
+            }
+          : cached
+      )
+      void invalidatePublicAbout()
+    } catch {
+      setNotice("Unable to change question order.")
     }
   }
 
@@ -423,10 +787,19 @@ export function AboutCms() {
     )
   if (!about)
     return (
-      <div className="py-16 text-center text-brand-gray-3">
-        About Us content is not available yet. Run the About Us seeder, then
-        refresh this page.
-      </div>
+      <CreateAboutPage
+        onCreate={async (title) => {
+          const created = await aboutUsService.save({
+            title,
+            description: "",
+            phone: [],
+            email: [],
+            address: [],
+          })
+          updateCachedAbout(() => created)
+          void invalidatePublicAbout()
+        }}
+      />
     )
 
   return (
@@ -441,30 +814,40 @@ export function AboutCms() {
               About Us
             </h2>
             <p className="mt-1 text-xs text-brand-light">
-              {hasUnsavedChanges ? "Unsaved changes" : "All changes saved"}
+              {hasUnsavedChanges
+                ? "Unsaved changes"
+                : about?.is_published
+                  ? "Published"
+                  : "Draft only — not visible on the public website"}
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
             <a
               className="inline-flex h-9 items-center gap-1 rounded-full border border-[#dce4da] bg-white px-3 text-sm font-medium text-brand"
-              href="/about"
+              href="/about?preview=1"
               rel="noreferrer"
               target="_blank"
             >
               <Eye size={16} /> Preview
             </a>
             <Button
-              isDisabled={isSaving || !hasUnsavedChanges}
+              isDisabled={isSaving || isPublishing || !hasUnsavedChanges}
               onPress={() => void cancel()}
               variant="outline"
             >
               <X size={16} /> Cancel
             </Button>
             <Button
-              isDisabled={isSaving || !hasUnsavedChanges}
+              isDisabled={isSaving || isPublishing || !hasUnsavedChanges}
               onPress={() => void saveChanges()}
             >
-              <FloppyDisk size={16} /> {isSaving ? "Saving…" : "Save changes"}
+              <FloppyDisk size={16} /> {isSaving ? "Saving…" : "Save draft"}
+            </Button>
+            <Button
+              isDisabled={isSaving || isPublishing}
+              onPress={() => void publishChanges()}
+            >
+              <Check size={16} /> {isPublishing ? "Publishing…" : "Publish"}
             </Button>
           </div>
         </div>
@@ -476,13 +859,55 @@ export function AboutCms() {
           <AlertDescription>{error || notice}</AlertDescription>
         </Alert>
       ) : null}
+      <section className="mt-6 overflow-hidden border border-[#d8e5d3] bg-white">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#e3e9df] bg-[#f5f8f1] px-5 py-3">
+          <div>
+            <p className="text-[10px] font-bold tracking-[0.16em] text-brand-gray-3 uppercase">
+              Visual page canvas
+            </p>
+            <p className="mt-1 text-xs text-brand-light">
+              This is the live draft in the exact approved public About Us layout.
+            </p>
+          </div>
+          {selected ? (
+            <Button
+              onPress={() =>
+                document
+                  .getElementById("about-section-controls")
+                  ?.scrollIntoView({ behavior: "smooth", block: "start" })
+              }
+              size="sm"
+              variant="outline"
+            >
+              Edit {cmsSectionName(selected)}
+            </Button>
+          ) : null}
+        </div>
+        {visualDraft ? (
+          <AboutUsContent
+            about={visualDraft}
+            onEditSection={(sectionType) => {
+              const section = orderedSections.find(
+                (entry) => entry.section_type === sectionType
+              )
+              if (!section) return
+              setSelectedId(section.id)
+              window.setTimeout(() => {
+                document
+                  .getElementById("about-section-controls")
+                  ?.scrollIntoView({ behavior: "smooth", block: "start" })
+              }, 0)
+            }}
+          />
+        ) : null}
+      </section>
       <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(280px,.72fr)_minmax(0,1.28fr)]">
         <aside className="border border-[#e3e9df] bg-white p-4">
           <p className="px-2 text-[10px] font-bold tracking-[0.16em] text-brand-gray-3 uppercase">
             Page sections
           </p>
           <div className="mt-3 space-y-2">
-            {about.sections.map((section, index) => (
+            {orderedSections.map((section, index) => (
               <button
                 className={`w-full border p-4 text-left transition-colors ${selectedId === section.id ? "border-brand-3 bg-[#f3f8ef]" : "border-[#e3e9df] bg-white hover:bg-[#f7faf4]"}`}
                 key={section.id}
@@ -491,8 +916,7 @@ export function AboutCms() {
               >
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-xs font-bold tracking-[0.12em] text-brand-gray-3 uppercase">
-                    {index + 1}.{" "}
-                    {sectionNames[section.section_type] ?? section.section_type}
+                    {index + 1}. {cmsSectionName(section)}
                   </span>
                   {section.is_active ? (
                     <Eye size={16} className="text-brand-3" />
@@ -504,67 +928,55 @@ export function AboutCms() {
                   {section.title || "Untitled section"}
                 </p>
                 <p className="mt-1 text-xs text-brand-light">
-                  {section.items.length} content items ·{" "}
-                  {section.media.length + section.gallery_images.length} images
+                  {section.items.length} content items
+                  {approvedImageCount(section) > 0
+                    ? ` · ${approvedImageCount(section)} images`
+                    : ""}
                 </p>
               </button>
             ))}
           </div>
-          <Button
-            className="mt-4 w-full"
-            isDisabled={isSaving}
-            onPress={() =>
-              void aboutUsService
-                .initializeLayout()
-                .then((updatedAbout) => {
-                  updateCachedAbout(() => updatedAbout)
-                  setNotice("Standard page sections are ready.")
-                })
-                .catch(() => setNotice("Unable to prepare standard sections."))
-            }
-            variant="outline"
-          >
-            <Plus size={16} /> Add missing standard sections
-          </Button>
+          <div className="mt-5 border-t border-[#e3e9df] pt-4">
+            <p className="text-xs font-semibold text-brand">Restore a missing page section</p>
+            <p className="mt-1 text-xs leading-5 text-brand-light">
+              These fixed sections keep the approved public About Us layout intact.
+            </p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {sectionTemplates
+                .filter(
+                  (template) =>
+                    !orderedSections.some(
+                      (section) => section.section_type === template.section_type
+                    )
+                )
+                .map((template) => (
+                  <Button
+                    isDisabled={isCreatingSection}
+                    key={template.section_type}
+                    onPress={() => void createSection(template)}
+                    size="sm"
+                    variant="outline"
+                  >
+                    <Plus size={14} /> {template.label}
+                  </Button>
+                ))}
+            </div>
+          </div>
         </aside>
         {selected && draft ? (
-          <section className="border border-[#e3e9df] bg-white">
+          <section className="border border-[#e3e9df] bg-white" id="about-section-controls">
             <div className="flex flex-wrap items-start justify-between gap-3 border-b border-[#e3e9df] p-5">
               <div>
                 <p className="text-[10px] font-bold tracking-[0.16em] text-brand-gray-3 uppercase">
                   Editing section
                 </p>
                 <h3 className="mt-1 font-serif text-3xl text-brand">
-                  {sectionNames[selected.section_type] ?? selected.section_type}
+                  {draft.cms_title?.trim() || cmsSectionName(selected)}
                 </h3>
               </div>
               <div className="flex flex-wrap gap-2">
                 <Button
-                  isDisabled={
-                    !about.sections.findIndex(
-                      (section) => section.id === selected.id
-                    )
-                  }
-                  onPress={() => void moveSection(-1)}
-                  size="icon-sm"
-                  variant="outline"
-                >
-                  <ArrowUp size={15} />
-                </Button>
-                <Button
-                  isDisabled={
-                    about.sections.findIndex(
-                      (section) => section.id === selected.id
-                    ) ===
-                    about.sections.length - 1
-                  }
-                  onPress={() => void moveSection(1)}
-                  size="icon-sm"
-                  variant="outline"
-                >
-                  <ArrowDown size={15} />
-                </Button>
-                <Button
+                  isDisabled={isUpdatingSection}
                   onPress={() => void toggleVisibility()}
                   size="sm"
                   variant="outline"
@@ -576,22 +988,37 @@ export function AboutCms() {
             </div>
             <div className="space-y-6 p-5">
               <EditorField
-                label="Section label"
+                label="Section name (shown in the CMS)"
+                value={draft.cms_title ?? ""}
+                onChange={(cms_title) => updateDraft({ cms_title })}
+              />
+              <EditorField
+                label="Public section label (shown above the heading)"
                 value={draft.eyebrow ?? ""}
                 onChange={(eyebrow) => updateDraft({ eyebrow })}
               />
               <EditorField
-                label="Heading"
+                label={selected.section_type === "hero" ? "Heading accent" : "Heading"}
                 value={draft.title ?? ""}
                 onChange={(title) => updateDraft({ title })}
               />
+              {selected.section_type === "hero" && contactDraft ? (
+                <EditorField
+                  label="Main heading"
+                  value={contactDraft.title}
+                  onChange={(title) =>
+                    setContactDraft({ ...contactDraft, title })
+                  }
+                />
+              ) : null}
               <EditorArea
                 label="Description"
                 value={draft.description ?? ""}
                 onChange={(description) => updateDraft({ description })}
               />
               {selected.section_type === "hero" ||
-              selected.section_type === "local_feature" ? (
+              selected.section_type === "local_feature" ||
+              selected.section_type === "faq" ? (
                 <div className="border-t border-[#e3e9df] pt-5">
                   <p className="text-xs font-semibold text-brand">Buttons</p>
                   <div className="mt-3 space-y-3">
@@ -625,13 +1052,43 @@ export function AboutCms() {
                             })
                           }
                         />
+                        <Button
+                          aria-label="Remove button"
+                          className="sm:col-span-2 sm:justify-self-start"
+                          onPress={() =>
+                            updateDraft({
+                              actions: (draft.actions ?? []).filter(
+                                (_, actionIndex) => actionIndex !== index
+                              ),
+                            })
+                          }
+                          size="sm"
+                          variant="destructive"
+                        >
+                          <Trash size={14} /> Remove button
+                        </Button>
                       </div>
                     ))}
+                    <Button
+                      onPress={() =>
+                        updateDraft({
+                          actions: [
+                            ...(draft.actions ?? []),
+                            { label: "", href: "" },
+                          ],
+                        })
+                      }
+                      size="sm"
+                      variant="outline"
+                    >
+                      <Plus size={14} /> Add button
+                    </Button>
                   </div>
                 </div>
               ) : null}
               {selected.section_type === "culture" ? (
                 <GalleryEditor
+                  canAdd={selected.gallery_images.length < 6}
                   isUploading={isUploadingImage}
                   section={selected}
                   onAdd={addGalleryImage}
@@ -642,27 +1099,71 @@ export function AboutCms() {
                         (image) => image.id !== id
                       ),
                     })
+                    void invalidatePublicAbout()
                     setNotice("Gallery image removed.")
                   }}
+                  onMove={moveGalleryImage}
+                  onReplace={replaceGalleryImage}
+                  onSave={saveGalleryImage}
                 />
-              ) : (
+              ) : ["hero", "local_feature", "values"].includes(
+                  selected.section_type
+                ) ? (
                 <div className="border-t border-[#e3e9df] pt-5">
                   <p className="mb-3 text-xs font-semibold text-brand">
                     Section image
                   </p>
                   <ImageUploader
-                    existingImage={resolveMediaUrl(selected.media[0]?.url)}
+                    existingImage={resolveMediaUrl(
+                      (selected.media[0] ?? selected.gallery_images[0])?.url
+                    )}
                     disabled={isUploadingImage}
-                    label="Replace section image"
-                    onChange={(file) => void replacePrimaryImage(file)}
+                    label={
+                      selected.media[0] || selected.gallery_images[0]
+                        ? "Section image"
+                        : "Add section image"
+                    }
+                    onChange={setPendingSectionImage}
                     previewAlt={
-                      selected.media[0]?.alt_text ??
+                      (selected.media[0] ?? selected.gallery_images[0])
+                        ?.alt_text ??
                       selected.title ??
                       "About section"
                     }
+                    value={pendingSectionImage}
                   />
+                  {pendingSectionImage ? (
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      <Button
+                        isDisabled={isUploadingImage}
+                        onPress={() => void replacePrimaryImage(pendingSectionImage)}
+                        size="sm"
+                      >
+                        <Check size={15} /> Confirm replacement
+                      </Button>
+                      <Button
+                        isDisabled={isUploadingImage}
+                        onPress={() => setPendingSectionImage(null)}
+                        size="sm"
+                        variant="outline"
+                      >
+                        <X size={15} /> Keep current image
+                      </Button>
+                    </div>
+                  ) : null}
+                  {selected.media[0] || selected.gallery_images[0] ? (
+                    <Button
+                      className="mt-3"
+                      isDisabled={isUploadingImage || Boolean(pendingSectionImage)}
+                      onPress={() => void removePrimaryImage()}
+                      size="sm"
+                      variant="destructive"
+                    >
+                      <Trash size={15} /> Remove saved image
+                    </Button>
+                  ) : null}
                 </div>
-              )}
+              ) : null}
               {selected.section_type !== "hero" &&
               selected.section_type !== "culture" &&
               selected.section_type !== "faq" ? (
@@ -675,10 +1176,16 @@ export function AboutCms() {
                     patchSection(selected.id, {
                       items: selected.items.filter((item) => item.id !== id),
                     })
+                    void invalidatePublicAbout()
                     setNotice("Content item removed.")
                   }}
                   onSave={saveItem}
+                  onMove={moveItem}
                   value={newItem}
+                  canAdd={
+                    selected.section_type !== "introduction" ||
+                    selected.items.length < 6
+                  }
                 />
               ) : null}
               {selected.section_type === "faq" ? (
@@ -695,9 +1202,11 @@ export function AboutCms() {
                           }
                         : current
                     )
+                    void invalidatePublicAbout()
                     setNotice("Question removed.")
                   }}
                   onSave={saveFaq}
+                  onMove={moveFaq}
                   value={newFaq}
                   onChange={setNewFaq}
                 />
@@ -746,10 +1255,12 @@ function EditorArea({
   return (
     <label className="block space-y-2">
       <span className="text-xs font-semibold text-brand">{label}</span>
-      <Textarea
-        className="min-h-32"
+      <RichTextEditor
+        height={260}
+        minHeight={180}
+        onChange={(nextValue) => onChange(nextValue ?? "")}
+        placeholder="Write this section's description…"
         value={value}
-        onChange={(event) => onChange(event.target.value)}
       />
     </label>
   )
@@ -762,16 +1273,20 @@ function ItemsEditor({
   onAdd,
   onSave,
   onRemove,
+  onMove,
+  canAdd,
 }: {
   items: AboutItem[]
-  value: { title: string; description: string }
-  onChange: (value: { title: string; description: string }) => void
+  value: { title: string; description: string; icon: string; link_url: string }
+  onChange: (value: { title: string; description: string; icon: string; link_url: string }) => void
   onAdd: () => void
   onSave: (item: AboutItem) => Promise<void>
   onRemove: (id: number) => Promise<void>
+  onMove: (id: number, direction: -1 | 1) => Promise<void>
+  canAdd: boolean
 }) {
   const [editing, setEditing] = useState<
-    Record<number, { title: string; description: string }>
+    Record<number, { title: string; description: string; icon: string; link_url: string }>
   >({})
   return (
     <section className="border-t border-[#e3e9df] pt-5">
@@ -781,6 +1296,8 @@ function ItemsEditor({
           const current = editing[item.id] ?? {
             title: item.title,
             description: item.description ?? "",
+            icon: item.icon ?? "",
+            link_url: item.link_url ?? "",
           }
           return (
             <div className="border border-[#e3e9df] p-4" key={item.id}>
@@ -794,7 +1311,8 @@ function ItemsEditor({
                 }
               />
               <Textarea
-                className="mt-2 min-h-20"
+                className="mt-2 min-h-24"
+                placeholder="Item description"
                 value={current.description}
                 onChange={(event) =>
                   setEditing({
@@ -803,7 +1321,45 @@ function ItemsEditor({
                   })
                 }
               />
+              <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                <Input
+                  placeholder="Optional icon name"
+                  value={current.icon}
+                  onChange={(event) =>
+                    setEditing({
+                      ...editing,
+                      [item.id]: { ...current, icon: event.target.value },
+                    })
+                  }
+                />
+                <Input
+                  placeholder="Optional link URL"
+                  value={current.link_url}
+                  onChange={(event) =>
+                    setEditing({
+                      ...editing,
+                      [item.id]: { ...current, link_url: event.target.value },
+                    })
+                  }
+                />
+              </div>
               <div className="mt-3 flex gap-2">
+                <Button
+                  aria-label="Move item up"
+                  onPress={() => void onMove(item.id, -1)}
+                  size="icon-sm"
+                  variant="outline"
+                >
+                  <CaretUp size={15} />
+                </Button>
+                <Button
+                  aria-label="Move item down"
+                  onPress={() => void onMove(item.id, 1)}
+                  size="icon-sm"
+                  variant="outline"
+                >
+                  <CaretDown size={15} />
+                </Button>
                 <Button
                   onPress={() => void onSave({ ...item, ...current })}
                   size="sm"
@@ -831,14 +1387,26 @@ function ItemsEditor({
           }
         />
         <Textarea
-          className="mt-2 min-h-20"
+          className="mt-2 min-h-24"
           placeholder="New item description"
           value={value.description}
           onChange={(event) =>
             onChange({ ...value, description: event.target.value })
           }
         />
-        <Button className="mt-3" onPress={onAdd} size="sm" variant="outline">
+        <div className="mt-2 grid gap-2 sm:grid-cols-2">
+          <Input
+            placeholder="Optional icon name"
+            value={value.icon}
+            onChange={(event) => onChange({ ...value, icon: event.target.value })}
+          />
+          <Input
+            placeholder="Optional link URL"
+            value={value.link_url}
+            onChange={(event) => onChange({ ...value, link_url: event.target.value })}
+          />
+        </div>
+        <Button className="mt-3" isDisabled={!canAdd} onPress={onAdd} size="sm" variant="outline">
           <Plus size={15} /> Add item
         </Button>
       </div>
@@ -851,26 +1419,54 @@ function GalleryEditor({
   onAdd,
   onRemove,
   isUploading,
+  onMove,
+  onReplace,
+  onSave,
+  canAdd,
 }: {
   section: AboutSection
-  onAdd: (file: File | null) => Promise<void>
+  onAdd: (file: File | null, sortOrder?: number) => Promise<void>
   onRemove: (id: number) => Promise<void>
   isUploading: boolean
+  onMove: (id: number, direction: -1 | 1) => Promise<void>
+  onReplace: (id: number, file: File) => Promise<void>
+  onSave: (id: number, altText: string, caption: string) => Promise<void>
+  canAdd: boolean
 }) {
+  const [details, setDetails] = useState<
+    Record<number, { altText: string; caption: string }>
+  >({})
+  const [pendingImage, setPendingImage] = useState<{
+    file: File
+    sortOrder: number
+  } | null>(null)
+  const [pendingReplacement, setPendingReplacement] = useState<{
+    id: number
+    file: File
+    preview: string
+  } | null>(null)
+  useEffect(
+    () => () => {
+      if (pendingReplacement) URL.revokeObjectURL(pendingReplacement.preview)
+    },
+    [pendingReplacement]
+  )
   return (
     <section className="border-t border-[#e3e9df] pt-5">
       <p className="mb-3 text-xs font-semibold text-brand">Image gallery</p>
-      <ImageUploader
-        disabled={isUploading}
-        label="Add gallery image"
-        onChange={(file) => void onAdd(file)}
-        previewAlt="New gallery image"
-      />
-      <div className="mt-4 grid grid-cols-2 gap-3">
-        {section.gallery_images.map((image) => (
-          <div className="relative" key={image.id}>
+      <p className="mb-3 text-xs text-brand-light">
+        {section.gallery_images.length} of 6 photos uploaded
+      </p>
+      <div className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-3">
+        {section.gallery_images.map((image) => {
+          const current = details[image.id] ?? {
+            altText: image.alt_text ?? "",
+            caption: image.caption ?? "",
+          }
+          return (
+          <div className="relative border border-[#e3e9df] p-2" key={image.id}>
             <Image
-              alt={image.alt_text ?? "Gallery image"}
+              alt={image.alt_text ?? section.title ?? "Gallery image"}
               className="aspect-[4/3] w-full object-cover"
               height={480}
               src={resolveMediaUrl(image.url)}
@@ -887,8 +1483,139 @@ function GalleryEditor({
             >
               <Trash size={14} />
             </Button>
+            <div className="mt-2 grid grid-cols-[auto_auto_minmax(0,1fr)] items-center gap-1.5">
+              <Button aria-label="Move gallery image up" isDisabled={isUploading} onPress={() => void onMove(image.id, -1)} size="icon-xs" variant="outline">
+                <CaretUp size={15} />
+              </Button>
+              <Button aria-label="Move gallery image down" isDisabled={isUploading} onPress={() => void onMove(image.id, 1)} size="icon-xs" variant="outline">
+                <CaretDown size={15} />
+              </Button>
+              <Button
+                className="min-w-0 w-full px-2 text-xs"
+                isDisabled={isUploading}
+                onPress={() =>
+                  document.getElementById(`gallery-replace-${image.id}`)?.click()
+                }
+                size="sm"
+                variant="outline"
+              >
+                Replace image
+              </Button>
+              <input
+                accept="image/png,image/jpeg,image/webp"
+                className="sr-only"
+                id={`gallery-replace-${image.id}`}
+                onChange={(event) => {
+                  const file = event.target.files?.[0]
+                  if (file)
+                    setPendingReplacement({
+                      id: image.id,
+                      file,
+                      preview: URL.createObjectURL(file),
+                    })
+                  event.target.value = ""
+                }}
+                type="file"
+              />
+            </div>
+            {pendingReplacement?.id === image.id ? (
+              <div className="mt-2 rounded border border-[#d8e5d3] bg-[#f5f8f1] p-2">
+                <Image
+                  alt="New gallery image preview"
+                  className="aspect-[4/3] w-full object-cover"
+                  height={480}
+                  src={pendingReplacement.preview}
+                  unoptimized
+                  width={640}
+                />
+                <div className="mt-2 flex flex-col gap-2">
+                  <Button
+                    className="w-full min-w-0 px-2 text-xs"
+                    isDisabled={isUploading}
+                    onPress={async () => {
+                      await onReplace(image.id, pendingReplacement.file)
+                      setPendingReplacement(null)
+                    }}
+                    size="sm"
+                  >
+                    <Check size={14} /> Confirm
+                  </Button>
+                  <Button
+                    className="w-full min-w-0 px-2 text-xs"
+                    isDisabled={isUploading}
+                    onPress={() => setPendingReplacement(null)}
+                    size="sm"
+                    variant="outline"
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+            ) : null}
+            <Input
+              className="mt-2"
+              placeholder="Image description for accessibility"
+              value={current.altText}
+              onChange={(event) =>
+                setDetails({ ...details, [image.id]: { ...current, altText: event.target.value } })
+              }
+            />
+            <Input
+              className="mt-2"
+              placeholder="Optional image caption"
+              value={current.caption}
+              onChange={(event) =>
+                setDetails({ ...details, [image.id]: { ...current, caption: event.target.value } })
+              }
+            />
+            <Button className="mt-2 w-full px-2 text-xs" onPress={() => void onSave(image.id, current.altText, current.caption)} size="sm" variant="outline">
+              <Check size={14} /> Save image details
+            </Button>
           </div>
-        ))}
+          )
+        })}
+        {Array.from(
+          { length: Math.max(0, 6 - section.gallery_images.length) },
+          (_, index) => {
+            const sortOrder = section.gallery_images.length + index
+            const isPending = pendingImage?.sortOrder === sortOrder
+            return (
+              <div className="border border-dashed border-[#cfdccb] p-2" key={`empty-${sortOrder}`}>
+                <ImageUploader
+                  disabled={isUploading || !canAdd}
+                  label={`Add photo ${sortOrder + 1} of 6`}
+                  onChange={(file) =>
+                    setPendingImage(file ? { file, sortOrder } : null)
+                  }
+                  previewAlt={`Gallery photo ${sortOrder + 1} preview`}
+                  value={isPending ? pendingImage.file : null}
+                />
+                {isPending ? (
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    <Button
+                      isDisabled={isUploading}
+                      onPress={async () => {
+                        await onAdd(pendingImage.file, sortOrder)
+                        setPendingImage(null)
+                      }}
+                      size="sm"
+                    >
+                      <Check size={14} /> Confirm upload
+                    </Button>
+                    <Button
+                      isDisabled={isUploading}
+                      onPress={() => setPendingImage(null)}
+                      size="sm"
+                      variant="outline"
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                ) : null}
+              </div>
+            )
+          }
+        )}
       </div>
     </section>
   )
@@ -901,6 +1628,7 @@ function FaqEditor({
   onAdd,
   onSave,
   onRemove,
+  onMove,
 }: {
   faqs: AboutFaq[]
   value: { question: string; answer: string }
@@ -914,6 +1642,7 @@ function FaqEditor({
     isActive: boolean
   ) => Promise<void>
   onRemove: (id: number) => Promise<void>
+  onMove: (id: number, direction: -1 | 1) => Promise<void>
 }) {
   const [editing, setEditing] = useState<
     Record<number, { question: string; answer: string }>
@@ -939,7 +1668,8 @@ function FaqEditor({
                 }
               />
               <Textarea
-                className="mt-2 min-h-20"
+                className="mt-2 min-h-24"
+                placeholder="Answer"
                 value={current.answer}
                 onChange={(event) =>
                   setEditing({
@@ -949,6 +1679,12 @@ function FaqEditor({
                 }
               />
               <div className="mt-3 flex gap-2">
+                <Button aria-label="Move question up" onPress={() => void onMove(faq.id, -1)} size="icon-sm" variant="outline">
+                  <CaretUp size={15} />
+                </Button>
+                <Button aria-label="Move question down" onPress={() => void onMove(faq.id, 1)} size="icon-sm" variant="outline">
+                  <CaretDown size={15} />
+                </Button>
                 <Button
                   onPress={() =>
                     void onSave(
@@ -984,7 +1720,7 @@ function FaqEditor({
           }
         />
         <Textarea
-          className="mt-2 min-h-20"
+          className="mt-2 min-h-24"
           placeholder="Answer"
           value={value.answer}
           onChange={(event) =>

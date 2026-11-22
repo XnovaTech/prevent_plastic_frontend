@@ -175,6 +175,17 @@ export function PublicBlogDetailContent({ slug }: { slug: string }) {
                   <p className="mt-1 text-sm text-brand-light">
                     {comment.body}
                   </p>
+                  {comment.replies.map((reply) => (
+                    <div
+                      className="mt-3 border-l-2 border-brand-2/30 pl-3"
+                      key={reply.id}
+                    >
+                      <p className="text-xs font-semibold text-brand">
+                        {reply.author.name} · {reply.author.role} · {new Date(reply.created_at).toLocaleDateString()}
+                      </p>
+                      <p className="mt-1 text-sm text-brand-light">{reply.body}</p>
+                    </div>
+                  ))}
                 </div>
               ))}
               {loadedComments && comments.length === 0 && (

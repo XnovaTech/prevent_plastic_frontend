@@ -14,20 +14,27 @@ export function useAboutUs(scope: "public" | "admin") {
       scope === "admin"
         ? aboutUsService.adminShow()
         : aboutUsService.publicShow(),
+    ...(scope === "public"
+      ? { staleTime: 0, refetchOnMount: "always" as const }
+      : {}),
   })
 
   const updateCachedAbout = useCallback(
     (updater: (current: AboutUs | null) => AboutUs | null) => {
-      queryClient.setQueryData<AboutUs | null>(queryKey, (current) =>
+      queryClient.setQueryData<AboutUs | null>(["about-us", scope], (current) =>
         updater(current ?? null)
       )
     },
-    [queryClient, queryKey]
+    [queryClient, scope]
   )
 
   const refresh = useCallback(async () => {
     await query.refetch()
   }, [query])
+
+  const invalidatePublicAbout = useCallback(() => {
+    return queryClient.invalidateQueries({ queryKey: ["about-us", "public"] })
+  }, [queryClient])
 
   return {
     about: query.data ?? null,
@@ -35,5 +42,6 @@ export function useAboutUs(scope: "public" | "admin") {
     isLoading: query.isLoading,
     refresh,
     updateCachedAbout,
+    invalidatePublicAbout,
   }
 }

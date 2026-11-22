@@ -9,5 +9,7 @@ export function resolveMediaUrl(source?: string | null): string {
     return `${BACKEND_BASE_URL}${source}`
   }
 
-  return source
+  if (source.startsWith("/")) return source
+
+  return `${BACKEND_BASE_URL}/storage/${source.replace(/^\/+/, "")}`
 }

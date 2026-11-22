@@ -2,35 +2,42 @@
 
 import Link from "next/link"
 import { useState } from "react"
-import {
-  ArrowRight,
-  CheckCircle,
-  ShoppingBagOpen,
-} from "@phosphor-icons/react"
+import { ArrowRight, CheckCircle, ShoppingBagOpen } from "@phosphor-icons/react"
 
 import { Button } from "@/components/ui/button"
 import { SeedlingIcon } from "@/components/ui/seedlingIcon"
-import type { HomeProduct } from "@/mock/homePageMock"
-import { useCartStore } from "@/stores/cartStore"
+import { useCart } from "@/hooks/useCart"
+import type { Product } from "@/services/productService"
 import { useWishlistStore } from "@/stores/wishlistStore"
 
 type ProductActionsProps = {
-  product: HomeProduct
+  product: Product
 }
 
 export function ProductActions({ product }: ProductActionsProps) {
   const [status, setStatus] = useState("")
-  const addItem = useCartStore((state) => state.addItem)
-  const inBag = useCartStore((state) =>
-    state.items.some((item) => item.id === product.id)
+  const { cart, isUpdating, setItem } = useCart()
+  const selectedVariant = product.variants?.find(
+    (variant) => variant.is_active !== false
   )
+  const inBag =
+    cart?.items.some((item) => item.product_id === product.id) ?? false
   const addWishlistItem = useWishlistStore((state) => state.addItem)
   const saved = useWishlistStore((state) =>
-    state.items.some((item) => item.id === product.id)
+    state.items.some((item) => item.id === String(product.id))
   )
 
-  function handleAddToBag() {
-    addItem({ ...product, quantity: 1 })
+  async function handleAddToBag() {
+    if (!selectedVariant) {
+      setStatus("This item is not currently available.")
+      return
+    }
+
+    await setItem({
+      product_id: product.id,
+      variant_id: selectedVariant.id,
+      quantity: 1,
+    })
     setStatus(`“${product.name}” is now in your bag.`)
   }
 
@@ -39,7 +46,18 @@ export function ProductActions({ product }: ProductActionsProps) {
       return
     }
 
-    addWishlistItem(product)
+    addWishlistItem({
+      id: String(product.id),
+      name: product.name,
+      category: product.category?.name ?? "Everyday things",
+      price: Number(selectedVariant?.price ?? 0),
+      merchant: product.vendor?.display_name ?? "Local seller",
+      condition: "Good",
+      image:
+        product.images?.find((image) => image.is_primary)?.url ??
+        product.images?.[0]?.url ??
+        "/products/ceramicPlates.jpg",
+    })
     setStatus(`“${product.name}” was saved to your wishlist.`)
   }
 
@@ -48,7 +66,8 @@ export function ProductActions({ product }: ProductActionsProps) {
       <div className="flex flex-col gap-2.5 sm:flex-row">
         <Button
           className="h-11 flex-1 rounded-full bg-brand-2 px-5 text-[11px] font-bold text-white hover:bg-[#1f6157]"
-          onPress={handleAddToBag}
+          isDisabled={isUpdating || !selectedVariant}
+          onPress={() => void handleAddToBag()}
           type="button"
         >
           <ShoppingBagOpen aria-hidden="true" size={16} />

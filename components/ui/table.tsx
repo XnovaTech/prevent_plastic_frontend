@@ -23,7 +23,7 @@ function Table({ className, ...props }: TableProps) {
   return (
     <div
       data-slot="table-container"
-      className="relative w-full overflow-x-auto"
+      className="order-table-scroll relative w-full overflow-x-auto"
     >
       <TablePrimitive
         data-slot="table"

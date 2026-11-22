@@ -16,17 +16,21 @@ export function AboutValuesSection({ content }: AboutValuesSectionProps) {
     >
       <div className="mx-auto grid max-w-[1440px] gap-8 lg:grid-cols-[1fr_0.9fr] lg:items-center lg:gap-16">
         <div className="relative min-h-[320px] overflow-hidden rounded-[24px] bg-[#e8eee5] sm:min-h-[460px] sm:rounded-[30px] lg:min-h-[560px]">
-          <Image
-            alt={content.imageAlt}
-            className="object-cover"
-            fill
-            sizes="(max-width: 1024px) 100vw, 52vw"
-            src={content.image}
-            unoptimized
-          />
-          <span className="absolute bottom-4 left-4 rounded-full border border-white/40 bg-white/90 px-4 py-2 text-[9px] font-bold tracking-[0.14em] text-brand-2 uppercase shadow-sm backdrop-blur-md sm:bottom-6 sm:left-6">
-            PRE-LOVED, READY AGAIN
-          </span>
+          {content.image ? (
+            <Image
+              alt={content.imageAlt}
+              className="object-cover"
+              fill
+              sizes="(max-width: 1024px) 100vw, 52vw"
+              src={content.image}
+              unoptimized
+            />
+          ) : null}
+          {content.imageLabel ? (
+            <span className="absolute bottom-4 left-4 rounded-full border border-white/40 bg-white/90 px-4 py-2 text-[9px] font-bold tracking-[0.14em] text-brand-2 uppercase shadow-sm backdrop-blur-md sm:bottom-6 sm:left-6">
+              {content.imageLabel}
+            </span>
+          ) : null}
         </div>
 
         <div>

@@ -52,6 +52,10 @@ export const api = axios.create({
 api.interceptors.request.use(async (config) => {
   const method = config.method?.toLowerCase()
 
+  if (typeof FormData !== "undefined" && config.data instanceof FormData) {
+    config.headers["Content-Type"] = undefined
+  }
+
   if (
     typeof window !== "undefined" &&
     method &&
