@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Leaf, LockKey } from "@phosphor-icons/react"
@@ -26,13 +26,28 @@ export default function LoginPage() {
 
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [returnTo, setReturnTo] = useState<string | null>(null)
+
+  useEffect(() => {
+    const requestedDestination = new URLSearchParams(window.location.search).get(
+      "returnTo"
+    )
+
+    if (
+      requestedDestination?.startsWith("/") &&
+      !requestedDestination.startsWith("//")
+    ) {
+      setReturnTo(requestedDestination)
+    }
+  }, [])
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     const result = await login({ email, password })
 
     if (result) {
       const role = getAppRole(result.user)
-      const destination = role ? getDashboardPath(role) : "/"
+      const destination = returnTo ?? (role ? getDashboardPath(role) : "/")
 
       router.push(destination)
     }

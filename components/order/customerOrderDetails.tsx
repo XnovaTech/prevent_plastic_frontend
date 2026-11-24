@@ -4,6 +4,7 @@ import Link from "next/link"
 import { Card } from "@/components/ui/card"
 import { useCustomerOrder } from "@/hooks/useOrders"
 import { resolveMediaUrl } from "@/lib/media"
+import { VendorConversation } from "@/components/order/vendorConversation"
 
 export function CustomerOrderDetails({ id }: { id: number }) {
   const { data: order, isLoading, error } = useCustomerOrder(id)
@@ -133,6 +134,27 @@ export function CustomerOrderDetails({ id }: { id: number }) {
                   ) : null}
                   <div>
                   <p className="font-medium text-brand">{item.product_name}</p>
+                  <div className="mt-1 flex flex-wrap items-center gap-2 text-sm">
+                    {vendorOrder.vendor?.logo ? (
+                      <img
+                        alt=""
+                        className="size-5 rounded-full object-cover"
+                        src={resolveMediaUrl(vendorOrder.vendor.logo)}
+                      />
+                    ) : null}
+                    {vendorOrder.vendor?.slug ? (
+                      <Link
+                        className="font-semibold text-brand-3 underline underline-offset-2"
+                        href={`/shop/${vendorOrder.vendor.slug}`}
+                      >
+                        {vendorOrder.vendor.display_name}
+                      </Link>
+                    ) : (
+                      <span className="font-semibold text-brand-3">
+                        {vendorOrder.vendor?.display_name ?? "Local seller"}
+                      </span>
+                    )}
+                  </div>
                   <p className="text-sm text-brand-gray-3">
                     {item.product_sku ? `${item.product_sku} · ` : ""}Qty {item.quantity}
                   </p>
@@ -143,12 +165,21 @@ export function CustomerOrderDetails({ id }: { id: number }) {
                   ) : null}
                   </div>
                 </div>
-                <p className="font-semibold text-brand">
-                  Ks {Number(item.line_total).toLocaleString()}
-                </p>
+                <div className="text-right">
+                  <p className="font-semibold text-brand">
+                    Ks {Number(item.line_total).toLocaleString()}
+                  </p>
+                  <p className="mt-1 text-xs text-brand-gray-3">
+                    Ks {Number(item.unit_price).toLocaleString()} each
+                  </p>
+                </div>
               </div>
             ))}
           </div>
+          <VendorConversation
+            vendorName={vendorOrder.vendor?.display_name ?? "this vendor"}
+            vendorOrderId={vendorOrder.id}
+          />
         </Card>
       ))}
     </div>

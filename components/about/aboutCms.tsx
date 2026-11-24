@@ -109,6 +109,14 @@ function uploadErrorMessage(error: unknown, fallback: string) {
   return firstValidationMessage || response?.message || fallback
 }
 
+type SaveState = "idle" | "saving" | "saved"
+
+function SaveLabel({ state, label = "Save" }: { state: SaveState; label?: string }) {
+  if (state === "saving") return <>Saving…</>
+  if (state === "saved") return <><Check size={15} /> Saved</>
+  return <><FloppyDisk size={15} /> {label}</>
+}
+
 function CreateAboutPage({
   onCreate,
 }: {
@@ -171,13 +179,13 @@ export function AboutCms() {
   const [isUpdatingSection, setIsUpdatingSection] = useState(false)
   const [isCreatingSection, setIsCreatingSection] = useState(false)
   const [notice, setNotice] = useState("")
+  const [saveStates, setSaveStates] = useState<Record<string, SaveState>>({})
   const [newItem, setNewItem] = useState({
     title: "",
     description: "",
     icon: "",
     link_url: "",
   })
-  const [newFaq, setNewFaq] = useState({ question: "", answer: "" })
   const orderedSections = useMemo(
     () => (about ? orderSections(about.sections) : []),
     [about]
@@ -233,6 +241,11 @@ export function AboutCms() {
     }) !== JSON.stringify(contactDraft)
   )
   const hasUnsavedChanges = hasUnsavedSectionChanges || hasUnsavedContactChanges
+  const hasSelectedDraftChanges = Boolean(
+    selected &&
+      drafts[selected.id] &&
+      JSON.stringify(sectionForm(selected)) !== JSON.stringify(drafts[selected.id])
+  )
   const visualDraft = useMemo(() => {
     if (!about) return null
 
@@ -252,6 +265,7 @@ export function AboutCms() {
 
   const updateDraft = (patch: Partial<AboutSectionInput>) => {
     if (!selected || !draft) return
+    setSaveStates((current) => ({ ...current, [`section:${selected.id}`]: "idle" }))
     setDrafts((current) => ({
       ...current,
       [selected.id]: { ...draft, ...patch },
@@ -330,7 +344,7 @@ export function AboutCms() {
   const saveChanges = async (showNotice = true): Promise<boolean> => {
     if (!about) return false
     setIsSaving(true)
-    setNotice("")
+    setSaveStates((current) => ({ ...current, overall: "saving" }))
     try {
       const changedSections = about.sections.filter((section) => {
         const next = drafts[section.id]
@@ -349,25 +363,48 @@ export function AboutCms() {
       )
       for (const { id, section } of updatedSections) {
         patchSection(id, sectionFields(section))
+        setSaveStates((current) => ({ ...current, [`section:${id}`]: "saved" }))
       }
       if (hasUnsavedContactChanges && contactDraft) {
         const updatedAbout = await aboutUsService.save(contactDraft)
         updateCachedAbout(() => updatedAbout)
+        setSaveStates((current) => ({ ...current, contact: "saved" }))
       }
       if (showNotice) {
-        setNotice("Draft saved. Publish when you are ready for the public website to use these changes.")
+        setNotice("All outstanding changes saved successfully.")
       }
+      setSaveStates((current) => ({ ...current, overall: "saved" }))
       return true
     } catch {
+      setSaveStates((current) => ({ ...current, overall: "idle" }))
       setNotice("Unable to save changes. Please try again.")
       return false
     } finally {
       setIsSaving(false)
     }
   }
+  const saveSelectedDraft = async () => {
+    if (!selected || !draft) return
+    const key = `section:${selected.id}`
+    if (saveStates[key] === "saving") return
+
+    setSaveStates((current) => ({ ...current, [key]: "saving" }))
+    try {
+      const updated = await aboutUsService.updateSection(selected.id, draft)
+      patchSection(selected.id, sectionFields(updated))
+      setDrafts((current) => ({
+        ...current,
+        [selected.id]: sectionForm(updated),
+      }))
+      setNotice(`${cmsSectionName(updated)} draft saved.`)
+      setSaveStates((current) => ({ ...current, [key]: "saved" }))
+    } catch {
+      setSaveStates((current) => ({ ...current, [key]: "idle" }))
+      setNotice("Unable to save this section. Please try again.")
+    }
+  }
   const publishChanges = async () => {
     setIsPublishing(true)
-    setNotice("")
     try {
       if (hasUnsavedChanges && !(await saveChanges(false))) {
         return
@@ -388,21 +425,17 @@ export function AboutCms() {
   }
   const saveContact = async () => {
     if (!about || !contactDraft) return
-    setIsSaving(true)
-    setNotice("")
+    if (saveStates.contact === "saving") return
+    setSaveStates((current) => ({ ...current, contact: "saving" }))
     try {
-      const updatedAbout = await aboutUsService.save({
-        ...contactDraft,
-        title: about.title,
-        description: about.description ?? "",
-      })
+      const updatedAbout = await aboutUsService.save(contactDraft)
       updateCachedAbout(() => updatedAbout)
       void invalidatePublicAbout()
       setNotice("Contact information saved.")
+      setSaveStates((current) => ({ ...current, contact: "saved" }))
     } catch {
+      setSaveStates((current) => ({ ...current, contact: "idle" }))
       setNotice("Unable to save contact information.")
-    } finally {
-      setIsSaving(false)
     }
   }
   const toggleVisibility = async () => {
@@ -500,10 +533,10 @@ export function AboutCms() {
       setIsUploadingImage(false)
     }
   }
-  const replaceGalleryImage = async (imageId: number, file: File) => {
-    if (!selected) return
+  const replaceGalleryImage = async (imageId: number, file: File): Promise<boolean> => {
+    if (!selected) return false
     const currentImage = selected.gallery_images.find((image) => image.id === imageId)
-    if (!currentImage) return
+    if (!currentImage) return false
 
     setIsUploadingImage(true)
     try {
@@ -519,6 +552,8 @@ export function AboutCms() {
         ),
       })
       setNotice("Gallery image replaced.")
+      void invalidatePublicAbout()
+      return true
     } catch (error) {
       setNotice(
         uploadErrorMessage(
@@ -526,8 +561,24 @@ export function AboutCms() {
           "Unable to replace this gallery image. Your existing image was kept."
         )
       )
+      return false
     } finally {
       setIsUploadingImage(false)
+    }
+  }
+  const removeGalleryImage = async (imageId: number): Promise<boolean> => {
+    if (!selected) return false
+    try {
+      await aboutUsService.removeGalleryImage(selected.id, imageId)
+      patchSection(selected.id, {
+        gallery_images: selected.gallery_images.filter((image) => image.id !== imageId),
+      })
+      setNotice("Gallery image removed.")
+      void invalidatePublicAbout()
+      return true
+    } catch {
+      setNotice("Unable to remove this gallery image.")
+      return false
     }
   }
   const removePrimaryImage = async () => {
@@ -554,8 +605,8 @@ export function AboutCms() {
       setIsUploadingImage(false)
     }
   }
-  const saveItem = async (item: AboutItem) => {
-    if (!selected) return
+  const saveItem = async (item: AboutItem): Promise<boolean> => {
+    if (!selected) return false
     try {
       const updated = await aboutUsService.updateItem(selected.id, item.id, {
         title: item.title,
@@ -572,8 +623,10 @@ export function AboutCms() {
       })
       setNotice("Content item saved.")
       void invalidatePublicAbout()
+      return true
     } catch {
       setNotice("Unable to save this item.")
+      return false
     }
   }
   const addItem = async () => {
@@ -595,53 +648,33 @@ export function AboutCms() {
       setNotice("Unable to add this item.")
     }
   }
-  const saveFaq = async (
-    id: number,
-    question: string,
-    answer: string,
-    sortOrder: number,
-    isActive: boolean
-  ) => {
-    try {
-      const faq = await aboutUsService.updateFaq(id, {
-        question,
-        answer,
-        sort_order: sortOrder,
-        is_active: isActive,
-      })
-      updateCachedAbout((current) =>
-        current
-          ? {
-              ...current,
-              faqs: current.faqs.map((entry) =>
-                entry.id === faq.id ? faq : entry
-              ),
-            }
-          : current
-      )
-      setNotice("Answer saved.")
-      void invalidatePublicAbout()
-    } catch {
-      setNotice("Unable to save this answer.")
+  const saveFaq = async (entry: FaqDraft): Promise<boolean> => {
+    if (!about || !entry.question.trim() || !entry.answer.trim()) {
+      setNotice("Every FAQ needs both a question and an answer.")
+      return false
     }
-  }
-  const addFaq = async () => {
-    if (!about || !newFaq.question.trim() || !newFaq.answer.trim()) return
+
     try {
-      const faq = await aboutUsService.createFaq({
-        question: newFaq.question,
-        answer: newFaq.answer,
-        sort_order: about.faqs.length,
-        is_active: true,
-      })
-      updateCachedAbout((current) =>
-        current ? { ...current, faqs: [...current.faqs, faq] } : current
-      )
-      setNewFaq({ question: "", answer: "" })
-      setNotice("Question added.")
+      const input = {
+        question: entry.question.trim(),
+        answer: entry.answer.trim(),
+        sort_order: entry.id === null ? about.faqs.length : entry.sort_order,
+        is_active: entry.is_active,
+      }
+      const saved = entry.id === null
+        ? await aboutUsService.createFaq(input)
+        : await aboutUsService.updateFaq(entry.id, input)
+      updateCachedAbout((current) => current ? {
+        ...current,
+        faqs: [...current.faqs.filter((faq) => faq.id !== saved.id), saved]
+          .sort((first, second) => first.sort_order - second.sort_order),
+      } : current)
+      setNotice(entry.id === null ? "Question added successfully." : "Question saved successfully.")
       void invalidatePublicAbout()
+      return true
     } catch {
-      setNotice("Unable to add this question.")
+      setNotice("Unable to save this question. Please try again.")
+      return false
     }
   }
   const moveItem = async (itemId: number, direction: -1 | 1) => {
@@ -718,10 +751,10 @@ export function AboutCms() {
     imageId: number,
     altText: string,
     caption: string
-  ) => {
-    if (!selected) return
+  ): Promise<boolean> => {
+    if (!selected) return false
     const image = selected.gallery_images.find((entry) => entry.id === imageId)
-    if (!image) return
+    if (!image) return false
     try {
       const updated = await aboutUsService.updateGalleryImage(selected.id, imageId, {
         ...image,
@@ -735,47 +768,38 @@ export function AboutCms() {
       })
       setNotice("Gallery image details saved.")
       void invalidatePublicAbout()
+      return true
     } catch {
       setNotice("Unable to save gallery image details.")
+      return false
     }
   }
-  const moveFaq = async (faqId: number, direction: -1 | 1) => {
-    if (!about) return
+  const moveFaq = async (faqId: number, direction: -1 | 1): Promise<boolean> => {
+    if (!about) return false
     const faqs = [...about.faqs].sort((a, b) => a.sort_order - b.sort_order)
     const currentIndex = faqs.findIndex((faq) => faq.id === faqId)
     const nextIndex = currentIndex + direction
-    if (currentIndex < 0 || nextIndex < 0 || nextIndex >= faqs.length) return
-
-    const current = faqs[currentIndex]
-    const target = faqs[nextIndex]
+    if (currentIndex < 0 || nextIndex < 0 || nextIndex >= faqs.length) return false
+    const reordered = [...faqs]
+    ;[reordered[currentIndex], reordered[nextIndex]] = [reordered[nextIndex], reordered[currentIndex]]
     try {
-      const [updatedCurrent, updatedTarget] = await Promise.all([
-        aboutUsService.updateFaq(current.id, {
-          ...current,
-          sort_order: target.sort_order,
-        }),
-        aboutUsService.updateFaq(target.id, {
-          ...target,
-          sort_order: current.sort_order,
-        }),
-      ])
+      const updatedFaqs = await Promise.all(reordered.map((faq, index) =>
+        aboutUsService.updateFaq(faq.id, { ...faq, sort_order: index })
+      ))
       updateCachedAbout((cached) =>
         cached
           ? {
               ...cached,
-              faqs: cached.faqs.map((faq) =>
-                faq.id === updatedCurrent.id
-                  ? updatedCurrent
-                  : faq.id === updatedTarget.id
-                    ? updatedTarget
-                    : faq
-              ),
+              faqs: updatedFaqs,
             }
           : cached
       )
+      setNotice("Question order saved.")
       void invalidatePublicAbout()
+      return true
     } catch {
       setNotice("Unable to change question order.")
+      return false
     }
   }
 
@@ -840,8 +864,9 @@ export function AboutCms() {
             <Button
               isDisabled={isSaving || isPublishing || !hasUnsavedChanges}
               onPress={() => void saveChanges()}
+              variant="outline"
             >
-              <FloppyDisk size={16} /> {isSaving ? "Saving…" : "Save draft"}
+              <SaveLabel label="Save all" state={saveStates.overall ?? "idle"} />
             </Button>
             <Button
               isDisabled={isSaving || isPublishing}
@@ -976,6 +1001,13 @@ export function AboutCms() {
               </div>
               <div className="flex flex-wrap gap-2">
                 <Button
+                  isDisabled={saveStates[`section:${selected.id}`] === "saving" || isUpdatingSection || !hasSelectedDraftChanges}
+                  onPress={() => void saveSelectedDraft()}
+                  size="sm"
+                >
+                  <SaveLabel label="Save" state={saveStates[`section:${selected.id}`] ?? "idle"} />
+                </Button>
+                <Button
                   isDisabled={isUpdatingSection}
                   onPress={() => void toggleVisibility()}
                   size="sm"
@@ -1006,9 +1038,10 @@ export function AboutCms() {
                 <EditorField
                   label="Main heading"
                   value={contactDraft.title}
-                  onChange={(title) =>
+                  onChange={(title) => {
+                    setSaveStates((current) => ({ ...current, contact: "idle" }))
                     setContactDraft({ ...contactDraft, title })
-                  }
+                  }}
                 />
               ) : null}
               <EditorArea
@@ -1092,16 +1125,7 @@ export function AboutCms() {
                   isUploading={isUploadingImage}
                   section={selected}
                   onAdd={addGalleryImage}
-                  onRemove={async (id) => {
-                    await aboutUsService.removeGalleryImage(selected.id, id)
-                    patchSection(selected.id, {
-                      gallery_images: selected.gallery_images.filter(
-                        (image) => image.id !== id
-                      ),
-                    })
-                    void invalidatePublicAbout()
-                    setNotice("Gallery image removed.")
-                  }}
+                  onRemove={removeGalleryImage}
                   onMove={moveGalleryImage}
                   onReplace={replaceGalleryImage}
                   onSave={saveGalleryImage}
@@ -1191,24 +1215,34 @@ export function AboutCms() {
               {selected.section_type === "faq" ? (
                 <FaqEditor
                   faqs={about.faqs}
-                  onAdd={addFaq}
                   onRemove={async (id) => {
-                    await aboutUsService.removeFaq(id)
-                    updateCachedAbout((current) =>
-                      current
-                        ? {
-                            ...current,
-                            faqs: current.faqs.filter((faq) => faq.id !== id),
-                          }
-                        : current
-                    )
-                    void invalidatePublicAbout()
-                    setNotice("Question removed.")
+                    try {
+                      await aboutUsService.removeFaq(id)
+                      const remaining = about.faqs
+                        .filter((faq) => faq.id !== id)
+                        .sort((first, second) => first.sort_order - second.sort_order)
+                      const reordered = await Promise.all(
+                        remaining.map((faq, index) =>
+                          aboutUsService.updateFaq(faq.id, {
+                            ...faq,
+                            sort_order: index,
+                          })
+                        )
+                      )
+                      updateCachedAbout((current) => current ? {
+                        ...current,
+                        faqs: reordered,
+                      } : current)
+                      void invalidatePublicAbout()
+                      setNotice("Question removed successfully.")
+                      return true
+                    } catch {
+                      setNotice("Unable to remove this question. Please try again.")
+                      return false
+                    }
                   }}
                   onSave={saveFaq}
                   onMove={moveFaq}
-                  value={newFaq}
-                  onChange={setNewFaq}
                 />
               ) : null}
             </div>
@@ -1219,7 +1253,11 @@ export function AboutCms() {
         <ContactSettings
           draft={contactDraft}
           isSaving={isSaving}
-          onChange={setContactDraft}
+          saveState={saveStates.contact ?? "idle"}
+          onChange={(next) => {
+            setSaveStates((current) => ({ ...current, contact: "idle" }))
+            setContactDraft(next)
+          }}
           onSave={() => void saveContact()}
         />
       ) : null}
@@ -1280,7 +1318,7 @@ function ItemsEditor({
   value: { title: string; description: string; icon: string; link_url: string }
   onChange: (value: { title: string; description: string; icon: string; link_url: string }) => void
   onAdd: () => void
-  onSave: (item: AboutItem) => Promise<void>
+  onSave: (item: AboutItem) => Promise<boolean>
   onRemove: (id: number) => Promise<void>
   onMove: (id: number, direction: -1 | 1) => Promise<void>
   canAdd: boolean
@@ -1288,6 +1326,7 @@ function ItemsEditor({
   const [editing, setEditing] = useState<
     Record<number, { title: string; description: string; icon: string; link_url: string }>
   >({})
+  const [saveStates, setSaveStates] = useState<Record<number, SaveState>>({})
   return (
     <section className="border-t border-[#e3e9df] pt-5">
       <p className="text-xs font-semibold text-brand">Content items</p>
@@ -1304,10 +1343,7 @@ function ItemsEditor({
               <Input
                 value={current.title}
                 onChange={(event) =>
-                  setEditing({
-                    ...editing,
-                    [item.id]: { ...current, title: event.target.value },
-                  })
+                  { setSaveStates((states) => ({ ...states, [item.id]: "idle" })); setEditing({ ...editing, [item.id]: { ...current, title: event.target.value } }) }
                 }
               />
               <Textarea
@@ -1315,10 +1351,7 @@ function ItemsEditor({
                 placeholder="Item description"
                 value={current.description}
                 onChange={(event) =>
-                  setEditing({
-                    ...editing,
-                    [item.id]: { ...current, description: event.target.value },
-                  })
+                  { setSaveStates((states) => ({ ...states, [item.id]: "idle" })); setEditing({ ...editing, [item.id]: { ...current, description: event.target.value } }) }
                 }
               />
               <div className="mt-2 grid gap-2 sm:grid-cols-2">
@@ -1326,20 +1359,14 @@ function ItemsEditor({
                   placeholder="Optional icon name"
                   value={current.icon}
                   onChange={(event) =>
-                    setEditing({
-                      ...editing,
-                      [item.id]: { ...current, icon: event.target.value },
-                    })
+                  { setSaveStates((states) => ({ ...states, [item.id]: "idle" })); setEditing({ ...editing, [item.id]: { ...current, icon: event.target.value } }) }
                   }
                 />
                 <Input
                   placeholder="Optional link URL"
                   value={current.link_url}
                   onChange={(event) =>
-                    setEditing({
-                      ...editing,
-                      [item.id]: { ...current, link_url: event.target.value },
-                    })
+                  { setSaveStates((states) => ({ ...states, [item.id]: "idle" })); setEditing({ ...editing, [item.id]: { ...current, link_url: event.target.value } }) }
                   }
                 />
               </div>
@@ -1361,10 +1388,15 @@ function ItemsEditor({
                   <CaretDown size={15} />
                 </Button>
                 <Button
-                  onPress={() => void onSave({ ...item, ...current })}
+                  isDisabled={saveStates[item.id] === "saving"}
+                  onPress={async () => {
+                    setSaveStates((states) => ({ ...states, [item.id]: "saving" }))
+                    const saved = await onSave({ ...item, ...current })
+                    setSaveStates((states) => ({ ...states, [item.id]: saved ? "saved" : "idle" }))
+                  }}
                   size="sm"
                 >
-                  <Check size={15} /> Save item
+                  <SaveLabel label="Save" state={saveStates[item.id] ?? "idle"} />
                 </Button>
                 <Button
                   onPress={() => void onRemove(item.id)}
@@ -1426,11 +1458,11 @@ function GalleryEditor({
 }: {
   section: AboutSection
   onAdd: (file: File | null, sortOrder?: number) => Promise<void>
-  onRemove: (id: number) => Promise<void>
+  onRemove: (id: number) => Promise<boolean>
   isUploading: boolean
   onMove: (id: number, direction: -1 | 1) => Promise<void>
-  onReplace: (id: number, file: File) => Promise<void>
-  onSave: (id: number, altText: string, caption: string) => Promise<void>
+  onReplace: (id: number, file: File) => Promise<boolean>
+  onSave: (id: number, altText: string, caption: string) => Promise<boolean>
   canAdd: boolean
 }) {
   const [details, setDetails] = useState<
@@ -1445,6 +1477,7 @@ function GalleryEditor({
     file: File
     preview: string
   } | null>(null)
+  const [saveStates, setSaveStates] = useState<Record<number, SaveState>>({})
   useEffect(
     () => () => {
       if (pendingReplacement) URL.revokeObjectURL(pendingReplacement.preview)
@@ -1533,8 +1566,8 @@ function GalleryEditor({
                     className="w-full min-w-0 px-2 text-xs"
                     isDisabled={isUploading}
                     onPress={async () => {
-                      await onReplace(image.id, pendingReplacement.file)
-                      setPendingReplacement(null)
+                      const replaced = await onReplace(image.id, pendingReplacement.file)
+                      if (replaced) setPendingReplacement(null)
                     }}
                     size="sm"
                   >
@@ -1557,7 +1590,7 @@ function GalleryEditor({
               placeholder="Image description for accessibility"
               value={current.altText}
               onChange={(event) =>
-                setDetails({ ...details, [image.id]: { ...current, altText: event.target.value } })
+                { setSaveStates((states) => ({ ...states, [image.id]: "idle" })); setDetails({ ...details, [image.id]: { ...current, altText: event.target.value } }) }
               }
             />
             <Input
@@ -1565,11 +1598,15 @@ function GalleryEditor({
               placeholder="Optional image caption"
               value={current.caption}
               onChange={(event) =>
-                setDetails({ ...details, [image.id]: { ...current, caption: event.target.value } })
+                { setSaveStates((states) => ({ ...states, [image.id]: "idle" })); setDetails({ ...details, [image.id]: { ...current, caption: event.target.value } }) }
               }
             />
-            <Button className="mt-2 w-full px-2 text-xs" onPress={() => void onSave(image.id, current.altText, current.caption)} size="sm" variant="outline">
-              <Check size={14} /> Save image details
+            <Button className="mt-2 w-full px-2 text-xs" isDisabled={saveStates[image.id] === "saving"} onPress={async () => {
+              setSaveStates((states) => ({ ...states, [image.id]: "saving" }))
+              const saved = await onSave(image.id, current.altText, current.caption)
+              setSaveStates((states) => ({ ...states, [image.id]: saved ? "saved" : "idle" }))
+            }} size="sm" variant="outline">
+              <SaveLabel label="Save" state={saveStates[image.id] ?? "idle"} />
             </Button>
           </div>
           )
@@ -1621,113 +1658,148 @@ function GalleryEditor({
   )
 }
 
+type FaqDraft = {
+  id: number | null
+  question: string
+  answer: string
+  sort_order: number
+  is_active: boolean
+}
+
 function FaqEditor({
   faqs,
-  value,
-  onChange,
-  onAdd,
   onSave,
   onRemove,
   onMove,
 }: {
   faqs: AboutFaq[]
-  value: { question: string; answer: string }
-  onChange: (value: { question: string; answer: string }) => void
-  onAdd: () => void
-  onSave: (
-    id: number,
-    question: string,
-    answer: string,
-    sortOrder: number,
-    isActive: boolean
-  ) => Promise<void>
-  onRemove: (id: number) => Promise<void>
-  onMove: (id: number, direction: -1 | 1) => Promise<void>
+  onSave: (entry: FaqDraft) => Promise<boolean>
+  onRemove: (id: number) => Promise<boolean>
+  onMove: (id: number, direction: -1 | 1) => Promise<boolean>
 }) {
-  const [editing, setEditing] = useState<
-    Record<number, { question: string; answer: string }>
-  >({})
+  const [items, setItems] = useState<FaqDraft[]>(() =>
+    [...faqs].sort((first, second) => first.sort_order - second.sort_order).map((faq) => ({
+      id: faq.id,
+      question: faq.question,
+      answer: faq.answer,
+      sort_order: faq.sort_order,
+      is_active: faq.is_active,
+    }))
+  )
+  const [editingId, setEditingId] = useState<number | "new" | null>(null)
+  const [draft, setDraft] = useState<FaqDraft | null>(null)
+  const [validationError, setValidationError] = useState("")
+  const [saveStates, setSaveStates] = useState<Record<string, SaveState>>({})
+
+  useEffect(() => {
+    setItems(
+      [...faqs].sort((first, second) => first.sort_order - second.sort_order).map((faq) => ({
+        id: faq.id,
+        question: faq.question,
+        answer: faq.answer,
+        sort_order: faq.sort_order,
+        is_active: faq.is_active,
+      }))
+    )
+  }, [faqs])
+
+  const stateFor = (key: string): SaveState => saveStates[key] ?? "idle"
+  const setState = (key: string, state: SaveState) => {
+    setSaveStates((current) => ({ ...current, [key]: state }))
+  }
+
+  const openAdd = () => {
+    setValidationError("")
+    setDraft({ id: null, question: "", answer: "", sort_order: items.length, is_active: true })
+    setEditingId("new")
+  }
+
+  const openEdit = (faq: FaqDraft) => {
+    setValidationError("")
+    setDraft({ ...faq })
+    setEditingId(faq.id)
+  }
+
+  const saveDraft = async () => {
+    if (!draft || editingId === null) return
+    if (!draft.question.trim() || !draft.answer.trim()) {
+      setValidationError("Every FAQ needs both a question and an answer.")
+      return
+    }
+
+    setValidationError("")
+    const key = editingId === "new" ? "new" : String(editingId)
+    setState(key, "saving")
+    const saved = await onSave(draft)
+    setState(key, saved ? "saved" : "idle")
+    if (saved) {
+      setDraft(null)
+      setEditingId(null)
+    }
+  }
+
+  const move = async (index: number, direction: -1 | 1) => {
+    const targetIndex = index + direction
+    const item = items[index]
+    if (!item || item.id === null || targetIndex < 0 || targetIndex >= items.length) return
+
+    const previous = items
+    const reordered = [...items]
+    ;[reordered[index], reordered[targetIndex]] = [reordered[targetIndex], reordered[index]]
+    setItems(reordered)
+    setState(String(item.id), "saving")
+    const saved = await onMove(item.id, direction)
+    setState(String(item.id), saved ? "saved" : "idle")
+    if (!saved) setItems(previous)
+  }
+
+  const remove = async (faq: FaqDraft) => {
+    if (faq.id === null) return
+    setState(String(faq.id), "saving")
+    const saved = await onRemove(faq.id)
+    setState(String(faq.id), saved ? "saved" : "idle")
+    if (saved) {
+      setItems((current) => current.filter((item) => item.id !== faq.id))
+      if (editingId === faq.id) {
+        setEditingId(null)
+        setDraft(null)
+      }
+    }
+  }
+
   return (
     <section className="border-t border-[#e3e9df] pt-5">
       <p className="text-xs font-semibold text-brand">Questions and answers</p>
       <div className="mt-3 space-y-3">
-        {faqs.map((faq) => {
-          const current = editing[faq.id] ?? {
-            question: faq.question,
-            answer: faq.answer,
-          }
-          return (
-            <div className="border border-[#e3e9df] p-4" key={faq.id}>
-              <Input
-                value={current.question}
-                onChange={(event) =>
-                  setEditing({
-                    ...editing,
-                    [faq.id]: { ...current, question: event.target.value },
-                  })
-                }
-              />
-              <Textarea
-                className="mt-2 min-h-24"
-                placeholder="Answer"
-                value={current.answer}
-                onChange={(event) =>
-                  setEditing({
-                    ...editing,
-                    [faq.id]: { ...current, answer: event.target.value },
-                  })
-                }
-              />
-              <div className="mt-3 flex gap-2">
-                <Button aria-label="Move question up" onPress={() => void onMove(faq.id, -1)} size="icon-sm" variant="outline">
-                  <CaretUp size={15} />
-                </Button>
-                <Button aria-label="Move question down" onPress={() => void onMove(faq.id, 1)} size="icon-sm" variant="outline">
-                  <CaretDown size={15} />
-                </Button>
-                <Button
-                  onPress={() =>
-                    void onSave(
-                      faq.id,
-                      current.question,
-                      current.answer,
-                      faq.sort_order,
-                      faq.is_active
-                    )
-                  }
-                  size="sm"
-                >
-                  <Check size={15} /> Save answer
-                </Button>
-                <Button
-                  onPress={() => void onRemove(faq.id)}
-                  size="sm"
-                  variant="destructive"
-                >
-                  <Trash size={15} /> Remove
-                </Button>
-              </div>
-            </div>
-          )
+        {items.map((faq, index) => {
+          const key = String(faq.id)
+          const isEditing = editingId === faq.id
+          const state = stateFor(key)
+          return <div className="border border-[#e3e9df] p-4" key={faq.id}>
+            {isEditing && draft ? <>
+              <Input aria-label={`Question ${index + 1}`} placeholder="Question" value={draft.question} onChange={(event) => { setState(key, "idle"); setDraft({ ...draft, question: event.target.value }) }} />
+              <Textarea className="mt-2 min-h-24" placeholder="Answer" value={draft.answer} onChange={(event) => { setState(key, "idle"); setDraft({ ...draft, answer: event.target.value }) }} />
+              <div className="mt-3 flex flex-wrap gap-2"><Button isDisabled={state === "saving"} onPress={() => void saveDraft()} size="sm"><SaveLabel label="Save" state={state} /></Button><Button onPress={() => { setEditingId(null); setDraft(null); setValidationError("") }} size="sm" variant="outline">Cancel</Button></div>
+            </> : <>
+              <div className="flex gap-3"><span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-brand-yellow-bg text-xs font-bold text-brand-4">{index + 1}</span><div className="min-w-0"><p className="font-semibold text-brand">{faq.question}</p><p className="mt-1 text-sm leading-6 text-brand-light">{faq.answer}</p></div></div>
+              <div className="mt-3 flex flex-wrap gap-2"><Button onPress={() => openEdit(faq)} size="sm" variant="outline">Edit</Button><Button isDisabled={index === 0 || state === "saving"} onPress={() => void move(index, -1)} size="sm" variant="outline"><CaretUp size={15} /> Move up</Button><Button isDisabled={index === items.length - 1 || state === "saving"} onPress={() => void move(index, 1)} size="sm" variant="outline"><CaretDown size={15} /> Move down</Button><Button isDisabled={state === "saving"} onPress={() => void remove(faq)} size="sm" variant="destructive"><Trash size={15} /> {state === "saving" ? "Removing…" : "Remove"}</Button></div>
+            </>}
+          </div>
         })}
+        {editingId === "new" && draft ? <div className="border border-[#e3e9df] p-4"><Input aria-label="New question" placeholder="Question" value={draft.question} onChange={(event) => { setState("new", "idle"); setDraft({ ...draft, question: event.target.value }) }} /><Textarea className="mt-2 min-h-24" placeholder="Answer" value={draft.answer} onChange={(event) => { setState("new", "idle"); setDraft({ ...draft, answer: event.target.value }) }} /><div className="mt-3 flex flex-wrap gap-2"><Button isDisabled={stateFor("new") === "saving"} onPress={() => void saveDraft()} size="sm"><SaveLabel label="Save" state={stateFor("new")} /></Button><Button onPress={() => { setEditingId(null); setDraft(null); setValidationError("") }} size="sm" variant="outline">Cancel</Button></div></div> : null}
       </div>
-      <div className="mt-4 border border-dashed border-[#cfdccb] p-4">
-        <Input
-          placeholder="New question"
-          value={value.question}
-          onChange={(event) =>
-            onChange({ ...value, question: event.target.value })
-          }
-        />
-        <Textarea
-          className="mt-2 min-h-24"
-          placeholder="Answer"
-          value={value.answer}
-          onChange={(event) =>
-            onChange({ ...value, answer: event.target.value })
-          }
-        />
-        <Button className="mt-3" onPress={onAdd} size="sm" variant="outline">
+      {validationError ? (
+        <Alert className="mt-4 border-[#f1d3ba] bg-brand-peach-bg text-brand-orange-3">
+          <AlertDescription>{validationError}</AlertDescription>
+        </Alert>
+      ) : null}
+      <div className="mt-4 flex flex-wrap gap-2">
+        <Button
+          isDisabled={editingId !== null}
+          onPress={openAdd}
+          size="sm"
+          variant="outline"
+        >
           <Plus size={15} /> Add question
         </Button>
       </div>
@@ -1740,11 +1812,13 @@ function ContactSettings({
   onChange,
   onSave,
   isSaving,
+  saveState,
 }: {
   draft: AboutUsInput
   onChange: (draft: AboutUsInput) => void
   onSave: () => void
   isSaving: boolean
+  saveState: SaveState
 }) {
   const change = (
     field: "phone" | "email" | "address",
@@ -1823,7 +1897,7 @@ function ContactSettings({
         ))}
       </div>
       <Button className="mt-5" isDisabled={isSaving} onPress={onSave}>
-        <FloppyDisk size={16} /> Save contact information
+        <SaveLabel label="Save" state={saveState} />
       </Button>
     </section>
   )

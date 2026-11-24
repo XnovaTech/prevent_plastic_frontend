@@ -17,11 +17,17 @@ export function useAddresses() {
     mutationFn: addressService.create,
     onSuccess: () => client.invalidateQueries({ queryKey: addressesKey }),
   })
+  const update = useMutation({
+    mutationFn: ({ id, input }: { id: number; input: Parameters<typeof addressService.update>[1] }) =>
+      addressService.update(id, input),
+    onSuccess: () => client.invalidateQueries({ queryKey: addressesKey }),
+  })
   return {
     addresses: query.data ?? [],
     error: query.error,
     isLoading: query.isLoading,
     create: create.mutateAsync,
-    isSaving: create.isPending,
+    update: update.mutateAsync,
+    isSaving: create.isPending || update.isPending,
   }
 }

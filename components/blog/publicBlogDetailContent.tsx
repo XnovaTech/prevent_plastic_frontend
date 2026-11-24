@@ -175,7 +175,7 @@ export function PublicBlogDetailContent({ slug }: { slug: string }) {
                   <p className="mt-1 text-sm text-brand-light">
                     {comment.body}
                   </p>
-                  {comment.replies.map((reply) => (
+                  {(comment.replies ?? []).map((reply) => (
                     <div
                       className="mt-3 border-l-2 border-brand-2/30 pl-3"
                       key={reply.id}

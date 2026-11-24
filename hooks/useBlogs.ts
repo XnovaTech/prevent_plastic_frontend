@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react"
 import axios from "axios"
 
 import { blogService } from "@/services/blogService"
+import { commentManagementService } from "@/services/commentManagementService"
 import type { BlogInput, BlogPost, BlogStatus } from "@/types/blog"
 
 function errorMessage(error: unknown, fallback: string) {
@@ -199,5 +200,9 @@ export function useAdminBlogDetail(id: number) {
   }
   const approveComment = async (commentId: number) => { const updated = await blogService.approveComment(id, commentId); setComments((current) => current.map((comment) => comment.id === commentId ? updated : comment)) }
   const removeComment = async (commentId: number) => { await blogService.removeComment(id, commentId); setComments((current) => current.filter((comment) => comment.id !== commentId)) }
-  return { post, comments, isLoading, error, transition, update, remove, approveComment, removeComment }
+  const replyToComment = async (commentId: number, body: string) => {
+    await commentManagementService.reply("admin", commentId, body)
+    await refresh()
+  }
+  return { post, comments, isLoading, error, transition, update, remove, approveComment, removeComment, replyToComment }
 }

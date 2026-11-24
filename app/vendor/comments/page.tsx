@@ -1,2 +1,5 @@
-import { CommentManagement } from "@/components/comment/commentManagement"
-export default function VendorCommentsPage() { return <CommentManagement scope="vendor" /> }
+import { redirect } from "next/navigation"
+
+export default function VendorCommentsPage() {
+  redirect("/vendor/products")
+}

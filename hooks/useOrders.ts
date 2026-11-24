@@ -37,6 +37,7 @@ export function useVendorOrders(enabled = true) {
     queryKey: ["vendor-orders"],
     queryFn: () => orderService.vendorOrders(),
     enabled,
+    refetchInterval: enabled ? 15_000 : false,
   })
   const update = useMutation({
     mutationFn: ({ id, status }: { id: number; status: string }) =>
@@ -54,6 +55,19 @@ export function useVendorOrders(enabled = true) {
       ])
     },
   })
+  const updatePayment = useMutation({
+    mutationFn: ({ vendorOrderId, status }: { vendorOrderId: number; status: PaymentStatus }) =>
+      orderService.updateVendorPayment(vendorOrderId, { status }),
+    onSuccess: async () => {
+      await Promise.all([
+        client.invalidateQueries({ queryKey: ["vendor-orders"] }),
+        client.invalidateQueries({ queryKey: ["customer-orders"] }),
+        client.invalidateQueries({ queryKey: ["admin-orders"] }),
+        client.invalidateQueries({ queryKey: ["admin-vendor-orders"] }),
+        client.invalidateQueries({ queryKey: ["admin-payments"] }),
+      ])
+    },
+  })
   return {
     orders: rows(query.data),
     isLoading: query.isLoading,
@@ -62,6 +76,8 @@ export function useVendorOrders(enabled = true) {
     isUpdating: update.isPending,
     approve: approve.mutateAsync,
     isApproving: approve.isPending,
+    updatePayment: updatePayment.mutateAsync,
+    isUpdatingPayment: updatePayment.isPending,
   }
 }
 
@@ -70,6 +86,7 @@ export function useVendorOrder(id: number, enabled = true) {
     queryKey: ["vendor-orders", id],
     queryFn: () => orderService.vendorOrder(id),
     enabled: enabled && Number.isInteger(id) && id > 0,
+    refetchInterval: enabled ? 15_000 : false,
   })
 }
 
@@ -115,37 +132,14 @@ export function useAdminVendorOrder(id: number, enabled = true) {
 }
 
 export function useAdminPayments(enabled = true) {
-  const client = useQueryClient()
   const query = useQuery({
     queryKey: ["admin-payments"],
     queryFn: () => orderService.adminPayments(),
     enabled,
   })
-  const update = useMutation({
-    mutationFn: ({
-      id,
-      status,
-      transaction_reference,
-    }: {
-      id: number
-      status: PaymentStatus
-      transaction_reference?: string
-    }) => orderService.updateAdminPayment(id, { status, transaction_reference }),
-    onSuccess: async () => {
-      await Promise.all([
-        client.invalidateQueries({ queryKey: ["admin-payments"] }),
-        client.invalidateQueries({ queryKey: ["admin-orders"] }),
-        client.invalidateQueries({ queryKey: ["admin-vendor-orders"] }),
-        client.invalidateQueries({ queryKey: ["customer-orders"] }),
-        client.invalidateQueries({ queryKey: ["vendor-orders"] }),
-      ])
-    },
-  })
   return {
     payments: rows(query.data),
     isLoading: query.isLoading,
     error: query.error,
-    update: update.mutateAsync,
-    isUpdating: update.isPending,
   }
 }

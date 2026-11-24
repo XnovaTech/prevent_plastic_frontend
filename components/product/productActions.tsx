@@ -61,6 +61,11 @@ export function ProductActions({ product }: ProductActionsProps) {
     setStatus(`“${product.name}” was saved to your wishlist.`)
   }
 
+  const condition = String(
+    product.attributes?.find((attribute) => attribute.field_key === "condition")
+      ?.value ?? "Good"
+  )
+
   return (
     <div className="mt-5">
       <div className="flex flex-col gap-2.5 sm:flex-row">
@@ -110,6 +115,25 @@ export function ProductActions({ product }: ProductActionsProps) {
       >
         {status}
       </p>
+
+      <div className="mt-3 grid grid-cols-2 gap-2.5">
+        {[
+          ["Category", product.category?.name ?? "Everyday things"],
+          ["Condition", condition.replace(/[_-]+/g, " ")],
+          ["Sold by", "Independent seller"],
+          ["Delivery", "Still being confirmed"],
+        ].map(([label, value]) => (
+          <div
+            className="rounded-[16px] border border-white/65 bg-white/35 px-3.5 py-3 backdrop-blur-md"
+            key={label}
+          >
+            <p className="text-[9px] font-bold tracking-[0.12em] text-brand-gray-3 uppercase">
+              {label}
+            </p>
+            <p className="mt-1 text-[11px] font-medium text-brand-5">{value}</p>
+          </div>
+        ))}
+      </div>
     </div>
   )
 }

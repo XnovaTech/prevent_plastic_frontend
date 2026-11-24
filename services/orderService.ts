@@ -63,6 +63,16 @@ export const orderService = {
     )
     return response.data.data
   },
+  async updateVendorPayment(
+    vendorOrderId: number,
+    input: { status: PaymentStatus; transaction_reference?: string }
+  ): Promise<Payment> {
+    const response = await api.patch<CategoryApiResponse<Payment>>(
+      `/vendor/orders/${vendorOrderId}/payment`,
+      input
+    )
+    return response.data.data
+  },
   async adminOrders(
     params?: Record<string, string | number>
   ): Promise<Paginated<Order>> {
@@ -102,13 +112,40 @@ export const orderService = {
     )
     return paginated(response.data.data)
   },
-  async updateAdminPayment(
-    id: number,
-    input: { status: PaymentStatus; transaction_reference?: string }
-  ): Promise<Payment> {
-    const response = await api.patch<CategoryApiResponse<Payment>>(
-      `/admin/payments/${id}`,
-      input
+}
+
+export type Conversation = {
+  id: number
+  vendor_order_id: number
+  subject: string | null
+  unread_count?: number
+  vendor?: { id: number; display_name: string; slug?: string | null; logo?: string | null }
+  messages: Array<{ id: number; body: string; created_at: string; sender?: { id: number; name: string } }>
+}
+
+export const conversationService = {
+  async forVendorOrder(vendorOrderId: number): Promise<Conversation | null> {
+    const response = await api.get<CategoryApiResponse<Conversation | null>>(
+      `/conversations/vendor-orders/${vendorOrderId}`
+    )
+    return response.data.data
+  },
+  async start(vendorOrderId: number): Promise<Conversation> {
+    const response = await api.post<CategoryApiResponse<Conversation>>("/conversations", {
+      vendor_order_id: vendorOrderId,
+    })
+    return response.data.data
+  },
+  async send(conversationId: number, body: string): Promise<Conversation> {
+    const response = await api.post<CategoryApiResponse<Conversation>>(
+      `/conversations/${conversationId}/messages`,
+      { body }
+    )
+    return response.data.data
+  },
+  async show(conversationId: number): Promise<Conversation> {
+    const response = await api.get<CategoryApiResponse<Conversation>>(
+      `/conversations/${conversationId}`
     )
     return response.data.data
   },

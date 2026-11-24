@@ -1,2 +1,5 @@
-import { CommentManagement } from "@/components/comment/commentManagement"
-export default function AdminCommentsPage() { return <CommentManagement scope="admin" /> }
+import { redirect } from "next/navigation"
+
+export default function AdminCommentsPage() {
+  redirect("/admin/blog")
+}

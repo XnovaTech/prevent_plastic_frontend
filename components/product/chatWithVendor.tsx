@@ -9,6 +9,7 @@ import {
 } from "@phosphor-icons/react"
 
 import { Dialog, DialogDescription, DialogTitle } from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
 
 type ChatMessage = {
   id: number
@@ -105,14 +106,15 @@ export function ChatWithVendor({
 
   return (
     <>
-      <button
-        className="mt-3 inline-flex h-11 w-full items-center justify-center gap-2 rounded-full border border-[#cfdccb] bg-white/55 px-5 text-[11px] font-bold text-brand-3 backdrop-blur-md transition-colors hover:bg-white"
-        onClick={() => setIsOpen(true)}
-        type="button"
+      <Button
+        className="mt-2 text-xs"
+        onPress={() => setIsOpen(true)}
+        size="sm"
+        variant="outline"
       >
         <ChatCircleDots aria-hidden="true" size={16} weight="fill" />
         Chat with Vendor
-      </button>
+      </Button>
 
       <Dialog
         className="flex max-h-[85vh] w-full flex-col overflow-hidden sm:max-w-md"

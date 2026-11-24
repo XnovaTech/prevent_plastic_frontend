@@ -12,6 +12,13 @@ import {
 } from "@phosphor-icons/react"
 
 import { Button } from "@/components/ui/button"
+import {
+  Dialog,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select"
 import { useCart } from "@/hooks/useCart"
 import { useCheckout } from "@/hooks/useCheckout"
@@ -29,6 +36,9 @@ export function CartContent() {
   const [paymentMethod, setPaymentMethod] = useState<
     "cash_on_delivery" | "bank_transfer" | "online"
   >("cash_on_delivery")
+  const [checkoutPrompt, setCheckoutPrompt] = useState<
+    "address" | "sign-in" | null
+  >(null)
   const items = (cart?.items ?? []).map((item) => ({
     id: item.id,
     productId: item.product_id,
@@ -62,11 +72,12 @@ export function CartContent() {
       const order = await checkout(paymentMethod)
       router.push(`/customer/orders/${order.id}`)
     } catch (error) {
-      if (
-        error instanceof Error &&
-        error.message.includes("delivery address")
-      ) {
-        router.push("/customer/addresses")
+      if (error instanceof Error) {
+        if (error.message.includes("sign in")) {
+          setCheckoutPrompt("sign-in")
+        } else if (error.message.includes("delivery address")) {
+          setCheckoutPrompt("address")
+        }
       }
     }
   }
@@ -80,6 +91,47 @@ export function CartContent() {
 
   return (
     <section className="py-12 sm:py-16" id="bag">
+      {checkoutPrompt ? (
+        <Dialog
+          className="border border-[#d8e5d3] bg-[#fdfefa] text-brand"
+          isOpen
+          onOpenChange={(isOpen) => {
+            if (!isOpen) setCheckoutPrompt(null)
+          }}
+        >
+          <DialogHeader>
+            <p className="text-[10px] font-bold tracking-[0.16em] text-brand-gray-3 uppercase">
+              Before checkout
+            </p>
+            <DialogTitle className="font-serif text-3xl text-brand">
+              {checkoutPrompt === "address"
+                ? "Add a delivery address"
+                : "Sign in to place your order"}
+            </DialogTitle>
+            <DialogDescription className="leading-6 text-brand-light">
+              {checkoutPrompt === "address"
+                ? "Your bag is saved. Add a delivery address, then return here to choose payment and place your order."
+                : "Sign in first so this order is securely linked to your account."}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button onPress={() => setCheckoutPrompt(null)} variant="outline">
+              Continue shopping
+            </Button>
+            <Button
+              onPress={() =>
+                router.push(
+                  checkoutPrompt === "address"
+                    ? "/customer/addresses?returnTo=/cart"
+                    : "/login?returnTo=/cart"
+                )
+              }
+            >
+              {checkoutPrompt === "address" ? "Add address" : "Sign in"}
+            </Button>
+          </DialogFooter>
+        </Dialog>
+      ) : null}
       <div className="mx-auto max-w-[1440px] px-4 sm:px-8 lg:px-12">
         <div
           className="mb-7 flex flex-wrap items-end justify-between gap-4 sm:mb-9"

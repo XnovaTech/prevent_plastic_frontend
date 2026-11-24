@@ -13,6 +13,7 @@ import {
 } from "@phosphor-icons/react"
 
 import { Button, LinkButton } from "@/components/ui/button"
+import { Textarea } from "@/components/ui/textarea"
 import { useAdminBlogDetail } from "@/hooks/useBlogs"
 import { resolveMediaUrl } from "@/lib/media"
 
@@ -29,8 +30,12 @@ export function AdminBlogDetailContent({ id }: { id: number }) {
     remove,
     approveComment,
     removeComment,
+    replyToComment,
   } = useAdminBlogDetail(id)
   const [tab, setTab] = useState<DetailTab>("story")
+  const [replyDrafts, setReplyDrafts] = useState<Record<number, string>>({})
+  const [replyingCommentId, setReplyingCommentId] = useState<number | null>(null)
+  const [replyError, setReplyError] = useState("")
 
   if (isLoading)
     return <p className="text-sm text-brand-light">Loading blog…</p>
@@ -187,6 +192,11 @@ export function AdminBlogDetailContent({ id }: { id: number }) {
       )}
       {tab === "comments" && (
         <section className="mt-8 space-y-3">
+          {replyError ? (
+            <p className="rounded-[14px] border border-[#f1d3ba] bg-brand-peach-bg px-3 py-2 text-sm text-brand-orange-3">
+              {replyError}
+            </p>
+          ) : null}
           {comments.map((comment) => (
             <div
               className="flex flex-wrap items-start justify-between gap-3 border-b border-[#e7e9e1] pb-4"
@@ -200,6 +210,52 @@ export function AdminBlogDetailContent({ id }: { id: number }) {
                 <p className="mt-1 text-xs text-brand-gray-3">
                   {comment.is_approved ? "Approved" : "Pending review"}
                 </p>
+                {(comment.replies ?? []).map((reply) => (
+                  <div className="mt-3 border-l-2 border-brand-2/30 pl-3" key={reply.id}>
+                    <p className="text-xs font-semibold text-brand">
+                      {reply.author.name} · {reply.author.role}
+                    </p>
+                    <p className="mt-1 text-sm leading-6 text-brand-light">{reply.body}</p>
+                  </div>
+                ))}
+                <div className="mt-4 max-w-xl">
+                  <Textarea
+                    aria-label={`Reply to ${comment.commenter.name ?? "comment"}`}
+                    className="min-h-20"
+                    onChange={(event) =>
+                      setReplyDrafts((current) => ({
+                        ...current,
+                        [comment.id]: event.target.value,
+                      }))
+                    }
+                    placeholder="Write an official reply"
+                    value={replyDrafts[comment.id] ?? ""}
+                  />
+                  <Button
+                    className="mt-2"
+                    isDisabled={
+                      replyingCommentId === comment.id ||
+                      !(replyDrafts[comment.id] ?? "").trim()
+                    }
+                    onPress={async () => {
+                      const body = replyDrafts[comment.id]?.trim()
+                      if (!body) return
+                      setReplyError("")
+                      setReplyingCommentId(comment.id)
+                      try {
+                        await replyToComment(comment.id, body)
+                        setReplyDrafts((current) => ({ ...current, [comment.id]: "" }))
+                      } catch {
+                        setReplyError("Unable to send this reply. Please try again.")
+                      } finally {
+                        setReplyingCommentId(null)
+                      }
+                    }}
+                    size="sm"
+                  >
+                    {replyingCommentId === comment.id ? "Sending…" : "Reply"}
+                  </Button>
+                </div>
               </div>
               <div className="flex gap-2">
                 {!comment.is_approved && (

@@ -59,7 +59,7 @@ export type VendorOrder = {
   vendor_note: string | null
   cancellation_reason: string | null
   items: OrderItem[]
-  vendor?: { id: number; display_name: string }
+  vendor?: { id: number; display_name: string; slug?: string | null; logo?: string | null }
   order?: {
     id: number
     order_number: string
@@ -68,6 +68,7 @@ export type VendorOrder = {
     shipping_address: ShippingAddress
     payment_method: string
     payment_status: string
+    payment?: { id: number; status: PaymentStatus } | null
   }
 }
 

@@ -7,7 +7,12 @@ export type ManagedComment = {
   created_at: string
   commenter: { id: number | null; name: string }
   subject: { type: "Product" | "Blog post"; title: string }
-  replies: { id: number; body: string; commenter: { name: string }; created_at: string }[]
+  replies: {
+    id: number
+    body: string
+    author: { name: string; role: "Admin" | "Vendor" }
+    created_at: string
+  }[]
 }
 
 export const commentManagementService = {

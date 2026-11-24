@@ -22,7 +22,7 @@ export function ProductGallery({ images }: ProductGalleryProps) {
       <div className="relative aspect-[4/4.45] overflow-hidden rounded-[28px] border border-white/75 bg-white/55 backdrop-blur-xl sm:rounded-[32px]">
         <img
           alt={activeImage.alt}
-          className="object-cover"
+          className="block size-full object-cover"
           src={resolveMediaUrl(activeImage.src)}
         />
         <span className="absolute top-4 left-4 rounded-full border border-white/70 bg-white/70 px-3 py-1.5 text-[9px] font-bold tracking-[0.12em] text-[#38684f] uppercase backdrop-blur-md">
@@ -45,7 +45,7 @@ export function ProductGallery({ images }: ProductGalleryProps) {
           >
             <img
               alt=""
-              className="object-cover transition-transform duration-300 group-hover:scale-105"
+              className="block size-full object-cover transition-transform duration-300 group-hover:scale-105"
               src={resolveMediaUrl(image.src)}
             />
           </button>

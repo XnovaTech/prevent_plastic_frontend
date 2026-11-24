@@ -17,4 +17,14 @@ export const addressService = {
     )
     return response.data.data
   },
+  async update(
+    id: number,
+    input: Omit<UserAddress, "id" | "is_default"> & { is_default?: boolean }
+  ): Promise<UserAddress> {
+    const response = await api.put<CategoryApiResponse<UserAddress>>(
+      `/addresses/${id}`,
+      input
+    )
+    return response.data.data
+  },
 }

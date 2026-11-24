@@ -3,6 +3,8 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
+import { VendorConversation } from "@/components/order/vendorConversation"
+import { resolveMediaUrl } from "@/lib/media"
 import {
   useAdminOrder,
   useAdminVendorOrder,
@@ -155,13 +157,16 @@ export function ManagedOrderDetails({ id, mode }: { id: number; mode: Mode }) {
                   className="flex items-center justify-between gap-4 py-3"
                   key={item.id}
                 >
-                  <div>
+                  <div className="flex min-w-0 items-center gap-3">
+                    {item.product_image ? <img alt={item.product_name} className="size-12 shrink-0 rounded-xl border border-[#e3e9df] object-cover" src={resolveMediaUrl(item.product_image)} /> : null}
+                    <div>
                     <p className="font-medium text-brand">
                       {item.product_name}
                     </p>
                     <p className="text-sm text-brand-gray-3">
                       Qty {item.quantity}
                     </p>
+                    </div>
                   </div>
                   <p className="font-semibold text-brand">
                     Ks {Number(item.line_total).toLocaleString()}
@@ -169,6 +174,9 @@ export function ManagedOrderDetails({ id, mode }: { id: number; mode: Mode }) {
                 </div>
               ))}
             </div>
+            {mode === "vendor" ? (
+              <div className="mt-4 border-t border-[#e3e9df] pt-4"><p className="mb-2 text-xs text-brand-gray-3">Messages are shared only for the products in this vendor order.</p><VendorConversation triggerLabel="Message customer" vendorName={customer?.name ?? "Customer"} vendorOrderId={vendorOrder.id} /></div>
+            ) : null}
           </Card>
         )
       })}

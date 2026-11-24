@@ -2,7 +2,7 @@
 
 import { useParams } from "next/navigation"
 
-import { StorefrontProductDetail } from "@/components/product/storefrontProductDetail"
+import { ApprovedStorefrontProductDetail } from "@/components/product/approvedStorefrontProductDetail"
 import { AosInitializer } from "@/components/shared/aosInitializer"
 import { SiteFooter } from "@/components/shared/siteFooter"
 import { SiteHeader } from "@/components/shared/siteHeader"
@@ -15,9 +15,9 @@ export default function ProductPage() {
       <AosInitializer />
       <SiteHeader activeHref="/products" />
       <main>
-        <StorefrontProductDetail productId={Number(params.productId)} />
+        <ApprovedStorefrontProductDetail productId={Number(params.productId)} />
       </main>
-      <SiteFooter />
+      <SiteFooter showContactDetails={false} />
     </div>
   )
 }
