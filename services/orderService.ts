@@ -1,6 +1,6 @@
 import { api } from "@/lib/api"
 import type { CategoryApiResponse } from "@/types/category"
-import type { Order, Paginated, Payment, PaymentStatus, VendorOrder } from "@/types/order"
+import type { Order, Paginated, Payment, PaymentStatus, Shipment, ShipmentStatus, VendorOrder } from "@/types/order"
 
 function paginated<T>(payload: Paginated<T> | T[]): Paginated<T> {
   return Array.isArray(payload) ? { data: payload } : payload
@@ -61,6 +61,18 @@ export const orderService = {
     const response = await api.get<CategoryApiResponse<VendorOrder>>(
       `/vendor/orders/${id}`
     )
+    return response.data.data
+  },
+  async shipments(): Promise<Shipment[]> {
+    const response = await api.get<CategoryApiResponse<Shipment[]>>("/vendor/shipments")
+    return response.data.data
+  },
+  async createShipment(input: { vendor_order_id: number; carrier_name?: string; tracking_number?: string; delivery_contact_name?: string; delivery_contact_phone?: string; estimated_delivery_at?: string; delivery_note?: string; status?: ShipmentStatus }): Promise<Shipment> {
+    const response = await api.post<CategoryApiResponse<Shipment>>("/vendor/shipments", input)
+    return response.data.data
+  },
+  async updateShipment(id: number, input: Partial<{ carrier_name: string; tracking_number: string; delivery_contact_name: string; delivery_contact_phone: string; estimated_delivery_at: string; delivery_note: string; status: ShipmentStatus; status_note: string }>): Promise<Shipment> {
+    const response = await api.patch<CategoryApiResponse<Shipment>>("/vendor/shipments/" + id, input)
     return response.data.data
   },
   async updateVendorPayment(

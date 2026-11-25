@@ -45,6 +45,22 @@ export type OrderItem = {
   unit_price: string
   line_total: string
 }
+export type ShipmentStatus = "pending" | "picked_up" | "in_transit" | "out_for_delivery" | "delivered" | "failed" | "returned"
+export type ShipmentHistory = { id: number; status: ShipmentStatus; note: string | null; updated_by: number | null; created_at: string }
+export type Shipment = {
+  id: number
+  vendor_order_id: number
+  tracking_number: string | null
+  carrier_name: string | null
+  delivery_contact_name: string | null
+  delivery_contact_phone: string | null
+  estimated_delivery_at: string | null
+  status: ShipmentStatus
+  shipped_at: string | null
+  delivered_at: string | null
+  delivery_note: string | null
+  history: ShipmentHistory[]
+}
 export type VendorOrder = {
   id: number
   vendor_order_number: string
@@ -58,6 +74,7 @@ export type VendorOrder = {
   approved_at: string | null
   vendor_note: string | null
   cancellation_reason: string | null
+  shipment?: Shipment | null
   items: OrderItem[]
   vendor?: { id: number; display_name: string; slug?: string | null; logo?: string | null }
   order?: {

@@ -108,7 +108,9 @@ function LegacyProductDetail({
   const prices = variants
     .map((variant) => Number(variant.price))
     .filter(Boolean)
-  const totalStock = currentProduct.stock_quantity ?? 0
+  const totalStock = variants.length
+    ? variants.reduce((total, variant) => total + variant.stock_quantity, 0)
+    : (currentProduct.stock_quantity ?? 0)
   const sanitizedDescription = useMemo(
     () => sanitizeDescription(currentProduct.description),
     [currentProduct.description]

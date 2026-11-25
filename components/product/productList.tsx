@@ -123,7 +123,9 @@ export function ProductList({
                       : "—"}
                   </TableCell>
                   <TableCell className="text-sm text-brand-light">
-                    {product.stock_quantity ?? 0}
+                    {product.variants?.length
+                      ? product.variants.reduce((total, variant) => total + variant.stock_quantity, 0)
+                      : (product.stock_quantity ?? 0)}
                   </TableCell>
                   <TableCell>
                     <Badge variant="outline">{product.status}</Badge>

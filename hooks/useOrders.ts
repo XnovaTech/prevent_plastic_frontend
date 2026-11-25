@@ -1,7 +1,7 @@
 "use client"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { orderService } from "@/services/orderService"
-import type { PaymentStatus } from "@/types/order"
+import type { PaymentStatus, ShipmentStatus } from "@/types/order"
 
 function rows<T>(page: { data: T[] } | T[] | undefined): T[] {
   return Array.isArray(page) ? page : (page?.data ?? [])
@@ -88,6 +88,24 @@ export function useVendorOrder(id: number, enabled = true) {
     enabled: enabled && Number.isInteger(id) && id > 0,
     refetchInterval: enabled ? 15_000 : false,
   })
+}
+
+export function useShipments(enabled = true) {
+  const client = useQueryClient()
+  const query = useQuery({ queryKey: ["vendor-shipments"], queryFn: () => orderService.shipments(), enabled, refetchInterval: enabled ? 15_000 : false })
+  const invalidate = async () => {
+    await Promise.all([
+      client.invalidateQueries({ queryKey: ["vendor-shipments"] }),
+      client.invalidateQueries({ queryKey: ["vendor-orders"] }),
+      client.invalidateQueries({ queryKey: ["customer-orders"] }),
+    ])
+  }
+  const create = useMutation({ mutationFn: orderService.createShipment, onSuccess: invalidate })
+  const updateShipment = useMutation({
+    mutationFn: ({ id, ...input }: { id: number; status?: ShipmentStatus; status_note?: string }) => orderService.updateShipment(id, input),
+    onSuccess: invalidate,
+  })
+  return { shipments: query.data ?? [], isLoading: query.isLoading, error: query.error, create: create.mutateAsync, isCreating: create.isPending, update: updateShipment.mutateAsync, isUpdating: updateShipment.isPending }
 }
 
 export function useAdminOrders(enabled = true) {
