@@ -237,6 +237,7 @@ export function ApprovedStorefrontProductDetail({
 
               <ChatWithVendor
                 merchant={vendorName}
+                productId={product.id}
                 productName={product.name}
               />
               <ProductActions product={product} />

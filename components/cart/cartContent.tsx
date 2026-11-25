@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import axios from "axios"
 import {
   ArrowRight,
   Minus,
@@ -37,8 +38,9 @@ export function CartContent() {
     "cash_on_delivery" | "bank_transfer" | "online"
   >("cash_on_delivery")
   const [checkoutPrompt, setCheckoutPrompt] = useState<
-    "address" | "sign-in" | null
+    "address" | "sign-in" | "error" | null
   >(null)
+  const [checkoutMessage, setCheckoutMessage] = useState("")
   const items = (cart?.items ?? []).map((item) => ({
     id: item.id,
     productId: item.product_id,
@@ -72,12 +74,20 @@ export function CartContent() {
       const order = await checkout(paymentMethod)
       router.push(`/customer/orders/${order.id}`)
     } catch (error) {
-      if (error instanceof Error) {
-        if (error.message.includes("sign in")) {
-          setCheckoutPrompt("sign-in")
-        } else if (error.message.includes("delivery address")) {
-          setCheckoutPrompt("address")
-        }
+      const message = axios.isAxiosError(error)
+        ? Object.values(
+            (error.response?.data?.errors ?? {}) as Record<string, string[]>
+          ).flat()[0] ?? error.response?.data?.message ?? "Unable to place your order."
+        : error instanceof Error
+          ? error.message
+          : "Unable to place your order."
+      if (message.includes("sign in")) {
+        setCheckoutPrompt("sign-in")
+      } else if (message.includes("delivery address") || message.includes("contact phone")) {
+        setCheckoutPrompt("address")
+      } else {
+        setCheckoutMessage(message)
+        setCheckoutPrompt("error")
       }
     }
   }
@@ -106,19 +116,23 @@ export function CartContent() {
             <DialogTitle className="font-serif text-3xl text-brand">
               {checkoutPrompt === "address"
                 ? "Add a delivery address"
-                : "Sign in to place your order"}
+                : checkoutPrompt === "sign-in"
+                  ? "Sign in to place your order"
+                  : "We couldn’t place your order"}
             </DialogTitle>
             <DialogDescription className="leading-6 text-brand-light">
               {checkoutPrompt === "address"
                 ? "Your bag is saved. Add a delivery address, then return here to choose payment and place your order."
-                : "Sign in first so this order is securely linked to your account."}
+                : checkoutPrompt === "sign-in"
+                  ? "Sign in first so this order is securely linked to your account."
+                  : checkoutMessage}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button onPress={() => setCheckoutPrompt(null)} variant="outline">
               Continue shopping
             </Button>
-            <Button
+            {checkoutPrompt !== "error" ? <Button
               onPress={() =>
                 router.push(
                   checkoutPrompt === "address"
@@ -128,7 +142,7 @@ export function CartContent() {
               }
             >
               {checkoutPrompt === "address" ? "Add address" : "Sign in"}
-            </Button>
+            </Button> : null}
           </DialogFooter>
         </Dialog>
       ) : null}

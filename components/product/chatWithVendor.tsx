@@ -10,6 +10,9 @@ import {
 
 import { Dialog, DialogDescription, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
+import { conversationService, type Conversation } from "@/services/orderService"
+import { useAuthStore } from "@/stores/authStore"
+import { notifyError } from "@/lib/notifications"
 
 type ChatMessage = {
   id: number
@@ -19,16 +22,10 @@ type ChatMessage = {
 
 type ChatWithVendorProps = {
   merchant: string
+  productId: number
   productName?: string
   shopKind?: string
 }
-
-const vendorReplies = [
-  "Yes, it's available! Would you like me to set it aside for you?",
-  "Happy to answer anything about pickup, delivery, or the item's condition.",
-  "We usually reply within a few minutes, so ask away.",
-  "If you'd like, I can share more photos or details for you.",
-]
 
 function greetingFor(productName?: string) {
   return productName
@@ -38,27 +35,19 @@ function greetingFor(productName?: string) {
 
 export function ChatWithVendor({
   merchant,
+  productId,
   productName,
   shopKind,
 }: ChatWithVendorProps) {
+  const user = useAuthStore((state) => state.user)
   const [isOpen, setIsOpen] = useState(false)
+  const [conversation, setConversation] = useState<Conversation | null>(null)
+  const [error, setError] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
   const [draft, setDraft] = useState("")
-  const [messages, setMessages] = useState<ChatMessage[]>(() => [
-    { id: 1, author: "vendor", text: greetingFor(productName) },
-  ])
+  const [messages, setMessages] = useState<ChatMessage[]>([])
 
-  const nextIdRef = useRef(2)
-  const replyIndexRef = useRef(0)
-  const replyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const listRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    return () => {
-      if (replyTimerRef.current) {
-        clearTimeout(replyTimerRef.current)
-      }
-    }
-  }, [])
 
   useEffect(() => {
     const list = listRef.current
@@ -67,15 +56,55 @@ export function ChatWithVendor({
     }
   }, [messages])
 
-  function handleOpenChange(open: boolean) {
+  useEffect(() => {
+    if (!conversation || !isOpen || !user) return
+    const interval = window.setInterval(() => {
+      void conversationService.show(conversation.id).then((current) => {
+        setConversation(current)
+        setMessages(current.messages.map((message) => ({
+          id: message.id,
+          author: message.sender?.id === user.id ? "shopper" : "vendor",
+          text: message.body,
+        })))
+      }).catch(() => undefined)
+    }, 15_000)
+    return () => window.clearInterval(interval)
+  }, [conversation?.id, isOpen, user])
+
+  async function handleOpenChange(open: boolean) {
     setIsOpen(open)
 
     if (!open) {
       setDraft("")
+      return
+    }
+
+    if (!user) {
+      setIsOpen(false)
+      setError("Please sign in to message this seller.")
+      return
+    }
+
+    setError("")
+    setIsLoading(true)
+    try {
+      const current = await conversationService.startForProduct(productId)
+      setConversation(current)
+      setMessages(current.messages.map((message) => ({
+        id: message.id,
+        author: message.sender?.id === user.id ? "shopper" : "vendor",
+        text: message.body,
+      })))
+    } catch {
+      notifyError("Unable to open this conversation. Please try again.")
+      setIsOpen(false)
+      setError("Unable to open this conversation. Please try again.")
+    } finally {
+      setIsLoading(false)
     }
   }
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
     const text = draft.trim()
@@ -83,38 +112,44 @@ export function ChatWithVendor({
       return
     }
 
-    setMessages((current) => [
-      ...current,
-      { id: nextIdRef.current++, author: "shopper", text },
-    ])
-    setDraft("")
-
-    if (replyTimerRef.current) {
-      clearTimeout(replyTimerRef.current)
+    if (!conversation || !user) return
+    setError("")
+    setIsLoading(true)
+    try {
+      const current = await conversationService.send(conversation.id, text)
+      setConversation(current)
+      setMessages(current.messages.map((message) => ({
+        id: message.id,
+        author: message.sender?.id === user.id ? "shopper" : "vendor",
+        text: message.body,
+      })))
+      setDraft("")
+    } catch {
+      notifyError("Unable to send your message. Please try again.")
+      setError("Unable to send your message. Please try again.")
+    } finally {
+      setIsLoading(false)
     }
-
-    replyTimerRef.current = setTimeout(() => {
-      const reply = vendorReplies[replyIndexRef.current % vendorReplies.length]
-      replyIndexRef.current += 1
-      setMessages((current) => [
-        ...current,
-        { id: nextIdRef.current++, author: "vendor", text: reply },
-      ])
-      replyTimerRef.current = null
-    }, 800)
   }
 
   return (
     <>
       <Button
         className="mt-2 text-xs"
-        onPress={() => setIsOpen(true)}
+        isDisabled={isLoading}
+        onPress={() => void handleOpenChange(true)}
         size="sm"
         variant="outline"
       >
         <ChatCircleDots aria-hidden="true" size={16} weight="fill" />
         Chat with Vendor
       </Button>
+
+      {error && !isOpen ? (
+        <p aria-live="polite" className="mt-3 text-xs text-red-700">
+          {error}
+        </p>
+      ) : null}
 
       <Dialog
         className="flex max-h-[85vh] w-full flex-col overflow-hidden sm:max-w-md"
@@ -179,7 +214,14 @@ export function ChatWithVendor({
                 </p>
               </div>
             ))}
+            {!messages.length && !isLoading ? (
+              <p className="text-center text-xs text-brand-gray-3">
+                Send a message to start the conversation.
+              </p>
+            ) : null}
           </div>
+
+          {error ? <p className="mt-3 text-xs text-red-700">{error}</p> : null}
 
           <form
             className="mt-3.5 flex items-center gap-2"
@@ -191,6 +233,7 @@ export function ChatWithVendor({
                 className="min-w-0 flex-1 bg-transparent text-[12px] text-brand outline-none placeholder:text-brand-gray-3"
                 onChange={(event) => setDraft(event.target.value)}
                 placeholder={`Message ${merchant}...`}
+                disabled={isLoading}
                 type="text"
                 value={draft}
               />
@@ -198,7 +241,7 @@ export function ChatWithVendor({
             <button
               aria-label="Send message"
               className="flex size-10 shrink-0 items-center justify-center rounded-full bg-brand-2 text-white transition-colors hover:bg-[#1f6157] disabled:opacity-40"
-              disabled={!draft.trim()}
+              disabled={isLoading || !draft.trim()}
               type="submit"
             >
               <PaperPlaneTilt aria-hidden="true" size={17} weight="fill" />

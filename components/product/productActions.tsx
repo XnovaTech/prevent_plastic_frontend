@@ -2,12 +2,21 @@
 
 import Link from "next/link"
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { ArrowRight, CheckCircle, ShoppingBagOpen } from "@phosphor-icons/react"
 
 import { Button } from "@/components/ui/button"
+import {
+  Dialog,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import { SeedlingIcon } from "@/components/ui/seedlingIcon"
 import { useCart } from "@/hooks/useCart"
 import type { Product } from "@/services/productService"
+import { useAuthStore } from "@/stores/authStore"
 import { useWishlistStore } from "@/stores/wishlistStore"
 
 type ProductActionsProps = {
@@ -16,6 +25,9 @@ type ProductActionsProps = {
 
 export function ProductActions({ product }: ProductActionsProps) {
   const [status, setStatus] = useState("")
+  const [showSignInPrompt, setShowSignInPrompt] = useState(false)
+  const router = useRouter()
+  const user = useAuthStore((state) => state.user)
   const { cart, isUpdating, setItem } = useCart()
   const selectedVariant = product.variants?.find(
     (variant) => variant.is_active !== false
@@ -28,16 +40,27 @@ export function ProductActions({ product }: ProductActionsProps) {
   )
 
   async function handleAddToBag() {
+    if (!user) {
+      setShowSignInPrompt(true)
+      return
+    }
+
     if (!selectedVariant) {
       setStatus("This item is not currently available.")
       return
     }
 
-    await setItem({
+    const added = await setItem({
       product_id: product.id,
       variant_id: selectedVariant.id,
       quantity: 1,
     })
+      .then(() => true)
+      .catch(() => {
+        setStatus("We couldn't add this item to your bag. Please try again.")
+        return false
+      })
+    if (!added) return
     setStatus(`“${product.name}” is now in your bag.`)
   }
 
@@ -68,6 +91,31 @@ export function ProductActions({ product }: ProductActionsProps) {
 
   return (
     <div className="mt-5">
+      <Dialog
+        className="border border-[#d8e5d3] bg-[#fdfefa] text-brand"
+        isOpen={showSignInPrompt}
+        onOpenChange={setShowSignInPrompt}
+      >
+        <DialogHeader>
+          <p className="text-[10px] font-bold tracking-[0.16em] text-brand-gray-3 uppercase">
+            Before adding to your bag
+          </p>
+          <DialogTitle className="font-serif text-3xl text-brand">
+            Sign in to save this find
+          </DialogTitle>
+          <DialogDescription className="leading-6 text-brand-light">
+            Sign in first so your bag is safely saved to your account.
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <Button onPress={() => setShowSignInPrompt(false)} variant="outline">
+            Continue browsing
+          </Button>
+          <Button onPress={() => router.push("/login?returnTo=/cart")}>
+            Sign in
+          </Button>
+        </DialogFooter>
+      </Dialog>
       <div className="flex flex-col gap-2.5 sm:flex-row">
         <Button
           className="h-11 flex-1 rounded-full bg-brand-2 px-5 text-[11px] font-bold text-white hover:bg-[#1f6157]"

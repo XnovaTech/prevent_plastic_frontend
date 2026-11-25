@@ -116,6 +116,8 @@ export const orderService = {
 
 export type Conversation = {
   id: number
+  product_id?: number | null
+  customer?: { id: number; name: string }
   vendor_order_id: number
   subject: string | null
   unread_count?: number
@@ -124,6 +126,18 @@ export type Conversation = {
 }
 
 export const conversationService = {
+  async forProduct(productId: number): Promise<Conversation[]> {
+    const response = await api.get<CategoryApiResponse<Conversation[]>>(
+      `/products/${productId}/conversations`
+    )
+    return response.data.data
+  },
+  async startForProduct(productId: number): Promise<Conversation> {
+    const response = await api.post<CategoryApiResponse<Conversation>>(
+      `/conversations/products/${productId}`
+    )
+    return response.data.data
+  },
   async forVendorOrder(vendorOrderId: number): Promise<Conversation | null> {
     const response = await api.get<CategoryApiResponse<Conversation | null>>(
       `/conversations/vendor-orders/${vendorOrderId}`

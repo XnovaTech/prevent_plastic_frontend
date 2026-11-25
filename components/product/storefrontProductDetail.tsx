@@ -133,6 +133,7 @@ export function StorefrontProductDetail({
           </div>
           <ChatWithVendor
             merchant={product.vendor?.display_name ?? "Local seller"}
+            productId={product.id}
             productName={product.name}
           />
           <ProductActions product={product} />

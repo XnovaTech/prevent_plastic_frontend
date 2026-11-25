@@ -2,6 +2,8 @@
 
 import { useCallback, useRef, useState } from "react"
 
+import { notifyError } from "@/lib/notifications"
+
 export type GeolocationStatus =
   "idle" | "locating" | "ready" | "denied" | "unavailable"
 
@@ -20,6 +22,7 @@ export function useGeolocation() {
     if (typeof navigator === "undefined" || !("geolocation" in navigator)) {
       setStatus("unavailable")
       setErrorMessage("This browser can't share your location.")
+      notifyError("This browser can't share your location.")
       return
     }
 
@@ -45,9 +48,11 @@ export function useGeolocation() {
           setErrorMessage(
             "Location permission denied — allow it to focus the map on you."
           )
+          notifyError("Location permission denied. Allow it to focus the map on you.")
         } else {
           setStatus("unavailable")
           setErrorMessage("We couldn't get your location. Please try again.")
+          notifyError("We couldn't get your location. Please try again.")
         }
       },
       {

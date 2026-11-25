@@ -202,14 +202,11 @@ export function AdminBlogDetailContent({ id }: { id: number }) {
               className="flex flex-wrap items-start justify-between gap-3 border-b border-[#e7e9e1] pb-4"
               key={comment.id}
             >
-              <div>
+              <div className="min-w-0 flex-1">
                 <p className="text-sm font-semibold text-brand">
                   {comment.commenter.name ?? "Anonymous"}
                 </p>
                 <p className="mt-1 text-sm text-brand-light">{comment.body}</p>
-                <p className="mt-1 text-xs text-brand-gray-3">
-                  {comment.is_approved ? "Approved" : "Pending review"}
-                </p>
                 {(comment.replies ?? []).map((reply) => (
                   <div className="mt-3 border-l-2 border-brand-2/30 pl-3" key={reply.id}>
                     <p className="text-xs font-semibold text-brand">
@@ -218,7 +215,7 @@ export function AdminBlogDetailContent({ id }: { id: number }) {
                     <p className="mt-1 text-sm leading-6 text-brand-light">{reply.body}</p>
                   </div>
                 ))}
-                <div className="mt-4 max-w-xl">
+                <div className="mt-4 w-full">
                   <Textarea
                     aria-label={`Reply to ${comment.commenter.name ?? "comment"}`}
                     className="min-h-20"

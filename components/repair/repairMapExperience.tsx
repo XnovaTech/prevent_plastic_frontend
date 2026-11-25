@@ -30,6 +30,7 @@ import {
 } from "@/components/repair/repairMapConfig"
 import { RepairPosterCarousel } from "@/components/repair/repairPosterCarousel"
 import { useGeolocation, type UserLocation } from "@/hooks/useGeolocation"
+import { notifyError } from "@/lib/notifications"
 
 type RawMyanmarMap = {
   categories: string[]
@@ -227,11 +228,9 @@ export function RepairMapExperience() {
         })
       } catch (error) {
         if (controller.signal.aborted) return
-        setLoadError(
-          error instanceof Error
-            ? error.message
-            : "The Myanmar map could not be loaded."
-        )
+        const message = error instanceof Error ? error.message : "The Myanmar map could not be loaded."
+        setLoadError(message)
+        notifyError(message)
       }
     }
 

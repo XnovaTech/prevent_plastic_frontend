@@ -1,6 +1,7 @@
 import axios from "axios"
 
 import { useAuthStore } from "@/stores/authStore"
+import { notifyError } from "@/lib/notifications"
 
 const configuredApiUrl = process.env.NEXT_PUBLIC_API_URL
 
@@ -30,6 +31,7 @@ export function ensureCsrfCookie(): Promise<void> {
       .get("/sanctum/csrf-cookie")
       .then(() => undefined)
       .catch((error: unknown) => {
+        notifyError(error)
         throw error
       })
       .finally(() => {
@@ -49,6 +51,13 @@ export const api = axios.create({
   withXSRFToken: true,
 })
 
+function handleApiError(error: unknown) {
+  notifyError(error)
+  return Promise.reject(error)
+}
+
+csrfApi.interceptors.response.use((response) => response, handleApiError)
+
 api.interceptors.request.use(async (config) => {
   const method = config.method?.toLowerCase()
 
@@ -61,7 +70,12 @@ api.interceptors.request.use(async (config) => {
     method &&
     !["get", "head", "options"].includes(method)
   ) {
-    await ensureCsrfCookie()
+    try {
+      await ensureCsrfCookie()
+    } catch (error) {
+      notifyError(error)
+      throw error
+    }
   }
 
   return config
@@ -74,6 +88,6 @@ api.interceptors.response.use(
       useAuthStore.getState().clearUser()
     }
 
-    return Promise.reject(error)
+    return handleApiError(error)
   }
 )

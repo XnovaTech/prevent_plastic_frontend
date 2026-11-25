@@ -1,6 +1,7 @@
 "use client"
 
 import { useMutation, useQueryClient } from "@tanstack/react-query"
+import axios from "axios"
 
 import { addressService } from "@/services/addressService"
 import { orderService } from "@/services/orderService"
@@ -60,9 +61,17 @@ export function useCheckout() {
       ])
     },
   })
+  const error = mutation.error
+  const errorMessage = axios.isAxiosError(error)
+    ? Object.values(
+        (error.response?.data?.errors ?? {}) as Record<string, string[]>
+      ).flat()[0] ?? error.response?.data?.message ?? "Unable to place your order."
+    : error instanceof Error
+      ? error.message
+      : ""
   return {
     checkout: mutation.mutateAsync,
-    error: mutation.error instanceof Error ? mutation.error.message : "",
+    error: errorMessage,
     isCheckingOut: mutation.isPending,
   }
 }
