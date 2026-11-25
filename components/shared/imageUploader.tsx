@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react"
 import { ImageSquare, Trash, UploadSimple } from "@phosphor-icons/react"
 
 import { Button } from "@/components/ui/button"
+import { resolveMediaUrl } from "@/lib/media"
 
 type ImageUploaderProps = {
   value?: File | null
@@ -23,12 +24,12 @@ export function ImageUploader({
   previewAlt = "Category preview",
 }: ImageUploaderProps) {
   const inputRef = useRef<HTMLInputElement>(null)
-  const [preview, setPreview] = useState<string | null>(existingImage ?? null)
+  const [preview, setPreview] = useState<string | null>(() => resolveMediaUrl(existingImage))
 
   useEffect(() => {
     if (!value) {
       const frame = window.requestAnimationFrame(() => {
-        setPreview(existingImage ?? null)
+        setPreview(resolveMediaUrl(existingImage))
       })
       return () => window.cancelAnimationFrame(frame)
     }

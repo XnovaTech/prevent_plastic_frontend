@@ -213,6 +213,14 @@
   html {
     @apply font-sans;
   }
+  select {
+    color: var(--foreground);
+  }
+  select option,
+  select optgroup {
+    background-color: var(--popover);
+    color: var(--popover-foreground);
+  }
 }
 
 .myanmar-leaflet-map {

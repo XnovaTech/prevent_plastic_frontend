@@ -18,6 +18,18 @@ export const authService = {
   },
 
   async register(input: RegisterInput): Promise<AuthResult> {
+    const hasFiles = Object.values(input).some((value) => value instanceof File)
+    if (hasFiles) {
+      const formData = new FormData()
+      Object.entries(input).forEach(([key, value]) => {
+        if (value instanceof File) formData.append(key, value)
+        else if (value !== undefined && value !== null) formData.append(key, String(value))
+      })
+      const response = await api.post<ApiResponse<AuthResult>>("/auth/register", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      })
+      return response.data.data
+    }
     const response = await api.post<ApiResponse<AuthResult>>(
       "/auth/register",
       input

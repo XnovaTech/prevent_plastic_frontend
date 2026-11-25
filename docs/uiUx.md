@@ -10,6 +10,11 @@
 4. shadcn/ui component ကို project ၏ design token နှင့်လိုက်ဖက်အောင် ပြင်နိုင်သော်လည်း component တစ်ခုချင်းစီတွင် အရောင်၊ border၊ radius ကို သီးခြား hard-code မလုပ်ပါနှင့်။
 5. `components.json` တွင် သတ်မှတ်ထားသော `aria-luma` style နှင့် Phosphor icon library ကို အခြေခံပါ။ UI kit သို့မဟုတ် icon library အသစ် ထပ်မထည့်မီ လိုအပ်ချက်ကို စိစစ်ပါ။
 
+## Select controls
+
+- Use the shared `components/ui/select.tsx` `Select` primitives for interactive dropdowns. Do not use raw HTML `<select>` elements for customer-facing forms: the shared trigger and content preserve the project theme, keyboard support, and consistent option styling.
+- Match the established form treatment: `h-12`, `rounded-[14px]`, `border-[#dfe6dc]`, white surface, brand text, and the shared themed `SelectContent` panel.
+
 ## Visual Direction
 
 ### Brand ခံစားချက်

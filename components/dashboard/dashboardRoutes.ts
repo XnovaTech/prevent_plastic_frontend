@@ -12,6 +12,7 @@ export const adminRoutes: DashboardNavItem[] = [
     ],
   },
   { href: "/admin/payments", label: "Payments", icon: "package" },
+  { href: "/admin/vendors", label: "Vendors", icon: "storefront" },
   { href: "/admin/about", label: "About Us", icon: "heart" },
   { href: "/admin/categories", label: "Categories", icon: "tag" },
   { href: "/admin/products", label: "Products", icon: "package" },
@@ -45,6 +46,7 @@ export const vendorRoutes: DashboardNavItem[] = [
   { href: "/vendor/orders", label: "Orders", icon: "package" },
   { href: "/vendor/payments", label: "Payments", icon: "package" },
   { href: "/vendor/products", label: "Products", icon: "package" },
+  { href: "/vendor/profile", label: "Shop profile", icon: "storefront" },
   {
     href: "/vendor/settings",
     label: "Settings",

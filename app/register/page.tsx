@@ -5,10 +5,17 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 
 import { AuthLayout } from "@/components/auth/authLayout"
-import { Alert, AlertDescription } from "@/components/ui/alert"
+import { ImageUploader } from "@/components/shared/imageUploader"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { useAuth } from "@/hooks/useAuth"
 
 const fieldClassName =
@@ -19,13 +26,24 @@ const labelClassName =
 
 export default function RegisterPage() {
   const router = useRouter()
-  const { error, isLoading: loading, register } = useAuth()
+  const { isLoading: loading, register } = useAuth()
 
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [phone, setPhone] = useState("")
   const [password, setPassword] = useState("")
   const [passwordConfirmation, setPasswordConfirmation] = useState("")
+  const [accountType, setAccountType] = useState<"customer" | "vendor">("customer")
+  const [vendorType, setVendorType] = useState<"individual" | "business">("individual")
+  const [displayName, setDisplayName] = useState("")
+  const [logo, setLogo] = useState<File | null>(null)
+  const [coverImage, setCoverImage] = useState<File | null>(null)
+  const [supportingDocument, setSupportingDocument] = useState<File | null>(null)
+  const [certificateFile, setCertificateFile] = useState<File | null>(null)
+  const [legalBusinessName, setLegalBusinessName] = useState("")
+  const [registrationNumber, setRegistrationNumber] = useState("")
+  const [taxNumber, setTaxNumber] = useState("")
+  const [businessAddress, setBusinessAddress] = useState("")
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     const result = await register({
@@ -34,10 +52,27 @@ export default function RegisterPage() {
       phone: phone || undefined,
       password,
       password_confirmation: passwordConfirmation,
+      account_type: accountType,
+      vendor_type: accountType === "vendor" ? vendorType : undefined,
+      display_name: accountType === "vendor" ? displayName : undefined,
+      contact_email: accountType === "vendor" ? email : undefined,
+      contact_phone: accountType === "vendor" ? phone : undefined,
+      logo: accountType === "vendor" ? logo : undefined,
+      cover_image: accountType === "vendor" ? coverImage : undefined,
+      document_type: accountType === "vendor" ? "identity_or_business_registration" : undefined,
+      supporting_document: accountType === "vendor" ? supportingDocument : undefined,
+      certification_name: accountType === "vendor" && certificateFile ? "Supporting certification" : undefined,
+      certificate_file: accountType === "vendor" ? certificateFile : undefined,
+      legal_business_name: accountType === "vendor" ? legalBusinessName : undefined,
+      registration_number: accountType === "vendor" ? registrationNumber : undefined,
+      tax_number: accountType === "vendor" ? taxNumber : undefined,
+      contact_person: accountType === "vendor" ? name : undefined,
+      business_type: accountType === "vendor" ? vendorType : undefined,
+      business_address: accountType === "vendor" ? businessAddress : undefined,
     })
 
     if (result) {
-      router.push("/")
+      router.push(accountType === "vendor" ? "/vendor" : "/")
     }
   }
 
@@ -73,6 +108,68 @@ export default function RegisterPage() {
             onSubmit={handleSubmit}
             noValidate
           >
+            <div className="flex flex-col gap-2">
+              <Label className={labelClassName} htmlFor="account-type">I want to join as</Label>
+              <Select
+                aria-label="I want to join as"
+                onSelectionChange={(key) => setAccountType(String(key) as "customer" | "vendor")}
+                selectedKey={accountType}
+              >
+                <SelectTrigger className={fieldClassName} id="account-type">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="rounded-[18px] border border-[#dfe6dc] bg-white text-brand shadow-[0_18px_45px_-28px_rgba(27,65,56,0.45)]">
+                  <SelectItem id="customer">Customer</SelectItem>
+                  <SelectItem id="vendor">Vendor</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            {accountType === "vendor" ? <>
+              <div className="flex flex-col gap-2">
+                <Label className={labelClassName} htmlFor="vendor-display-name">Shop name <span aria-hidden="true">*</span></Label>
+                <Input className={fieldClassName} id="vendor-display-name" onChange={(event) => setDisplayName(event.target.value)} required value={displayName} />
+              </div>
+              <div className="flex flex-col gap-2">
+                <Label className={labelClassName} htmlFor="vendor-type">Vendor type</Label>
+                <Select
+                  aria-label="Vendor type"
+                  onSelectionChange={(key) => setVendorType(String(key) as "individual" | "business")}
+                  selectedKey={vendorType}
+                >
+                  <SelectTrigger className={fieldClassName} id="vendor-type">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="rounded-[18px] border border-[#dfe6dc] bg-white text-brand shadow-[0_18px_45px_-28px_rgba(27,65,56,0.45)]">
+                    <SelectItem id="individual">Individual</SelectItem>
+                    <SelectItem id="business">Business</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              {vendorType === "business" ? <div className="grid gap-5 sm:grid-cols-2">
+                <div className="flex flex-col gap-2"><Label className={labelClassName} htmlFor="legal-business-name">Legal business name</Label><Input className={fieldClassName} id="legal-business-name" onChange={(event) => setLegalBusinessName(event.target.value)} value={legalBusinessName} /></div>
+                <div className="flex flex-col gap-2"><Label className={labelClassName} htmlFor="registration-number">Registration number</Label><Input className={fieldClassName} id="registration-number" onChange={(event) => setRegistrationNumber(event.target.value)} value={registrationNumber} /></div>
+                <div className="flex flex-col gap-2"><Label className={labelClassName} htmlFor="tax-number">Tax number</Label><Input className={fieldClassName} id="tax-number" onChange={(event) => setTaxNumber(event.target.value)} value={taxNumber} /></div>
+                <div className="flex flex-col gap-2"><Label className={labelClassName} htmlFor="business-address">Business address</Label><Input className={fieldClassName} id="business-address" onChange={(event) => setBusinessAddress(event.target.value)} value={businessAddress} /></div>
+              </div> : null}
+              <div className="grid gap-5 sm:grid-cols-2">
+                <div className="flex flex-col gap-2">
+                  <Label className={labelClassName}>Shop logo</Label>
+                  <ImageUploader label="Add shop logo" onChange={setLogo} previewAlt="Shop logo preview" value={logo} />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <Label className={labelClassName}>Shop cover</Label>
+                  <ImageUploader label="Add shop cover" onChange={setCoverImage} previewAlt="Shop cover preview" value={coverImage} />
+                </div>
+              </div>
+              <div className="flex flex-col gap-2">
+                <Label className={labelClassName} htmlFor="supporting-document">Supporting document <span aria-hidden="true">*</span></Label>
+                <Input accept=".pdf,image/jpeg,image/png,image/webp" className={fieldClassName} id="supporting-document" onChange={(event) => setSupportingDocument(event.target.files?.[0] ?? null)} required type="file" />
+              </div>
+              <div className="flex flex-col gap-2">
+                <Label className={labelClassName} htmlFor="certificate-file">Certification (optional)</Label>
+                <Input accept=".pdf,image/jpeg,image/png,image/webp" className={fieldClassName} id="certificate-file" onChange={(event) => setCertificateFile(event.target.files?.[0] ?? null)} type="file" />
+              </div>
+            </> : null}
             <div className="flex flex-col gap-2">
               <Label className={labelClassName} htmlFor="register-name">
                 Full name <span aria-hidden="true">*</span>
@@ -160,17 +257,6 @@ export default function RegisterPage() {
                 }
               />
             </div>
-
-            {error ? (
-              <Alert
-                aria-live="polite"
-                className="border-destructive/25 bg-destructive/5 text-destructive"
-                role="alert"
-                variant="destructive"
-              >
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            ) : null}
 
             <Button
               className="h-12 w-full rounded-full bg-primary px-5 text-sm font-bold text-primary-foreground hover:bg-primary/90"

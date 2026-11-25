@@ -11,6 +11,8 @@ export type Notification = {
 
 let lastError = ""
 let lastErrorAt = 0
+let lastSuccess = ""
+let lastSuccessAt = 0
 
 type NotificationState = {
   notification: Notification | null
@@ -42,4 +44,12 @@ export function notifyError(error: unknown, fallback?: string) {
   lastError = message
   lastErrorAt = now
   useNotificationStore.getState().show({ id: now, message, variant: "error" })
+}
+
+export function notifySuccess(message: string) {
+  const now = Date.now()
+  if (message === lastSuccess && now - lastSuccessAt < 1_000) return
+  lastSuccess = message
+  lastSuccessAt = now
+  useNotificationStore.getState().show({ id: now, message, variant: "success" })
 }

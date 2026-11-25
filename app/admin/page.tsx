@@ -7,7 +7,6 @@ import {
 } from "@phosphor-icons/react/dist/ssr"
 
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 
 const stats = [
@@ -89,13 +88,12 @@ export default function AdminPage() {
                 Recent vendor applications
               </h2>
             </div>
-            <Button
+            <a
               className="text-xs font-bold text-brand-3 hover:text-brand-orange"
-              size="sm"
-              variant="ghost"
+              href="/admin/vendors"
             >
               View all
-            </Button>
+            </a>
           </div>
           <CardContent className="p-0">
             {["Demo Vendor", "Demo Vendor 2", "Demo Vendor 3"].map(
@@ -135,7 +133,7 @@ export default function AdminPage() {
             <div className="mt-5 flex flex-col gap-2">
               <a
                 className="flex items-center justify-between rounded-2xl bg-brand-yellow-bg px-4 py-3 text-sm font-semibold text-brand-3 hover:bg-[#e3efdc]"
-                href="#vendors"
+                href="/admin/vendors"
               >
                 Review vendors <ArrowRight size={16} />
               </a>

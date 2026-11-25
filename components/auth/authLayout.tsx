@@ -39,7 +39,7 @@ export function AuthLayout({ children, compact = false }: AuthLayoutProps) {
         </div>
       </header>
 
-      <main className={`mx-auto grid max-w-[1440px] items-center gap-6 px-4 py-5 sm:px-8 sm:py-8 lg:grid-cols-[0.9fr_1.1fr] lg:gap-8 lg:px-12 ${compact ? "h-[calc(100dvh-64px)] overflow-hidden lg:gap-0 lg:bg-white lg:px-0 lg:py-0" : "lg:py-10"}`}>
+      <main className={`mx-auto grid max-w-[1440px] ${compact ? "items-center" : "items-start"} gap-6 px-4 py-5 sm:px-8 sm:py-8 lg:grid-cols-[0.9fr_1.1fr] lg:gap-8 lg:px-12 ${compact ? "h-[calc(100dvh-64px)] overflow-hidden lg:gap-0 lg:bg-white lg:px-0 lg:py-0" : "lg:py-10"}`}>
         <section className={`relative hidden overflow-hidden rounded-[32px] border border-white/70 bg-[#eef4e9] px-7 py-8 shadow-[0_28px_70px_-48px_rgba(38,74,55,0.48)] lg:block lg:px-10 lg:py-10 ${compact ? "min-h-0 py-6 lg:h-full lg:rounded-none lg:border-y-0 lg:border-l-0 lg:border-r lg:border-r-[#dfe7dc] lg:px-8 lg:py-7 lg:shadow-none" : "min-h-[620px] lg:min-h-[680px]"}`}>
           <div aria-hidden="true" className="absolute -top-24 -right-20 size-72 rounded-full border-[26px] border-[#dfe7d9]" />
           <div aria-hidden="true" className="absolute top-12 right-12 size-3 rounded-full bg-brand-orange/70" />
