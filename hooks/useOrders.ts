@@ -42,7 +42,13 @@ export function useVendorOrders(enabled = true) {
   const update = useMutation({
     mutationFn: ({ id, status }: { id: number; status: string }) =>
       orderService.updateVendorOrder(id, { status }),
-    onSuccess: () => client.invalidateQueries({ queryKey: ["vendor-orders"] }),
+    onSuccess: async () => {
+      await Promise.all([
+        client.invalidateQueries({ queryKey: ["vendor-orders"] }),
+        client.invalidateQueries({ queryKey: ["vendor-shipments"] }),
+        client.invalidateQueries({ queryKey: ["customer-orders"] }),
+      ])
+    },
   })
   const approve = useMutation({
     mutationFn: orderService.approveVendorOrder,

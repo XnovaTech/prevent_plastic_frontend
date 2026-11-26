@@ -88,4 +88,18 @@ export const vendorService = {
     })
     return response.data
   },
+
+  async previewOwnDocument(vendorId: number, documentId: number): Promise<Blob> {
+    const response = await api.get(`/vendors/${vendorId}/documents/${documentId}/file`, {
+      responseType: "blob",
+    })
+    return response.data
+  },
+
+  async previewCertification(vendorId: number, certificationId: number): Promise<Blob> {
+    const response = await api.get(`/vendors/${vendorId}/certifications/${certificationId}/file`, {
+      responseType: "blob",
+    })
+    return response.data
+  },
 }

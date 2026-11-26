@@ -84,8 +84,14 @@ api.interceptors.request.use(async (config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    const isGuestSessionCheck = error?.response?.status === 401 && error?.config?.url === "/auth/me"
+
     if (error?.response?.status === 401) {
       useAuthStore.getState().clearUser()
+    }
+
+    if (isGuestSessionCheck) {
+      return Promise.reject(error)
     }
 
     return handleApiError(error)

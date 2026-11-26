@@ -3,14 +3,18 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
 import { cartService } from "@/services/cartService"
+import { useAuthStore } from "@/stores/authStore"
 
 const cartKey = ["cart"] as const
 
 export function useCart() {
   const queryClient = useQueryClient()
+  const user = useAuthStore((state) => state.user)
+  const isReady = useAuthStore((state) => state.isReady)
   const cart = useQuery({
     queryKey: cartKey,
     queryFn: cartService.get,
+    enabled: isReady && Boolean(user),
     retry: false,
   })
   const update = useMutation({

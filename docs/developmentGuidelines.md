@@ -1,5 +1,9 @@
 # Frontend Development Guidelines
 
+## Form controls
+
+Use the shared themed `Select` and `ThemedDatePicker` components for every new or modified dropdown and date/calendar field. Do not introduce native HTML `select`, `date`, or `datetime-local` controls; they render browser-default UI and do not preserve the approved Prevent Plastic form design.
+
 ဤလမ်းညွှန်ချက်များသည် UI၊ feature logic၊ API နှင့် state တို့ကို ရှင်းလင်းစွာ ခွဲထားပြီး feature များကို တစ်သမတ်တည်းတည်ဆောက်နိုင်ရန် ဖြစ်သည်။
 
 ## အခြေခံမူ
