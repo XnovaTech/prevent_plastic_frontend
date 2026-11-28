@@ -1,11 +1,11 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import { ImageSquare, Plus } from "@phosphor-icons/react"
+import { ArrowLeft, ImageSquare, Plus } from "@phosphor-icons/react"
 
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import { Button, LinkButton } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -27,6 +27,7 @@ export function ProductCreateForm({
   const { categories, error: categoryError, isLoading } = useCategories()
   const [categoryId, setCategoryId] = useState(0)
   const [successMessage, setSuccessMessage] = useState("")
+  const [formKey, setFormKey] = useState(0)
   const { create, error: productError, isCreating } = useProducts()
   const {
     error: vendorError,
@@ -51,6 +52,7 @@ export function ProductCreateForm({
         onClose={() => setSuccessMessage("")}
       />
       <form
+        key={formKey}
         className="mx-auto max-w-5xl"
         onSubmit={async (event) => {
         event.preventDefault()
@@ -62,12 +64,22 @@ export function ProductCreateForm({
           try {
             await create(formData)
             setSuccessMessage("Product published successfully.")
+            setCategoryId(0)
+            setVendorId(0)
+            setFormKey((current) => current + 1)
           } catch {
             // The mutation hook exposes the API error inline above the form.
           }
         }}
       >
       <div className="mb-7">
+        <LinkButton
+          className="mb-5 text-xs font-semibold text-brand-light"
+          href={adminMode ? "/admin/products" : "/vendor/products"}
+          variant="ghost"
+        >
+          <ArrowLeft size={14} /> Back to products
+        </LinkButton>
         <p className="text-[10px] font-bold tracking-[0.16em] text-brand-gray-3 uppercase">
           New listing
         </p>

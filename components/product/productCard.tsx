@@ -51,7 +51,7 @@ export function ProductCard({
             ? "flex flex-row items-stretch gap-3"
             : "flex h-full flex-col"
         }`}
-        href={`/products/${product.id}`}
+        href={`/products/${product.slug ?? product.id}`}
       >
         <div
           className={`relative shrink-0 overflow-hidden rounded-[22px] bg-[#f0eee6] ${
@@ -140,6 +140,11 @@ export function ProductCard({
                   {product.merchant}
                 </span>
               </p>
+              {product.distanceKm !== null && product.distanceKm !== undefined && (
+                <p className="mt-1 text-[10px] text-brand-gray-3">
+                  {product.distanceKm.toLocaleString("en-US", { maximumFractionDigits: 1 })} km away
+                </p>
+              )}
               {layout === "row" && (
                 <span
                   className={`mt-2 inline-flex rounded-full px-2 py-0.5 text-[8px] font-semibold uppercase ${conditionToneClass[product.condition as keyof typeof conditionToneClass] ?? conditionToneClass.Good}`}

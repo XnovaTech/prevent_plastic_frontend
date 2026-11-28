@@ -1,5 +1,6 @@
 export type HomeProduct = {
   id: string
+  slug?: string
   name: string
   category: string
   price: number
@@ -9,6 +10,7 @@ export type HomeProduct = {
   image: string
   badge?: string
   badgeTone?: "coral" | "green" | "lavender"
+  distanceKm?: number | null
 }
 
 export type HomeCategory = {

@@ -39,12 +39,12 @@ function formatValue(value: unknown) {
   return String(value)
 }
 
-type StorefrontProductDetailProps = { productId: number }
+type StorefrontProductDetailProps = { productSlug: string }
 
 export function StorefrontProductDetail({
-  productId,
+  productSlug,
 }: StorefrontProductDetailProps) {
-  const { error, isLoading, product } = useCatalogProduct(productId)
+  const { error, isLoading, product } = useCatalogProduct(productSlug)
 
   if (isLoading) {
     return <Skeleton className="mx-auto h-[620px] max-w-6xl rounded-[30px]" />

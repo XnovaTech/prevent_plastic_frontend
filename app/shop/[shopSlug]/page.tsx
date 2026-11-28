@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
-import { notFound } from "next/navigation"
 
 import { ShopDetailView } from "@/components/shop/shopDetailView"
+import { CatalogShopDetail } from "@/components/shop/catalogShopDetail"
 import { AosInitializer } from "@/components/shared/aosInitializer"
 import { SiteFooter } from "@/components/shared/siteFooter"
 import { SiteHeader } from "@/components/shared/siteHeader"
@@ -31,10 +31,6 @@ export default async function Page({ params }: ShopPageProps) {
   const { shopSlug } = await params
   const shop = getShopBySlug(shopSlug)
 
-  if (!shop) {
-    notFound()
-  }
-
   return (
     <div className="min-h-screen bg-transparent text-brand">
       <AosInitializer />
@@ -44,9 +40,9 @@ export default async function Page({ params }: ShopPageProps) {
       >
         Skip to content
       </a>
-      <SiteHeader activeHref={shop.type === "sme" ? "/shops" : "/products"} />
+      <SiteHeader activeHref={shop?.type === "sme" ? "/shops" : "/products"} />
       <main id="main-content">
-        <ShopDetailView shop={shop} />
+        {shop ? <ShopDetailView shop={shop} /> : <CatalogShopDetail shopSlug={shopSlug} />}
       </main>
       <SiteFooter />
     </div>

@@ -5,7 +5,7 @@ import axios from "axios"
 
 import { productService, type Product } from "@/services/productService"
 
-export function useCatalogProduct(id: number) {
+export function useCatalogProduct(slug: string) {
   const [product, setProduct] = useState<Product | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState("")
@@ -15,7 +15,7 @@ export function useCatalogProduct(id: number) {
       setIsLoading(true)
       setError("")
       void productService
-        .catalogShow(id)
+        .catalogShow(slug)
         .then(setProduct)
         .catch((requestError: unknown) => {
           setProduct(null)
@@ -30,7 +30,7 @@ export function useCatalogProduct(id: number) {
     })
 
     return () => window.cancelAnimationFrame(frame)
-  }, [id])
+  }, [slug])
 
   return { error, isLoading, product }
 }

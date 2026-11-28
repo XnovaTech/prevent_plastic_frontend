@@ -5,6 +5,7 @@ import {
   ArrowLeft,
   ArrowRight,
   ArrowUpRight,
+  MapPin,
   Storefront,
 } from "@phosphor-icons/react"
 
@@ -48,7 +49,9 @@ function plainText(value?: string | null) {
   )
 }
 
-type ApprovedStorefrontProductDetailProps = { productId: number }
+type ApprovedStorefrontProductDetailProps = { productSlug: string }
+
+const fallbackProductImage = "/products/ceramicPlates.jpg"
 
 function RelatedProducts({ product }: { product: Product }) {
   const { products } = useCatalogProducts()
@@ -88,6 +91,7 @@ function RelatedProducts({ product }: { product: Product }) {
             .filter(Number.isFinite)
           const relatedProduct: HomeProduct = {
             id: String(entry.id),
+            slug: entry.slug,
             name: entry.name,
             category: entry.category?.name ?? "Everyday things",
             price: prices.length ? Math.min(...prices) : 0,
@@ -105,9 +109,9 @@ function RelatedProducts({ product }: { product: Product }) {
 }
 
 export function ApprovedStorefrontProductDetail({
-  productId,
+  productSlug,
 }: ApprovedStorefrontProductDetailProps) {
-  const { error, isLoading, product } = useCatalogProduct(productId)
+  const { error, isLoading, product } = useCatalogProduct(productSlug)
 
   if (isLoading) {
     return <Skeleton className="mx-auto h-[620px] max-w-6xl rounded-[30px]" />
@@ -132,10 +136,19 @@ export function ApprovedStorefrontProductDetail({
     )
   }
 
-  const gallery = (product.images ?? []).map((image) => ({
-    src: image.url,
-    alt: image.alt_text ?? product.name,
-  }))
+  const gallery = (product.images ?? [])
+    .filter((image) => image.url)
+    .map((image) => ({
+      src: image.url,
+      alt: image.alt_text ?? product.name,
+    }))
+
+  if (!gallery.length) {
+    gallery.push({
+      src: fallbackProductImage,
+      alt: `${product.name} preview image`,
+    })
+  }
   const prices = (product.variants ?? [])
     .filter((variant) => variant.is_active !== false)
     .map((variant) => Number(variant.price))
@@ -225,45 +238,42 @@ export function ApprovedStorefrontProductDetail({
                   <p className="mt-0.5 text-[10px] text-brand-gray-2">
                     Independent seller
                   </p>
+                  {product.vendor?.address ? (
+                    <p className="mt-1 flex items-center gap-1 text-[10px] text-brand-gray-2">
+                      <MapPin aria-hidden="true" size={11} />
+                      <span className="truncate">{product.vendor.address}</span>
+                    </p>
+                  ) : null}
                 </div>
-                <Link
-                  className="inline-flex items-center gap-1 text-[10px] font-semibold text-brand-3 transition-colors hover:text-brand-orange"
-                  href="/products"
-                >
-                  Browse seller listings{" "}
-                  <ArrowUpRight aria-hidden="true" size={12} />
-                </Link>
+                <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
+                  <ChatWithVendor
+                    className="mt-0"
+                    merchant={vendorName}
+                    productId={product.id}
+                    productName={product.name}
+                  />
+                  <Link
+                    className="inline-flex items-center gap-1 text-[10px] font-semibold text-brand-3 transition-colors hover:text-brand-orange"
+                    href={product.vendor?.slug ? `/shop/${product.vendor.slug}` : "/shops"}
+                  >
+                    Browse seller listings{" "}
+                    <ArrowUpRight aria-hidden="true" size={12} />
+                  </Link>
+                </div>
               </div>
 
-              <ChatWithVendor
-                merchant={vendorName}
-                productId={product.id}
-                productName={product.name}
-              />
+              <div className="mt-4 rounded-[20px] border border-white/70 bg-white/40 p-3.5 backdrop-blur-md">
+                <p className="text-[9px] font-bold tracking-[0.14em] text-brand-gray-3 uppercase">
+                  Condition notes
+                </p>
+                <p className="mt-1.5 text-[11px] leading-5 text-brand-light">
+                  {listingDescription ||
+                    "The seller has not added condition notes yet."}
+                </p>
+              </div>
+
               <ProductActions product={product} />
             </div>
-          </div>
-        </div>
-
-        <div className="mt-6 grid gap-3 sm:grid-cols-2">
-          <div className="rounded-[22px] border border-white/65 bg-white/35 p-5 backdrop-blur-xl">
-            <p className="text-[9px] font-bold tracking-[0.14em] text-brand-gray-5 uppercase">
-              Condition notes
-            </p>
-            <p className="mt-2 text-[11px] leading-5 text-brand-light">
-              {listingDescription ||
-                "The seller has not added condition notes yet."}
-            </p>
-          </div>
-          <div className="rounded-[22px] border border-white/65 bg-white/35 p-5 backdrop-blur-xl">
-            <p className="text-[9px] font-bold tracking-[0.14em] text-brand-gray-5 uppercase">
-              A note on the photos
-            </p>
-            <p className="mt-2 text-[11px] leading-5 text-brand-light">
-              {gallery.length
-                ? "Photos are provided by the seller. Please review them carefully before ordering."
-                : "No seller photos have been added yet."}
-            </p>
           </div>
         </div>
 

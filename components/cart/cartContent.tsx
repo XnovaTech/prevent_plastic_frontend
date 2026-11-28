@@ -20,7 +20,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select"
 import { useCart } from "@/hooks/useCart"
 import { useCheckout } from "@/hooks/useCheckout"
 import { resolveMediaUrl } from "@/lib/media"
@@ -34,9 +33,6 @@ export function CartContent() {
   const { cart, isUpdating, removeItem, setItem } = useCart()
   const { checkout, error: checkoutError, isCheckingOut } = useCheckout()
   const router = useRouter()
-  const [paymentMethod, setPaymentMethod] = useState<
-    "cash_on_delivery" | "bank_transfer" | "online"
-  >("cash_on_delivery")
   const [checkoutPrompt, setCheckoutPrompt] = useState<
     "address" | "sign-in" | "error" | null
   >(null)
@@ -44,6 +40,7 @@ export function CartContent() {
   const items = (cart?.items ?? []).map((item) => ({
     id: item.id,
     productId: item.product_id,
+    productSlug: item.product.slug,
     variantId: item.variant_id,
     name: item.product.name,
     category: item.product.category?.name ?? "Pre-loved find",
@@ -71,7 +68,7 @@ export function CartContent() {
 
   async function placeOrder() {
     try {
-      const order = await checkout(paymentMethod)
+      const order = await checkout()
       router.push(`/customer/orders/${order.id}`)
     } catch (error) {
       const message = axios.isAxiosError(error)
@@ -221,7 +218,7 @@ export function CartContent() {
                           <h3 className="mt-0.5 truncate text-[14px] font-semibold text-brand-6">
                             <Link
                               className="transition-colors hover:text-brand-2"
-                              href={`/products/${item.productId}`}
+                              href={`/products/${item.productSlug ?? item.productId}`}
                             >
                               {item.name}
                             </Link>
@@ -321,37 +318,21 @@ export function CartContent() {
                 <span>{formatPrice(subtotal)}</span>
               </div>
 
-              <div className="mt-5">
-                <label
-                  className="mb-2 block text-[10px] font-bold tracking-[0.14em] text-brand-gray-5 uppercase"
-                  htmlFor="payment-method"
-                >
+              <div className="mt-5 rounded-[14px] border border-[#dce4da] bg-[#f4f8f1] px-3.5 py-3">
+                <p className="text-[10px] font-bold tracking-[0.14em] text-brand-gray-5 uppercase">
                   Payment method
-                </label>
-                <NativeSelect
-                  aria-label="Payment method"
-                  className="w-full [&_[data-slot=native-select]]:h-11 [&_[data-slot=native-select]]:rounded-full [&_[data-slot=native-select]]:border-[#dce4da] [&_[data-slot=native-select]]:bg-white [&_[data-slot=native-select]]:px-4 [&_[data-slot=native-select]]:text-xs [&_[data-slot=native-select]]:font-semibold [&_[data-slot=native-select]]:text-brand [&_[data-slot=native-select]]:hover:bg-[#f4f8f1] [&_[data-slot=native-select]]:focus-visible:border-brand-3 [&_[data-slot=native-select]]:focus-visible:ring-brand-3/20"
-                  id="payment-method"
-                  onChange={(event) =>
-                    setPaymentMethod(
-                      event.target.value as
-                        | "cash_on_delivery"
-                        | "bank_transfer"
-                        | "online"
-                    )
-                  }
-                  value={paymentMethod}
-                >
-                  <NativeSelectOption value="cash_on_delivery">
-                    Cash on delivery (COD)
-                  </NativeSelectOption>
-                  <NativeSelectOption value="bank_transfer">
-                    Bank transfer
-                  </NativeSelectOption>
-                  <NativeSelectOption value="online">
-                    Online payment
-                  </NativeSelectOption>
-                </NativeSelect>
+                </p>
+                <div className="mt-2 flex items-center justify-between gap-3">
+                  <div>
+                    <p className="text-xs font-semibold text-brand">Cash on delivery</p>
+                    <p className="mt-1 text-[10px] leading-4 text-brand-gray-3">
+                      Pay when your order arrives.
+                    </p>
+                  </div>
+                  <span className="rounded-full bg-white px-2.5 py-1 text-[9px] font-bold tracking-[0.1em] text-brand-3 uppercase">
+                    COD
+                  </span>
+                </div>
               </div>
 
               <Button
@@ -368,7 +349,7 @@ export function CartContent() {
                 id="cart-checkout-pending"
               >
                 {checkoutError ||
-                  "Your order will use your default saved delivery address and selected payment method."}
+                  "Your order will use your default saved delivery address and cash on delivery."}
               </p>
               <p className="mt-3 rounded-[14px] bg-[#edf2e9] px-3.5 py-3 text-[10px] leading-5 text-[#557360]">
                 {summary.guestNote}

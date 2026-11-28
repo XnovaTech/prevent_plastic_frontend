@@ -25,6 +25,7 @@ type ChatWithVendorProps = {
   productId: number
   productName?: string
   shopKind?: string
+  className?: string
 }
 
 function greetingFor(productName?: string) {
@@ -38,6 +39,7 @@ export function ChatWithVendor({
   productId,
   productName,
   shopKind,
+  className,
 }: ChatWithVendorProps) {
   const user = useAuthStore((state) => state.user)
   const [isOpen, setIsOpen] = useState(false)
@@ -135,7 +137,7 @@ export function ChatWithVendor({
   return (
     <>
       <Button
-        className="mt-2 text-xs"
+        className={`mt-2 text-xs ${className ?? ""}`}
         isDisabled={isLoading}
         onPress={() => void handleOpenChange(true)}
         size="sm"

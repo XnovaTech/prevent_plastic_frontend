@@ -11,6 +11,7 @@ export type Product = {
   template_id: number
   description?: string | null
   stock_quantity?: number
+  distance_km?: number | null
   attributes?: {
     field_id: number
     field_key?: string | null
@@ -18,7 +19,7 @@ export type Product = {
     value: unknown
   }[]
   category?: { id: number; name: string }
-  vendor?: { id: number; display_name: string; slug?: string }
+  vendor?: { id: number; display_name: string; slug?: string | null; logo?: string | null; address?: string | null; latitude?: number | null; longitude?: number | null }
   variation_attributes?: {
     id: number
     name: string
@@ -54,6 +55,7 @@ export type ProductUpdateInput = {
   name: string
   description?: string
   status: "draft" | "active"
+  attributes?: { field_id: number; value: unknown }[]
   variants: {
     sku?: string
     price: number
@@ -68,16 +70,25 @@ export const productService = {
     return response.data.data
   },
 
-  async catalogList(): Promise<Product[]> {
+  async catalogList(
+    location?: { latitude: number; longitude: number },
+    vendorSlug?: string
+  ): Promise<Product[]> {
     const response = await api.get<CategoryApiResponse<Product[]>>(
-      "/catalog/products"
+      "/catalog/products",
+      {
+        params: {
+          ...(location ? { ...location, sort: "nearby" } : { sort: "latest" }),
+          ...(vendorSlug ? { vendor_slug: vendorSlug } : {}),
+        },
+      }
     )
     return response.data.data
   },
 
-  async catalogShow(id: number): Promise<Product> {
+  async catalogShow(slug: string): Promise<Product> {
     const response = await api.get<CategoryApiResponse<Product>>(
-      `/catalog/products/${id}`
+      `/catalog/products/${slug}`
     )
     return response.data.data
   },

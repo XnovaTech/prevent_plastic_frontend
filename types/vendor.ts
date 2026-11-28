@@ -43,6 +43,8 @@ export type Vendor = {
   facebook_url?: string | null
   instagram_url?: string | null
   address?: string | null
+  latitude?: number | null
+  longitude?: number | null
   status: VendorStatus
   rejection_reason?: string | null
   approved_at?: string | null

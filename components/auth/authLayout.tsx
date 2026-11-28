@@ -1,17 +1,17 @@
-import Image from "next/image"
 import Link from "next/link"
 import { ArrowRight, Leaf } from "@phosphor-icons/react/dist/ssr"
 
+import { MiniSvg } from "@/components/shared/miniSvg"
+
 type AuthLayoutProps = {
   children: React.ReactNode
-  compact?: boolean
 }
 
-export function AuthLayout({ children, compact = false }: AuthLayoutProps) {
+export function AuthLayout({ children }: AuthLayoutProps) {
   return (
-    <div className={`${compact ? "h-dvh overflow-hidden" : "min-h-screen"} bg-[#fbfcf8] text-brand`}>
+    <div className="min-h-screen bg-[#fbfcf8] text-brand">
       <header className="border-b border-white/80 bg-white/70 backdrop-blur-xl">
-        <div className={`mx-auto flex max-w-[1440px] items-center justify-between gap-4 px-4 sm:px-8 lg:px-12 ${compact ? "h-16" : "h-[76px]"}`}>
+        <div className="mx-auto flex h-[76px] max-w-[1440px] items-center justify-between gap-4 px-4 sm:px-8 lg:px-12">
           <Link
             aria-label="Prevent Plastic home"
             className="group flex items-center gap-2.5"
@@ -39,20 +39,12 @@ export function AuthLayout({ children, compact = false }: AuthLayoutProps) {
         </div>
       </header>
 
-      <main className={`mx-auto grid max-w-[1440px] ${compact ? "items-center" : "items-start"} gap-6 px-4 py-5 sm:px-8 sm:py-8 lg:grid-cols-[0.9fr_1.1fr] lg:gap-8 lg:px-12 ${compact ? "h-[calc(100dvh-64px)] overflow-hidden lg:gap-0 lg:bg-white lg:px-0 lg:py-0" : "lg:py-10"}`}>
-        <section className={`relative hidden overflow-hidden rounded-[32px] border border-white/70 bg-[#eef4e9] px-7 py-8 shadow-[0_28px_70px_-48px_rgba(38,74,55,0.48)] lg:block lg:px-10 lg:py-10 ${compact ? "min-h-0 py-6 lg:h-full lg:rounded-none lg:border-y-0 lg:border-l-0 lg:border-r lg:border-r-[#dfe7dc] lg:px-8 lg:py-7 lg:shadow-none" : "min-h-[620px] lg:min-h-[680px]"}`}>
+      <main className="mx-auto grid max-w-[1440px] items-start gap-6 px-4 py-5 sm:px-8 sm:py-8 lg:h-[calc(100dvh-76px)] lg:grid-cols-[0.9fr_1.1fr] lg:gap-8 lg:overflow-hidden lg:px-12 lg:py-10">
+        <section className="relative hidden min-h-[620px] overflow-hidden rounded-[32px] border border-white/70 bg-[#eef4e9] px-7 py-8 shadow-[0_28px_70px_-48px_rgba(38,74,55,0.48)] lg:block lg:h-full lg:min-h-0 lg:px-10 lg:py-10">
           <div aria-hidden="true" className="absolute -top-24 -right-20 size-72 rounded-full border-[26px] border-[#dfe7d9]" />
           <div aria-hidden="true" className="absolute top-12 right-12 size-3 rounded-full bg-brand-orange/70" />
           <div aria-hidden="true" className="absolute top-20 right-20 size-1.5 rounded-full bg-brand-3/70" />
           <div aria-hidden="true" className="absolute -bottom-28 -left-20 size-80 rounded-full bg-[#dcebd6]" />
-          <Image
-            alt=""
-            aria-hidden="true"
-            className="absolute top-8 right-6 w-32 opacity-80"
-            height={100}
-            src="/illustrations/marketDoodle.svg"
-            width={150}
-          />
           <div className="relative z-10 flex h-full flex-col justify-between">
             <div>
               <p className="flex items-center gap-2 text-[10px] font-bold tracking-[0.18em] text-brand-4 uppercase">
@@ -71,19 +63,12 @@ export function AuthLayout({ children, compact = false }: AuthLayoutProps) {
                 Little choices, lasting change
               </p>
             </div>
-            <div className={`relative flex items-end justify-center ${compact ? "mt-3 min-h-[180px]" : "mt-8 min-h-[270px]"}`}>
-              <div aria-hidden="true" className={`absolute bottom-3 rounded-full border border-white/80 bg-[#f8fbf4]/75 shadow-[0_20px_45px_-30px_rgba(38,74,55,0.4)] ${compact ? "h-32 w-52" : "h-52 w-64"}`} />
-              <span aria-hidden="true" className="absolute bottom-8 left-1/2 h-3 w-36 -translate-x-1/2 rounded-[100%] bg-brand/12 blur-sm" />
-              <Image
-                alt="A community member carrying a reusable bag"
-                aria-hidden="true"
-                className={`relative z-10 object-contain drop-shadow-[0_16px_18px_rgba(38,74,55,0.14)] ${compact ? "h-48 w-48" : "h-72 w-72"}`}
-                height={1024}
-                src="/illustrations/community-girl-cutout.png"
-                width={1024}
+            <div className="mt-8 flex min-h-0 flex-1 items-center justify-center">
+              <MiniSvg
+                className="pointer-events-none h-[min(38vh,22rem)] w-[min(38vh,22rem)] object-contain opacity-95"
               />
             </div>
-            <div className="flex flex-wrap justify-center gap-2 border-t border-white/75 pt-4">
+            <div className="flex flex-wrap justify-center gap-2 border-t border-white/75 pt-10 mt-4">
               {["Buy better", "Sell locally", "Repair more"].map((label) => (
                 <span
                   className="min-w-[112px] rounded-full border border-white/80 bg-white/80 px-3.5 py-2 text-center text-[11px] font-semibold text-brand-4 shadow-sm"
@@ -95,8 +80,16 @@ export function AuthLayout({ children, compact = false }: AuthLayoutProps) {
             </div>
           </div>
         </section>
-        <div className={`flex w-full items-center justify-center ${compact ? "lg:h-full lg:bg-white/80 lg:px-8" : ""}`}>{children}</div>
+        <div className="flex w-full items-start justify-center lg:h-full lg:min-h-0 lg:overflow-y-auto lg:px-2 lg:py-2">{children}</div>
       </main>
     </div>
+  )
+}
+
+export function AuthPanel({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+  return (
+    <section className={`rounded-[28px] border border-[#e1e8de] bg-white/85 p-6 shadow-[0_24px_70px_-42px_rgba(27,65,56,0.45)] backdrop-blur-xl sm:p-8 ${className}`}>
+      {children}
+    </section>
   )
 }

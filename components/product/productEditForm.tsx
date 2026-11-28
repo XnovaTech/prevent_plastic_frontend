@@ -32,6 +32,7 @@ export function ProductEditForm({ product, basePath = "/vendor/products" }: Prod
       is_active: variant.is_active ?? true,
     }))
   )
+  const [attributes, setAttributes] = useState(product.attributes ?? [])
   const [error, setError] = useState("")
   const [isSaving, setIsSaving] = useState(false)
   const hasVariantOptions = (product.variation_attributes?.length ?? 0) > 0
@@ -45,6 +46,10 @@ export function ProductEditForm({ product, basePath = "/vendor/products" }: Prod
         name,
         description,
         status,
+        attributes: attributes.map((attribute) => ({
+          field_id: attribute.field_id,
+          value: attribute.value,
+        })),
         variants,
       })
       router.push(`${basePath}/${product.id}`)
@@ -126,6 +131,39 @@ export function ProductEditForm({ product, basePath = "/vendor/products" }: Prod
             Category and template version are fixed after product creation.
             {isModerated && " Admin moderation status cannot be changed here."}
           </p>
+        </CardContent>
+      </Card>
+      <Card className="mb-5 rounded-[26px] border-[#e3e9df] bg-white shadow-none">
+        <CardHeader>
+          <CardTitle className="text-base text-brand">Listing context</CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-5 sm:grid-cols-2">
+          <div className="space-y-2">
+            <Label>Category</Label>
+            <div className="rounded-3xl bg-input/50 px-4 py-2.5 text-sm text-brand-light">
+              {product.category?.name ?? "—"}
+            </div>
+            <p className="text-xs text-brand-gray-3">Category is fixed after creation.</p>
+          </div>
+          <div className="space-y-2">
+            <Label>Vendor</Label>
+            <div className="rounded-3xl bg-input/50 px-4 py-2.5 text-sm text-brand-light">
+              {product.vendor?.display_name ?? `Vendor #${product.vendor_id}`}
+            </div>
+            <p className="text-xs text-brand-gray-3">Vendor ownership cannot be changed here.</p>
+          </div>
+          {attributes.map((attribute, index) => (
+            <div className="space-y-2" key={attribute.field_id}>
+              <Label htmlFor={`edit-product-attribute-${attribute.field_id}`}>
+                {attribute.field_label ?? attribute.field_key ?? `Detail ${index + 1}`}
+              </Label>
+              <Input
+                id={`edit-product-attribute-${attribute.field_id}`}
+                onChange={(event) => setAttributes((current) => current.map((item) => item.field_id === attribute.field_id ? { ...item, value: event.target.value } : item))}
+                value={attribute.value === null || attribute.value === undefined ? "" : String(attribute.value)}
+              />
+            </div>
+          ))}
         </CardContent>
       </Card>
       <Card className="rounded-[26px] border-[#e3e9df] bg-white shadow-none">

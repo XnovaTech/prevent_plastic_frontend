@@ -15,7 +15,7 @@ export default function ProductPage() {
       <AosInitializer />
       <SiteHeader activeHref="/products" />
       <main>
-        <ApprovedStorefrontProductDetail productId={Number(params.productId)} />
+        <ApprovedStorefrontProductDetail productSlug={params.productId} />
       </main>
       <SiteFooter showContactDetails={false} />
     </div>

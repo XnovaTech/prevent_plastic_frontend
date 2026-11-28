@@ -27,9 +27,7 @@ export function useCheckout() {
   const queryClient = useQueryClient()
   const user = useAuthStore((state) => state.user)
   const mutation = useMutation({
-    mutationFn: async (
-      paymentMethod: "cash_on_delivery" | "bank_transfer" | "online"
-    ) => {
+    mutationFn: async () => {
       if (!user) throw new Error("Please sign in before checkout.")
       const addresses = await addressService.list()
       const hasDeliveryPhone = (address: (typeof addresses)[number]) =>
@@ -51,7 +49,7 @@ export function useCheckout() {
           phone,
           address: formatAddress(address),
         },
-        payment_method: paymentMethod,
+        payment_method: "cash_on_delivery",
       })
     },
     onSuccess: async () => {

@@ -101,16 +101,21 @@ Guest
 
 Guest cart နှင့် wishlist ကို product scope ထဲတွင် ထည့်သွင်းထားသည်။ သို့သော် သိမ်းဆည်းမှုကြာချိန်၊ login ပြီးနောက် ပေါင်းစည်းနည်းနှင့် account sync ကို ဆက်လက်သတ်မှတ်ရန်လိုသည်။
 
-### 4.2 Checkout၊ Payment နှင့် Delivery (Pending)
+### 4.2 Checkout၊ COD နှင့် Delivery
 
-Payment နှင့် delivery သည် လိုအပ်မည့်အပိုင်းများဖြစ်သော်လည်း provider၊ လုပ်ငန်းစည်းမျဉ်းနှင့် backend/API contract မရသေးသဖြင့် pending အဖြစ်ထားရမည်။ ယခုအဆင့်တွင် payment သို့မဟုတ် delivery ကို အောင်မြင်သည်ဟု ပြသသော mock checkout ကို မတည်ဆောက်ရ။
+လက်ရှိ release တွင် payment method တစ်ခုတည်းသာ အသုံးပြုသည် — Cash on Delivery (COD)။ Frontend သည် COD ကိုပဲ ပြပြီး backend validation ကလည်း `cash_on_delivery` မဟုတ်သော value များကို reject လုပ်သည်။ ထို့ကြောင့် bank transfer သို့မဟုတ် online payment ကို UI မှာ မပြသေးရ။
 
-အတည်ပြုပြီးနောက် အောက်ပါအချက်များကို သတ်မှတ်ရန်လိုသည်။
+```text
+Customer
+  -> Delivery address နှင့် ဖုန်းနံပါတ် စစ်
+  -> Cart items/stock စစ်
+  -> Vendor အလိုက် order ခွဲ
+  -> COD order ဖန်တီး
+  -> Vendor က ပြင်ဆင်/ပို့ဆောင်
+  -> Customer က လက်ခံချိန်တွင် ငွေချေ
+```
 
-- Payment method/provider, transaction status, failure/retry, refund.
-- Delivery address, delivery method/fee, tracking, delivery status.
-- Order total calculation, stock check, order confirmation, cancellation.
-- Payment နှင့် delivery step များ၏ sequence၊ timeout နှင့် error recovery.
+Delivery address, delivery fee/tracking နှင့် cancellation/refund စည်းမျဉ်းများကို နောက်ပိုင်း release တွင် သတ်မှတ်နိုင်သည်။ Payment provider ထည့်မည့်အချိန်တွင် backend contract နှင့် UI ကို သီးခြားပြန်တိုးချဲ့ရမည်။
 
 ### 4.3 Merchant လျှောက်ထားခြင်းနှင့် အတည်ပြုခြင်း
 

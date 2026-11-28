@@ -7,6 +7,7 @@
 - Vendor/admin management routes (`/products`) နှင့် public storefront catalog routes (`/catalog/products`) ကို သီးခြားထားသည်။
 - Category template မရှိသည့်အခါ vendor product create form သည် mock template မပြဘဲ active template မရှိကြောင်းရှင်းလင်းစွာ ပြသည်။
 - Product detail တွင် category attributes၊ variants၊ price၊ stock၊ vendor နှင့် seller images များကို ပြသည်။
+- Public product feedback သည် initial အနေဖြင့် compact rating summary bar အဖြစ်ပြပြီး user က `View reviews` သို့မဟုတ် `Write a review` နှိပ်မှ reviews, comments နှင့် composer များကို ဖွင့်ရမည်။ Product detail page ကို review form များကြောင့် အလွန်ရှည်မသွားစေရ။
 - Variant creation UI တွင် option group name ကို တစ်ခါသာထည့်ပြီး values များကို comma-separated list အဖြစ် ထည့်ရမည်။ ဥပမာ `Size → Small, Medium, Large` ဖြစ်ပြီး `Size` ကို row တစ်ကြောင်းစီ ထပ်မရေးရ။
 - Shared media rules အရ single image upload တွင် [`imageUploader.tsx`](../components/shared/imageUploader.tsx)၊ rich description တွင် [`richTextEditor.tsx`](../components/shared/richTextEditor.tsx) ကို ပြန်သုံးရမည်။ Backend file lifecycle ကို [`FileService.php`](../../backend/app/Services/FileService.php) မှတစ်ဆင့် ကိုင်တွယ်ရမည်။
 - Homepage နှင့် reviews များတွင် mock content ကျန်ရှိနေသေးသည်။ Product catalog list/detail သည် real API သုံးနေပြီဖြစ်သည်။
@@ -58,6 +59,7 @@
 ### Phase 3 — Auth နှင့် shared state
 
 - Authentication flow/API contract ကို သတ်မှတ်ပြီး login/register hook များ တည်ဆောက်ပါ။
+- Login/register layout တွင် shared `AuthLayout` နှင့် [`miniSvg.tsx`](../components/shared/miniSvg.tsx) မှတစ်ဆင့် animated [`mini.svg`](../public/svg/mini.svg) brand accent ကို ပြန်သုံးရမည်။ Password show/hide၊ loading state နှင့် inline validation error များကို form UX ၏ အစိတ်အပိုင်းအဖြစ် ထည့်သွင်းရမည်။
 - Auth state ကို Zustand ထဲတွင်သာထားပြီး session persistence၊ token storage နှင့် logout behavior ကို backend/security contract အတိုင်း ဆုံးဖြတ်ပါ။
 - Auth state ပြောင်းလဲသည့်အခါ ပြန်သုံးနိုင်သော route/permission handling ကို စီမံပါ။
 - Token၊ credential သို့မဟုတ် private user data ကို log မလုပ်ပါနှင့်။
@@ -73,6 +75,7 @@
 - SME, Individual နှင့် Repair page များကို route/UI အဖြစ်စီစဉ်ပါ။ ၎င်းတို့၏ domain အဓိပ္ပာယ်နှင့် Repair booking လိုအပ်ချက်ကို အတည်မပြုမချင်း မသတ်မှတ်ထားသော workflow ကို မတည်ဆောက်ပါနှင့်။
 - Public route မှ guest နှင့် customer နှစ်ဦးလုံး ထုတ်ကုန် browse လုပ်နိုင်အောင် တည်ဆောက်ပါ။
 - Product list/detail data ကို domain hooks (`useCatalogProducts`, `useCatalogProduct`) နှင့် `productService` မှယူပြီး `components/list/` နှင့် `components/product/` တွင်သာ ပြသပါ။
+- Visitor သည် location permission ပေးပါက `useGeolocation` မှရသော coordinates ဖြင့် catalog API ကို nearby sort အဖြစ်ခေါ်ပြီး နီးရာ vendor listings ကို အရင်ပြပါ။ Permission မပေးပါက normal latest catalog သို့ fallback လုပ်ရမည်။ Exact visitor coordinates ကို persistent storage မသိမ်းရ။
 - တစ်ပတ်ရစ် product ၏ condition၊ သိရှိထားသော ချို့ယွင်းချက်နှင့် ပစ္စည်းအခြေအနေကို နားလည်စေမည့်ပုံ/ဖော်ပြချက်ကို အတည်ပြုထားသော policy အတိုင်း ပြပါ။
 - Search၊ filter၊ sort၊ pagination နှင့် category behavior ကို business/API requirement အတည်ပြုပြီးမှ ထည့်ပါ။
 - Product merchant identity/approval status ၏ public visibility ကို privacy နှင့် product requirement အတိုင်း သတ်မှတ်ပါ။

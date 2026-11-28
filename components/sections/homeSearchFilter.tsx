@@ -1,8 +1,9 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { MagnifyingGlass } from "@phosphor-icons/react"
 
+import { MiniSvg } from "@/components/shared/miniSvg"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 
@@ -35,35 +36,12 @@ const style = `
   .btn-burmese {
     font-family:"BurmeseHandwriting",sans-serif;
   }
-  .mini-gif {
+  .mini-svg {
     animation: miniFloat 2.5s ease-in-out infinite;
     transform-origin: center center;
   }
 `
 
-function LoopingGif({ src, width, height }: { src: string; width: number; height: number }) {
-  const [tick, setTick] = useState(0)
-
-  useEffect(() => {
-    // mini.gif is ~2s long; force an infinite loop by re-triggering src.
-    const interval = setInterval(() => {
-      setTick((t) => t + 1)
-    }, 2000)
-    return () => clearInterval(interval)
-  }, [])
-
-  return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
-      alt=""
-      className="mini-gif h-full w-full object-contain mix-blend-multiply"
-      height={height}
-      key={tick}
-      src={`${src}?t=${tick}`}
-      width={width}
-    />
-  )
-}
 const quickFilters = [
   { id: "all", label: "အားလုံး" },
   { id: "clothes", label: "အဝတ်အစား" },
@@ -96,9 +74,9 @@ export function HomeSearchFilter() {
                   <span className="w w3">ဝင်ကြည့်လေ</span>
                 </h2>
 
-                {/* Decorative looping gif on the left */}
-                <div className="pointer-events-none absolute left-[-32%] hidden h-32 w-32 -translate-y-1/2 opacity-90 md:block  lg:right-auto lg:h-72 lg:w-72">
-                  <LoopingGif height={160} src="/gif/mini.gif" width={160} />
+                {/* The SVG contains its own indefinite animation. */}
+                <div className="pointer-events-none absolute left-[-32%] hidden h-28 w-32 -translate-y-1/2 opacity-90 md:block  lg:right-auto lg:h-72 lg:w-72">
+                  <MiniSvg className="mini-svg h-full w-full object-contain mix-blend-multiply" />
                 </div>
               </div>
             </div>

@@ -10,7 +10,7 @@ export const orderService = {
   async place(input: {
     shipping_address: { name: string; phone: string; address: string }
     billing_address?: Record<string, string>
-    payment_method: "cash_on_delivery" | "bank_transfer" | "online" | "other"
+    payment_method: "cash_on_delivery"
     customer_note?: string
   }): Promise<Order> {
     const response = await api.post<CategoryApiResponse<Order>>(

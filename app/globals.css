@@ -2,6 +2,35 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
+.vendor-location-map .leaflet-control-attribution {
+  font-size: 8px;
+}
+
+.vendor-location-pin-wrapper {
+  background: transparent;
+  border: 0;
+}
+
+.vendor-location-pin {
+  display: block;
+  width: 28px;
+  height: 28px;
+  background: #155e52;
+  border: 3px solid #ffffff;
+  border-radius: 50% 50% 50% 0;
+  box-shadow: 0 4px 12px rgb(21 94 82 / 30%);
+  transform: rotate(-45deg);
+  position: relative;
+}
+
+.vendor-location-pin::after {
+  content: "";
+  position: absolute;
+  inset: 7px;
+  border-radius: 50%;
+  background: #d8f28a;
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {

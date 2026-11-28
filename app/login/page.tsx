@@ -1,10 +1,10 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Leaf, LockKey } from "@phosphor-icons/react"
-import { AuthLayout } from "@/components/auth/authLayout"
+import { AuthLayout, AuthPanel } from "@/components/auth/authLayout"
 import { AosInitializer } from "@/components/shared/aosInitializer"
 import { getDashboardPath, getAppRole } from "@/lib/auth"
 
@@ -26,27 +26,16 @@ export default function LoginPage() {
 
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const [returnTo, setReturnTo] = useState<string | null>(null)
-
-  useEffect(() => {
-    const requestedDestination = new URLSearchParams(window.location.search).get(
-      "returnTo"
-    )
-
-    if (
-      requestedDestination?.startsWith("/") &&
-      !requestedDestination.startsWith("//")
-    ) {
-      setReturnTo(requestedDestination)
-    }
-  }, [])
-
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     const result = await login({ email, password })
 
     if (result) {
       const role = getAppRole(result.user)
+      const requestedDestination = new URLSearchParams(window.location.search).get("returnTo")
+      const returnTo = requestedDestination?.startsWith("/") && !requestedDestination.startsWith("//")
+        ? requestedDestination
+        : null
       const destination = returnTo ?? (role ? getDashboardPath(role) : "/")
 
       router.push(destination)
@@ -54,7 +43,7 @@ export default function LoginPage() {
   }
 
   return (
-    <AuthLayout compact>
+    <AuthLayout>
       <AosInitializer />
       <a
         className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-full focus:bg-white focus:px-4 focus:py-2"
@@ -62,8 +51,8 @@ export default function LoginPage() {
       >
         Skip to content
       </a>
-      <main id="main-content" className="w-full max-w-[540px]" data-aos="fade-left" data-aos-duration="650">
-        <section className="relative overflow-hidden bg-transparent p-5 sm:p-7">
+      <main id="main-content" className="w-full max-w-[680px] lg:h-full" data-aos="fade-left" data-aos-duration="650">
+        <AuthPanel className="h-full lg:flex lg:flex-col lg:justify-center">
           <span aria-hidden="true" className="pointer-events-none absolute -top-16 -right-16 size-28 rounded-full bg-brand-yellow-bg/60" />
           <span aria-hidden="true" className="pointer-events-none absolute top-16 -right-2 size-2 rounded-full bg-brand-orange/70" />
           <div className="relative z-10 mb-5">
@@ -154,7 +143,7 @@ export default function LoginPage() {
               Create one
             </Link>
           </p>
-        </section>
+        </AuthPanel>
       </main>
     </AuthLayout>
   )

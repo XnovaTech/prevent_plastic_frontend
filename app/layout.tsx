@@ -1,6 +1,7 @@
 import { Geist_Mono, IBM_Plex_Sans } from "next/font/google"
 
 import "./globals.css"
+import "leaflet/dist/leaflet.css"
 import { SiteBackdrop } from "@/components/shared/siteBackdrop"
 import { QueryProvider } from "@/components/shared/queryProvider"
 import { AuthProvider } from "@/components/auth/authProvider"
